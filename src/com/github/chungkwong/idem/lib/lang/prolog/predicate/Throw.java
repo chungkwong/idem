@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog.predicate;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
+import java.util.*;
 /**
  *
  * @author kwong
@@ -26,7 +27,32 @@ public class Throw extends ControlConstruct{
 	private static final Predicate pred=new Predicate("throw",1);
 	@Override
 	public void firstexecute(Processor exec){
-		throw new UnsupportedOperationException("Not supported yet.");
+		Predication throwPred=exec.getCurrentActivator();
+		ExecutionState cutparent=exec.getStack().peek().getDecsglstk().peek().getCutparent();
+		exec.getStack().pop();
+		Substitution subst=null;
+		while(true){
+			if(exec.getStack().isEmpty())
+				throw new SystemException("Uncaught prolog error");
+			if((subst=matchCatch(throwPred,cutparent,exec))!=null)
+				break;
+			cutparent=exec.getStack().peek().getDecsglstk().peek().getCutparent();
+		}
+		ExecutionState.DecoratedSubgoal currdec=exec.getStack().peek().getDecsglstk().pop();
+		Predication recover=new CompoundTerm("call",Collections.singletonList(currdec.getActivator().getArguments().get(2).substitute(subst)));
+		exec.getStack().peek().getDecsglstk().push(new ExecutionState.DecoratedSubgoal(throwPred,currdec.getCutparent()));
+		exec.getStack().peek().setBI(ExecutionState.BacktraceInfo.NIL);
+	}
+	private Substitution matchCatch(Predication throwPred,ExecutionState cutparent,Processor exec){
+		Predication curract=exec.getCurrentActivator();
+		if(!curract.getPredicate().equals(Catch.CATCH.getPredicate()))
+			return null;
+		Substitution subst=new Substitution();
+		if(!curract.getArguments().get(1).unities(throwPred.getArguments().get(0),subst))
+			return null;
+		if(exec.getStack().search(cutparent)<exec.getStack().search(exec.getCurrentDecoratedSubgoal().getCutparent()))
+			return null;
+		return subst;
 	}
 	@Override
 	public void reexecute(Processor exec){}

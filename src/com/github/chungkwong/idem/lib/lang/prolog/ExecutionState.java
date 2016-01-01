@@ -83,8 +83,8 @@ public class ExecutionState{
 		NIL,CTRL,BIP,UP;
 	}
 	public static class DecoratedSubgoal{
-		private final Predication activator;
-		private final ExecutionState cutparent;
+		private Predication activator;
+		private ExecutionState cutparent;
 		public DecoratedSubgoal(Predication activator,ExecutionState cutparent){
 			this.activator=activator;
 			this.cutparent=cutparent;
@@ -98,6 +98,12 @@ public class ExecutionState{
 		}
 		public ExecutionState getCutparent(){
 			return cutparent;
+		}
+		public void setActivator(Predication activator){
+			this.activator=activator;
+		}
+		public void setCutparent(ExecutionState cutparent){
+			this.cutparent=cutparent;
 		}
 	}
 }

@@ -20,13 +20,13 @@ import com.github.chungkwong.idem.lib.lang.prolog.*;
  *
  * @author kwong
  */
-public class Disjunction extends ControlConstruct{
-	public static Disjunction DISJUNCTION=new Disjunction();
-	private Disjunction(){}
-	private static final Predicate pred=new Predicate(";",2);
+public class IfThenElse  extends ControlConstruct{
+	public static final IfThenElse IF=new IfThenElse();
+	private IfThenElse(){}
+	private static final Predicate pred=new Predicate("->",2);
 	@Override
 	public void firstexecute(Processor exec){
-		ExecutionState ccs=new ExecutionState(exec.getCurrentState());
+		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
 		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
 		ExecutionState.DecoratedSubgoal currdecsgl=ccs.getDecsglstk().pop();
 		ExecutionState checkpoint=exec.getStack().get(exec.getStack().size()-2);
@@ -34,13 +34,19 @@ public class Disjunction extends ControlConstruct{
 				(Predication)currdecsgl.getActivator().getArguments().get(1),currdecsgl.getCutparent()));
 		ccs.getDecsglstk().push(new ExecutionState.DecoratedSubgoal(new Atom("!"),checkpoint));
 		ccs.getDecsglstk().push(new ExecutionState.DecoratedSubgoal(
-				(Predication)currdecsgl.getActivator().getArguments().get(0),checkpoint));
+				(Predication)currdecsgl.getActivator().getArguments().get(0),exec.getStack().peek()));
 		exec.getStack().push(ccs);
 	}
 	@Override
 	public void reexecute(Processor exec){
-		exec.getStack().pop();
-		exec.backtrack();
+		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
+		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
+		ExecutionState.DecoratedSubgoal currdecsgl=ccs.getDecsglstk().pop();
+		ExecutionState checkpoint=exec.getStack().get(exec.getStack().size()-2);
+		ccs.getDecsglstk().push(new ExecutionState.DecoratedSubgoal(
+				(Predication)currdecsgl.getActivator().getArguments().get(2),currdecsgl.getCutparent()));
+		ccs.getDecsglstk().push(new ExecutionState.DecoratedSubgoal(new Atom("!"),checkpoint));
+		exec.getStack().push(ccs);
 	}
 	@Override
 	public Predicate getPredicate(){

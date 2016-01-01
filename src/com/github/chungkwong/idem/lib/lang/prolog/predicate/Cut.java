@@ -26,10 +26,18 @@ public class Cut extends ControlConstruct{
 	private static final Predicate pred=new Predicate("!",0);
 	@Override
 	public void firstexecute(Processor exec){
-		throw new UnsupportedOperationException("Not supported yet.");
+		ExecutionState ccs=exec.getCurrentState();
+		exec.getCurrentDecoratedSubgoal().setActivator(new Atom("true"));
+		exec.getStack().push(ccs);
 	}
 	@Override
-	public void reexecute(Processor exec){}
+	public void reexecute(Processor exec){
+		ExecutionState cut=exec.getCurrentDecoratedSubgoal().getCutparent();
+		do{
+			exec.getStack().pop();
+		}while(exec.getStack().peek()!=cut);
+		exec.backtrack();
+	}
 	@Override
 	public Predicate getPredicate(){
 		return pred;

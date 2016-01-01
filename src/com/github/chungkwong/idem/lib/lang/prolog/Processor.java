@@ -104,6 +104,12 @@ public class Processor{
 		stack.pop();
 		backtrack();
 	}
+	public ExecutionState getCurrentState(){
+		return stack.peek();
+	}
+	public ExecutionState.DecoratedSubgoal getCurrentDecoratedSubgoal(){
+		return stack.peek().getDecsglstk().get(0);
+	}
 	public Predication getCurrentActivator(){
 		return stack.peek().getDecsglstk().get(0).getActivator();
 	}

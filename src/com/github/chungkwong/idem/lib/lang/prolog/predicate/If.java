@@ -26,10 +26,20 @@ public class If  extends ControlConstruct{
 	private static final Predicate pred=new Predicate("->",2);
 	@Override
 	public void firstexecute(Processor exec){
-		throw new UnsupportedOperationException("Not supported yet.");
+		ExecutionState ccs2=new ExecutionState(exec.getStack().peek());
+		ccs2.setBI(ExecutionState.BacktraceInfo.NIL);
+		ccs2.getDecsglstk().peek().setActivator(new Atom("or"));
+		exec.getStack().push(ccs2);
+		ExecutionState ccs1=new ExecutionState(exec.getStack().peek());
+		ccs1.setBI(ExecutionState.BacktraceInfo.NIL);
+		ccs1.getDecsglstk().peek().setActivator(new Atom("either"));
+		exec.getStack().push(ccs1);
 	}
 	@Override
-	public void reexecute(Processor exec){}
+	public void reexecute(Processor exec){
+		exec.getStack().pop();
+		exec.backtrack();
+	}
 	@Override
 	public Predicate getPredicate(){
 		return pred;

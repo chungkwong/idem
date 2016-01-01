@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog.predicate;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
+import java.util.*;
 /**
  *
  * @author kwong
@@ -26,10 +27,17 @@ public class Catch extends ControlConstruct{
 	private static final Predicate pred=new Predicate("catch",3);
 	@Override
 	public void firstexecute(Processor exec){
-		throw new UnsupportedOperationException("Not supported yet.");
+		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
+		ccs.getDecsglstk().peek().setActivator(
+				new CompoundTerm("call",Collections.singletonList(exec.getCurrentActivator().getArguments().get(0))));
+		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
+		exec.getStack().push(ccs);
 	}
 	@Override
-	public void reexecute(Processor exec){}
+	public void reexecute(Processor exec){
+		exec.getStack().pop();
+		exec.backtrack();
+	}
 	@Override
 	public Predicate getPredicate(){
 		return pred;
