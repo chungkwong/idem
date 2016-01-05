@@ -27,16 +27,16 @@ public final class Lex{
 	public static final int ALARM='\u0007',BACKSPACE='\u0008',TABULATION='\u0009',LINEFEED='\n',NEWLINE='\n'
 		,LINE_TABULATION='\u000B',FORM_FEED='\u000C',CARRIAGE_RETURN='\r',ESCAPE='\u001B',SPACE='\u0020'
 		,DELETE='\u007F',NEXT_LINE='\u0085',LINE_SEPARATOR='\u2028',PARAGRAPH_SEPARATOR='\u2029';
-	public static final HashMap<String,Integer> name2char=new HashMap<String,Integer>();
-	public static final HashMap<Integer,Integer> mem2char=new HashMap<Integer,Integer>();
-	public static final HashSet<Integer> delimiter=new HashSet<Integer>();
-	public static final HashSet<Integer> idInitial=new HashSet<Integer>(),idSubsequent=new HashSet<Integer>();
+	public static final HashMap<String,Integer> name2char=new HashMap<>();
+	public static final HashMap<Integer,Integer> mem2char=new HashMap<>();
+	public static final HashSet<Integer> delimiter=new HashSet<>();
+	public static final HashSet<Integer> idInitial=new HashSet<>(),idSubsequent=new HashSet<>();
 	//public static final HashSet<Character> expMarker=new HashSet<Character>();//R6RS only
-	public static final HashSet<Byte> idInitialType=new HashSet<Byte>(),idSubsequentType=new HashSet<Byte>();
+	public static final HashSet<Byte> idInitialType=new HashSet<>(),idSubsequentType=new HashSet<>();
 	Reader in;
 	boolean foldingCase=false;
 	int ugetc=NONE;//look forward charcater, NONE if none
-	HashMap<String,Object> datums=new HashMap<String,Object>();
+	HashMap<String,Object> datums=new HashMap<>();
 	static{
 		name2char.put("null",(int)'\0');
 		name2char.put("alarm",ALARM);
@@ -119,12 +119,14 @@ public final class Lex{
 	}
 	/**
 	 * Construct a lexical analyzer to analysis a piece of code from a Reader
+	 * @param in the source
 	 */
 	public Lex(Reader in){
 		this.in=in;
 	}
 	/**
 	 * Construct a lexical analyzer to analysis a piece of code as String
+	 * @param code the source
 	 */
 	public Lex(String code){
 		in=new StringReader(code);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 kwong
+ * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +34,8 @@ public class Conjunction extends ControlConstruct{
 		List<Term> argments=exec.getCurrentActivator().getArguments();
 		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
 		ExecutionState cutparent=ccs.getDecsglstk().pop().getCutparent();
-		ccs.getDecsglstk().push(new ExecutionState.DecoratedSubgoal((Predication)argments.get(1),cutparent));
-		ccs.getDecsglstk().push(new ExecutionState.DecoratedSubgoal((Predication)argments.get(0),cutparent));
+		ccs.getDecsglstk().push(new DecoratedSubgoal((Predication)argments.get(1),cutparent));
+		ccs.getDecsglstk().push(new DecoratedSubgoal((Predication)argments.get(0),cutparent));
 		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
 		exec.getStack().push(ccs);
 		exec.selectClause();

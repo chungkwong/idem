@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 kwong
+ * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,9 +38,9 @@ public class Throw extends ControlConstruct{
 				break;
 			cutparent=exec.getStack().peek().getDecsglstk().peek().getCutparent();
 		}
-		ExecutionState.DecoratedSubgoal currdec=exec.getStack().peek().getDecsglstk().pop();
+		DecoratedSubgoal currdec=exec.getStack().peek().getDecsglstk().pop();
 		Predication recover=new CompoundTerm("call",Collections.singletonList(currdec.getActivator().getArguments().get(2).substitute(subst)));
-		exec.getStack().peek().getDecsglstk().push(new ExecutionState.DecoratedSubgoal(throwPred,currdec.getCutparent()));
+		exec.getStack().peek().getDecsglstk().push(new DecoratedSubgoal(throwPred,currdec.getCutparent()));
 		exec.getStack().peek().setBI(ExecutionState.BacktraceInfo.NIL);
 	}
 	private Substitution matchCatch(Predication throwPred,ExecutionState cutparent,Processor exec){

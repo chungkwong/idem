@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 kwong
+ * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,5 +74,14 @@ public class PrologTest{
 	}
 	@Test public void testNonexist(){
 		Assert.assertNull(query(new CompoundTerm("tatooed",Collections.singletonList(new Atom("jody"))),db));
+	}
+	@Test public void testUserRule(){
+		Database db=new Database();
+		db.addClause(new Clause(new CompoundTerm("p",Arrays.asList(new Variable("M"),new Variable("W"))),
+			new CompoundTerm(",",Arrays.asList(new CompoundTerm("m",Collections.singletonList(new Variable("M"))),
+					new CompoundTerm("f",Collections.singletonList(new Variable("W")))))));
+		Substitution result=query(new CompoundTerm("p",Arrays.asList(new Variable("X"),new Variable("Y"))),db);
+		System.out.println(result);
+		Assert.assertNotNull(result);
 	}
 }

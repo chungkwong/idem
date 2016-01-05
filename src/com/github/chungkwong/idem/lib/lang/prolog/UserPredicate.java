@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 kwong
+ * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ public class UserPredicate implements Procedure{
 				ExecutionState ccs=new ExecutionState(exec.getStack().peek());
 				ccs.setSubst(context);
 				ccs.getDecsglstk().pop();
-				ccs.getDecsglstk().push(new ExecutionState.DecoratedSubgoal(c.getBody().substitute(context),exec.getStack().get(exec.getStack().size()-2)));
+				ccs.getDecsglstk().push(new DecoratedSubgoal(c.getBody().substitute(context),exec.getStack().get(exec.getStack().size()-2)));
 				ccs.setBI(ExecutionState.BacktraceInfo.NIL);
 				exec.getStack().push(ccs);
 				return;

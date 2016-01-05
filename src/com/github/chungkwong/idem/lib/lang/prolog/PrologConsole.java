@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,33 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.github.chungkwong.idem.lib.lang.prolog;
+import com.github.chungkwong.swingconsole.*;
+import java.awt.*;
 import java.util.*;
+import javax.swing.*;
 /**
  *
  * @author kwong
  */
-public class ExistenceException extends PrologException{
-	static String FUNCTOR="existence_error";
-	private final Class type;
-	private final Term argument;
-	public ExistenceException(Class type,Term argument){
-		this.type=type;
-		this.argument=argument;
+public class PrologConsole implements Shell{
+	Database db=new Database();
+	String result;
+	public boolean acceptLine(String line){
+		throw new UnsupportedOperationException();
 	}
-	@Override
-	public String getMessage(){
-		return "No"+getType()+" found:"+getArgument();
+	public String evaluate(){
+		return result;
 	}
-	@Override
-	public Term getErrorTerm(){
-		return new CompoundTerm(FUNCTOR,Arrays.asList(new Atom(getType()),getArgument()));
+	public java.util.List<String> getHints(String prefix){
+		ArrayList<String> lst=new ArrayList<String>();
+
+		return lst;
 	}
-	public Class getType(){
-		return type;
-	}
-	public Term getArgument(){
-		return argument;
+	public static void main(String[] args) throws Exception{
+		JFrame f=new JFrame("Console");
+		f.add(new SwingConsole(new PrologConsole()),BorderLayout.CENTER);
+		f.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.setVisible(true);
 	}
 }

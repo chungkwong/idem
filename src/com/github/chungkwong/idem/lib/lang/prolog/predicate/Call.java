@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 kwong
+ * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ public class Call extends ControlConstruct{
 			exec.raise(new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)goal));
 		}
 		ExecutionState cutparent=exec.getStack().get(exec.getStack().size()-2);
-		ccs.getDecsglstk().push(new ExecutionState.DecoratedSubgoal(goal.toBody(),cutparent));
+		ccs.getDecsglstk().push(new DecoratedSubgoal(goal.toBody(),cutparent));
 		exec.getStack().push(ccs);
 	}
 	@Override

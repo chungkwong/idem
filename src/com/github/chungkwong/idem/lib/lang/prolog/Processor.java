@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 kwong
+ * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ public class Processor{
 	public Processor(Predication goal,Database db){
 		this.db=db;
 		stack.push(new ExecutionState());
-		stack.push(new ExecutionState(new ExecutionState.DecoratedSubgoal(goal,stack.peek()),new Substitution()));
+		stack.push(new ExecutionState(new DecoratedSubgoal(goal,stack.peek()),new Substitution()));
 		execute();
 	}
 	public Database getDatabase(){
@@ -84,7 +84,7 @@ public class Processor{
 					LOG.log(Level.WARNING,"Functor not found: {0}",currpred);
 				case FAIL:
 					ExecutionState cutparent=stack.peek().getDecsglstk().pop().getCutparent();
-					stack.peek().getDecsglstk().push(new ExecutionState.DecoratedSubgoal(new Atom("fail"),cutparent));
+					stack.peek().getDecsglstk().push(new DecoratedSubgoal(new Atom("fail"),cutparent));
 					break;
 			}
 		}else{
@@ -107,7 +107,7 @@ public class Processor{
 	public ExecutionState getCurrentState(){
 		return stack.peek();
 	}
-	public ExecutionState.DecoratedSubgoal getCurrentDecoratedSubgoal(){
+	public DecoratedSubgoal getCurrentDecoratedSubgoal(){
 		return stack.peek().getDecsglstk().get(0);
 	}
 	public Predication getCurrentActivator(){
@@ -116,7 +116,7 @@ public class Processor{
 	public void raise(PrologException ex){
 		ExecutionState cutparent=stack.peek().getDecsglstk().pop().getCutparent();
 		Predication throwPred=new CompoundTerm("throw",Collections.singletonList(ex.getErrorTerm()));
-		stack.peek().getDecsglstk().push(new ExecutionState.DecoratedSubgoal(throwPred,cutparent));
+		stack.peek().getDecsglstk().push(new DecoratedSubgoal(throwPred,cutparent));
 	}
 	static List<Substitution> multiquery(Predication goal,Database db){
 		List<Substitution> substs=new ArrayList<>();

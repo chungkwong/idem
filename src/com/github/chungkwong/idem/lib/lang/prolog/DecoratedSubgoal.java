@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,25 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lazy;
-import java.util.concurrent.*;
+package com.github.chungkwong.idem.lib.lang.prolog;
+
 /**
  *
  * @author kwong
  */
-public class LazyChunk<T> implements Chunk<T>{
-	Callable<T> proc;
-	T val;
-	public LazyChunk(Callable<T> proc){
-		this.proc=proc;
+public class DecoratedSubgoal{
+	private Predication activator;
+	private ExecutionState cutparent;
+	public DecoratedSubgoal(Predication activator,ExecutionState cutparent){
+		this.activator=activator;
+		this.cutparent=cutparent;
 	}
 	@Override
-	public synchronized T get()throws Exception{
-		if(proc!=null){
-			val=proc.call();
-			proc=null;
-		}
-		return val;
+	public String toString(){
+		return getActivator().toString();
+	}
+	public Predication getActivator(){
+		return activator;
+	}
+	public ExecutionState getCutparent(){
+		return cutparent;
+	}
+	public void setActivator(Predication activator){
+		this.activator=activator;
+	}
+	public void setCutparent(ExecutionState cutparent){
+		this.cutparent=cutparent;
 	}
 
 }

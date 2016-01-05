@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,33 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.github.chungkwong.idem.lib.lang.prolog;
-import java.util.*;
+
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ExistenceException extends PrologException{
-	static String FUNCTOR="existence_error";
-	private final Class type;
-	private final Term argument;
-	public ExistenceException(Class type,Term argument){
-		this.type=type;
-		this.argument=argument;
+public class Operator{
+	public enum Class{PREFIX,INFIX,POSTFIX}
+	public enum Associativity{LEFT,RIGHT,NO}
+	private final String token;
+	private final int priority;
+	private final Class cls;
+	private final Associativity associativity;
+	public Operator(String token,int priority,Class cls,Associativity associativity){
+		this.token=token;
+		this.priority=priority;
+		this.cls=cls;
+		this.associativity=associativity;
 	}
-	@Override
-	public String getMessage(){
-		return "No"+getType()+" found:"+getArgument();
+	public String getToken(){
+		return token;
 	}
-	@Override
-	public Term getErrorTerm(){
-		return new CompoundTerm(FUNCTOR,Arrays.asList(new Atom(getType()),getArgument()));
+	public int getPriority(){
+		return priority;
 	}
-	public Class getType(){
-		return type;
+	public Class getCls(){
+		return cls;
 	}
-	public Term getArgument(){
-		return argument;
+	public Associativity getAssociativity(){
+		return associativity;
 	}
 }

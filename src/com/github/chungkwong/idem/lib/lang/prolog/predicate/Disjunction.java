@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 kwong
+ * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,12 +28,12 @@ public class Disjunction extends ControlConstruct{
 	public void firstexecute(Processor exec){
 		ExecutionState ccs=new ExecutionState(exec.getCurrentState());
 		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
-		ExecutionState.DecoratedSubgoal currdecsgl=ccs.getDecsglstk().pop();
+		DecoratedSubgoal currdecsgl=ccs.getDecsglstk().pop();
 		ExecutionState checkpoint=exec.getStack().get(exec.getStack().size()-2);
-		ccs.getDecsglstk().push(new ExecutionState.DecoratedSubgoal(
+		ccs.getDecsglstk().push(new DecoratedSubgoal(
 				(Predication)currdecsgl.getActivator().getArguments().get(1),currdecsgl.getCutparent()));
-		ccs.getDecsglstk().push(new ExecutionState.DecoratedSubgoal(new Atom("!"),checkpoint));
-		ccs.getDecsglstk().push(new ExecutionState.DecoratedSubgoal(
+		ccs.getDecsglstk().push(new DecoratedSubgoal(new Atom("!"),checkpoint));
+		ccs.getDecsglstk().push(new DecoratedSubgoal(
 				(Predication)currdecsgl.getActivator().getArguments().get(0),checkpoint));
 		exec.getStack().push(ccs);
 	}

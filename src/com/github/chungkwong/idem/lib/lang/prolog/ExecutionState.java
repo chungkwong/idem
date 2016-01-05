@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 kwong
+ * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,29 +81,5 @@ public class ExecutionState{
 	}
 	public static enum BacktraceInfo{
 		NIL,CTRL,BIP,UP;
-	}
-	public static class DecoratedSubgoal{
-		private Predication activator;
-		private ExecutionState cutparent;
-		public DecoratedSubgoal(Predication activator,ExecutionState cutparent){
-			this.activator=activator;
-			this.cutparent=cutparent;
-		}
-		@Override
-		public String toString(){
-			return getActivator().toString();
-		}
-		public Predication getActivator(){
-			return activator;
-		}
-		public ExecutionState getCutparent(){
-			return cutparent;
-		}
-		public void setActivator(Predication activator){
-			this.activator=activator;
-		}
-		public void setCutparent(ExecutionState cutparent){
-			this.cutparent=cutparent;
-		}
 	}
 }
