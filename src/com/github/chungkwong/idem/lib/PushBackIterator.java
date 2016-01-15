@@ -14,38 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog;
-
+package com.github.chungkwong.idem.lib;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Operator{
-	public enum Class{PREFIX,INFIX,POSTFIX}
-	public enum Associativity{LEFT,RIGHT,NO}
-	private final String token;
-	private final int priority;
-	private final Class cls;
-	private final Associativity associativity;
-	public Operator(String token,int priority,Class cls,Associativity associativity){
-		this.token=token;
-		this.priority=priority;
-		this.cls=cls;
-		this.associativity=associativity;
+public class PushBackIterator<T> implements Iterator<T>{
+	LinkedList<T> buffer=new LinkedList<>();
+	Iterator<T> iter;
+	public PushBackIterator(Iterator<T> iter){
+		this.iter=iter;
 	}
-	public String getToken(){
-		return token;
+	public void pushBack(T item){
+		buffer.addFirst(item);
 	}
-	public int getPriority(){
-		return priority;
+	public T peek(){
+		if(buffer.isEmpty())
+			buffer.addFirst(iter.next());
+		return buffer.getFirst();
 	}
-	public Class getCls(){
-		return cls;
+	@Override
+	public boolean hasNext(){
+		return iter.hasNext()||!buffer.isEmpty();
 	}
-	public Associativity getAssociativity(){
-		return associativity;
-	}
-	public String toString(){
-		return token;
+	@Override
+	public T next(){
+		return buffer.isEmpty()?iter.next():buffer.removeFirst();
 	}
 }

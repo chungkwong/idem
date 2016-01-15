@@ -14,38 +14,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog;
-
+package com.github.chungkwong.idem.lib;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Operator{
-	public enum Class{PREFIX,INFIX,POSTFIX}
-	public enum Associativity{LEFT,RIGHT,NO}
-	private final String token;
-	private final int priority;
-	private final Class cls;
-	private final Associativity associativity;
-	public Operator(String token,int priority,Class cls,Associativity associativity){
-		this.token=token;
-		this.priority=priority;
-		this.cls=cls;
-		this.associativity=associativity;
+public class SimpleIteratorWraper<T> implements Iterator<T>{
+	private final SimpleIterator<T> iter;
+	private T buffer;
+	private boolean ended=false;
+	public SimpleIteratorWraper(SimpleIterator<T> iter){
+		this.iter=iter;
 	}
-	public String getToken(){
-		return token;
+	@Override
+	public boolean hasNext(){
+		if(ended)
+			return false;
+		else if(buffer!=null)
+			return true;
+		else{
+			buffer=iter.next();
+			ended=(buffer==null);
+			return !ended;
+		}
 	}
-	public int getPriority(){
-		return priority;
-	}
-	public Class getCls(){
-		return cls;
-	}
-	public Associativity getAssociativity(){
-		return associativity;
-	}
-	public String toString(){
-		return token;
+	@Override
+	public T next(){
+		if(hasNext()){
+			T tmp=buffer;
+			buffer=null;
+			return tmp;
+		}else
+			throw new NoSuchElementException();
 	}
 }

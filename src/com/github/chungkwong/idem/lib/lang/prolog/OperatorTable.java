@@ -21,54 +21,52 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class OperatorTable{
-	private static final OperatorTable DEFAULT_OPERATOR_TABLE=new OperatorTable();
-	public static OperatorTable getDEFAULT_OPERATOR_TABLE(){
-		return DEFAULT_OPERATOR_TABLE;
-	}
-	private final TreeMap<String,Operator> infixOperators=new TreeMap<>();
-	private final TreeMap<String,Operator> prefixOperators=new TreeMap<>();
-	private final TreeMap<String,Operator> postfixOperators=new TreeMap<>();
+	public static final OperatorTable DEFAULT_OPERATOR_TABLE=new OperatorTable();
+	private final Map<String,Operator> infixOperators=new HashMap<>();
+	private final Map<String,Operator> prefixOperators=new HashMap<>();
+	private final Map<String,Operator> postfixOperators=new HashMap<>();
 	static{
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator(":-",1200,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("-->",1200,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator(":-",1200,Operator.Class.PREFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("?-",1200,Operator.Class.PREFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator(";",1100,Operator.Class.INFIX,Operator.Associativity.RIGHT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("->",1050,Operator.Class.INFIX,Operator.Associativity.RIGHT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator(",",1000,Operator.Class.INFIX,Operator.Associativity.RIGHT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("=",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("\\=",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("==",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("\\==",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("@<",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("@=<",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("@>",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("@>=",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("=..",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("is",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("=:=",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("=\\=",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("<",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("=<",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator(">",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator(">=",700,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("+",500,Operator.Class.INFIX,Operator.Associativity.LEFT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("-",500,Operator.Class.INFIX,Operator.Associativity.LEFT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("/\\",500,Operator.Class.INFIX,Operator.Associativity.LEFT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("\\/",500,Operator.Class.INFIX,Operator.Associativity.LEFT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("*",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("/",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("//",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("rem",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("mod",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("<<",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator(">>",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("**",200,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("^",200,Operator.Class.INFIX,Operator.Associativity.RIGHT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("-",200,Operator.Class.PREFIX,Operator.Associativity.RIGHT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("\\",200,Operator.Class.PREFIX,Operator.Associativity.RIGHT));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator("@",100,Operator.Class.INFIX,Operator.Associativity.NO));
-		getDEFAULT_OPERATOR_TABLE().addOperator(new Operator(":",50,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator(":-",1200,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("-->",1200,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator(":-",1200,Operator.Class.PREFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("?-",1200,Operator.Class.PREFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator(";",1100,Operator.Class.INFIX,Operator.Associativity.RIGHT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("->",1050,Operator.Class.INFIX,Operator.Associativity.RIGHT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator(",",1000,Operator.Class.INFIX,Operator.Associativity.RIGHT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("|",1000,Operator.Class.INFIX,Operator.Associativity.RIGHT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("=",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("\\=",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("==",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("\\==",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("@<",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("@=<",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("@>",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("@>=",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("=..",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("is",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("=:=",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("=\\=",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("<",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("=<",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator(">",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator(">=",700,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("+",500,Operator.Class.INFIX,Operator.Associativity.LEFT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("-",500,Operator.Class.INFIX,Operator.Associativity.LEFT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("/\\",500,Operator.Class.INFIX,Operator.Associativity.LEFT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("\\/",500,Operator.Class.INFIX,Operator.Associativity.LEFT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("*",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("/",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("//",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("rem",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("mod",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("<<",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator(">>",400,Operator.Class.INFIX,Operator.Associativity.LEFT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("**",200,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("^",200,Operator.Class.INFIX,Operator.Associativity.RIGHT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("-",200,Operator.Class.PREFIX,Operator.Associativity.RIGHT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("\\",200,Operator.Class.PREFIX,Operator.Associativity.RIGHT));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("@",100,Operator.Class.INFIX,Operator.Associativity.NO));
+		DEFAULT_OPERATOR_TABLE.addOperator(new Operator(":",50,Operator.Class.INFIX,Operator.Associativity.NO));
 	}
 	public void addOperator(Operator operator){
 		switch(operator.getCls()){
@@ -83,13 +81,17 @@ public class OperatorTable{
 				break;
 		}
 	}
-	public TreeMap<String,Operator> getInfixOperators(){
+	public boolean hasOperator(String spec){
+		return infixOperators.containsKey(spec)||prefixOperators.containsKey(spec)
+				||postfixOperators.containsKey(spec);
+	}
+	public Map<String,Operator> getInfixOperators(){
 		return infixOperators;
 	}
-	public TreeMap<String,Operator> getPrefixOperators(){
+	public Map<String,Operator> getPrefixOperators(){
 		return prefixOperators;
 	}
-	public TreeMap<String,Operator> getPostfixOperators(){
+	public Map<String,Operator> getPostfixOperators(){
 		return postfixOperators;
 	}
 

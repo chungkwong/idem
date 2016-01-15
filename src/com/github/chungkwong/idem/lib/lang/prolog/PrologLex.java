@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
+import static com.github.chungkwong.idem.global.Log.LOG;
+import com.github.chungkwong.idem.lib.*;
 import java.io.*;
 import java.math.*;
 import java.util.*;
@@ -22,7 +24,7 @@ import java.util.*;
  *
  * @author kwong
  */
-public class PrologLex{
+public class PrologLex implements SimpleIterator<Object>{
 	PushbackReader in;
 	static final String GRAPHIC_TOKEN_CHARACTER="#$&*+-./:<=>?@^~\\";
 	public PrologLex(Reader in){
@@ -39,6 +41,10 @@ public class PrologLex{
 			next=nextToken();
 		}
 		return tokens;
+	}
+	private void unreadIfNotEOF(int c) throws IOException{
+		if(c!=-1)
+			in.unread(c);
 	}
 	private void eatLayoutText()throws IOException{
 		while(true){
@@ -57,7 +63,7 @@ public class PrologLex{
 						bracket:while(true){
 							c=in.read();
 							if(c==-1)
-								return;
+								throw new LexicalException("comment not ended");
 							while(c=='*'){
 								c=in.read();
 								if(c=='/')
@@ -66,18 +72,21 @@ public class PrologLex{
 						}
 					}else{
 						in.unread('/');
-						in.unread(c);
+						unreadIfNotEOF(c);
 						return;
 					}
 					break;
+				case -1:
+					return;
 				default:
+					in.unread(c);
 					return;
 			}
 		}
 	}
 	private char getChar(int base)throws IOException{
 		int c=in.read(),ch=0;
-		while(c!='\\')
+		while(c!='\\'&&c!=-1)
 			ch=ch*base+Character.digit(c,base);
 		return (char)ch;
 	}
@@ -105,6 +114,8 @@ public class PrologLex{
 			case '\n':
 			case '\r':
 				return '\0';
+			case -1:
+				throw new LexicalException("reached end of the stream");
 			default:
 				in.unread(c);
 				return getChar(8);
@@ -116,11 +127,12 @@ public class PrologLex{
 			int c=in.read();
 			if(c==quote){
 				c=in.read();
-				if(c!=quote){
-					in.unread(c);
-					break;
-				}else
+				if(c==quote)
 					buf.append(quote);
+				else{
+					unreadIfNotEOF(c);
+					break;
+				}
 			}else if(c=='\\'){
 				char esc=getEspaceCharacter();
 				if(esc!='\0')
@@ -137,7 +149,7 @@ public class PrologLex{
 		buf.append((char)start);
 		while(GRAPHIC_TOKEN_CHARACTER.indexOf(start=in.read())!=-1)
 			buf.append((char)start);
-		in.unread(start);
+		unreadIfNotEOF(start);
 		return buf.toString();
 	}
 	private Variable getVariable() throws IOException{
@@ -149,10 +161,12 @@ public class PrologLex{
 				buf.append((char)c);
 				c=in.read();
 			}while(Character.isAlphabetic(c)||Character.isDigit(c));
-			in.unread(c);
+			unreadIfNotEOF(c);
 			return new Variable(buf.toString());
-		}else
+		}else{
+			unreadIfNotEOF(c);
 			return Variable.WILDCARD;
+		}
 	}
 	private Object getIdentifier(int start) throws IOException{
 		StringBuilder buf=new StringBuilder();
@@ -160,7 +174,9 @@ public class PrologLex{
 			buf.append((char)start);
 			start=in.read();
 		}
-		in.unread(start);
+		if(buf.length()==0)
+			throw new LexicalException("Unknown token");
+		unreadIfNotEOF(start);
 		if(Character.isUpperCase(buf.charAt(0))){
 			return new Variable(buf.toString());
 		}else if(Character.isLowerCase(buf.charAt(0))){
@@ -171,9 +187,11 @@ public class PrologLex{
 	private BigInteger getInteger(int base) throws IOException{
 		StringBuilder buf=new StringBuilder();
 		int c=in.read();
-		while(Character.digit(c,base)!=-1)
+		while(Character.digit(c,base)!=-1){
 			buf.append((char)c);
-		in.unread(c);
+			c=in.read();
+		}
+		unreadIfNotEOF(c);
 		if(buf.length()==0)
 			return BigInteger.ZERO;
 		else
@@ -194,13 +212,16 @@ public class PrologLex{
 					if(start=='\'')
 						in.read();
 					return BigInteger.valueOf(start);
+				default:
+					throw new LexicalException("A number is expected");
 			}
 		}
+		in.unread(start);
 		BigInteger intPart=getInteger(10);
 		start=in.read();
 		if(start=='.'){
 			BigInteger fracPart=getInteger(10);
-			BigDecimal val=new BigDecimal(intPart);
+			BigDecimal val=new BigDecimal(fracPart);
 			while(val.compareTo(BigDecimal.ONE)>=0)
 				val=val.movePointLeft(1);
 			val=val.add(new BigDecimal(intPart));
@@ -210,15 +231,17 @@ public class PrologLex{
 				boolean neg=false;
 				if(start=='-')
 					neg=true;
+				else if(start==-1)
+					throw new LexicalException("Number not ended");
 				else if(start!='+')
 					in.unread(start);
 				int expPart=getInteger(10).intValue();
 				val=neg?val.movePointLeft(expPart):val.movePointRight(expPart);
 			}else
-				in.unread(start);
+				unreadIfNotEOF(start);
 			return val;
 		}else{
-			in.unread(start);
+			unreadIfNotEOF(start);
 			return intPart;
 		}
 	}
@@ -227,15 +250,15 @@ public class PrologLex{
 		int c=in.read();
 		switch(c){
 			case'(':case')':case'[':case ']':case '{':case '}':case '|':case ',':case ';':case '!':
-				return String.valueOf(c);
+				return String.valueOf((char)c);
 			case '`':
 				return getQuotedString('`');
 			case '\'':
 				return getQuotedString('\'');
 			case '\"':
 				return getQuotedString('\"');
-			case '.':case '#':case '$': case '&':case '*':case '+':case '-':case '/':
-			case '<':case '=':case '>':case '?':case '@':case '^':case '~':case '\\'://.
+			case '.':case '#':case '$': case '&':case '*':case '+':case '-':case '/':case ':':
+			case '<':case '=':case '>':case '?':case '@':case '^':case '~':case '\\':
 				return getGraphicToken(c);
 			case '_':
 				return getVariable();
@@ -245,6 +268,22 @@ public class PrologLex{
 				return null;
 			default:
 				return getIdentifier(c);
+		}
+	}
+	@Override
+	public Object next(){
+		try{
+			return nextToken();
+		}catch(IOException ex){
+			LOG.log(java.util.logging.Level.SEVERE,"Reach end of stream",ex);
+		}
+		return null;
+	}
+	public static void main(String[] args) throws IOException{
+		Scanner in=new Scanner(System.in);
+		while(in.hasNextLine()){
+			PrologLex lex=new PrologLex(in.nextLine());
+			System.out.println(lex.getRemainingTokens());
 		}
 	}
 }

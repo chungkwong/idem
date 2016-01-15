@@ -15,25 +15,240 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
-import java.io.*;
+import com.github.chungkwong.idem.lib.*;
+import static com.github.chungkwong.idem.lib.lang.prolog.OperatorTable.DEFAULT_OPERATOR_TABLE;
 import java.util.*;
 /**
  *
  * @author kwong
  */
-public class PrologParser{
-	PrologLex lex;
+public class PrologParser implements SimpleIterator<Predication>{
+	private static final Operator curly=new Operator("{}",0,Operator.Class.PREFIX,Operator.Associativity.RIGHT);
+	private static final Operator openParen=new Operator("(",1202,Operator.Class.INFIX,Operator.Associativity.RIGHT);
+	PushBackIterator lex;
 	public PrologParser(PrologLex lex){
-		this.lex=lex;
+		this.lex=new PushBackIterator<>(new SimpleIteratorWraper<>(lex));
 	}
-	public Predication nextPredication() throws IOException{
-		Stack<Level> stack=new Stack<>();
-		Object token=lex.nextToken();
-
-		return null;
+	public List<Predication> getRemaining(){
+		ArrayList<Predication> lst=new ArrayList<>();
+		Predication pred=next();
+		while(pred!=null){
+			lst.add(pred);
+			pred=next();
+		}
+		return lst;
+	}
+	public Predication next(){
+		ParseState state=new ParseState();
+		out:while(lex.hasNext()){
+			Object token=lex.next();
+			if(token instanceof Number){
+				state.pushOperand(new Atom(token));
+			}else if(token instanceof Variable){
+				state.pushOperand((Variable)token);
+			}else if(token instanceof String){
+				String name=(String)token;
+				switch(name){
+					case "(":state.pushOpenParen(lex);break;
+					case ")":state.pushCloseParen();break;
+					case "[":state.pushOpenBracket(lex);break;
+					case "]":state.pushCloseBracket();break;
+					case "{":state.pushOpenCurly(lex);break;
+					case "}":state.pushCloseCurly();break;
+					default:
+						if(state.pushOperator(name,lex))
+							break out;
+				}
+			}else{
+				assert false;
+			}
+			System.err.println(state);
+		}
+		state.end();
+		if(state.operands.isEmpty())
+			return null;
+		if(state.operands.size()!=1)
+			throw new ParseException();
+		return (Predication)state.operands.pop();
+	}
+	public static void main(String[] args){
+		Scanner in=new Scanner(System.in);
+		while(in.hasNextLine()){
+			PrologParser parse=new PrologParser(new PrologLex(in.nextLine()));
+			System.out.println(parse.getRemaining());
+		}
 	}
 }
-class Level{
-	int priority;
-	
+enum ExpectClass{
+	PREFIX,INFIX_OR_POSTFIX
+}
+class ParseState{
+	private static final Operator OPEN_PAREN=new Operator("(",1202,Operator.Class.INFIX,Operator.Associativity.RIGHT);
+	private static final Operator OPEN_BRACKET=new Operator("[",1202,Operator.Class.INFIX,Operator.Associativity.RIGHT);
+	private static final Operator OPEN_CURLY=new Operator("{",1202,Operator.Class.INFIX,Operator.Associativity.RIGHT);
+	private static final Atom EMPTY_LIST=new Atom(Collections.EMPTY_LIST);
+	Stack<Term> operands=new Stack<>();
+	Stack<Operator> operators=new Stack<>();
+	ExpectClass expected=ExpectClass.PREFIX;
+	ParseState(){
+		operators.push(new Operator("#",1202,Operator.Class.INFIX,Operator.Associativity.NO));
+	}
+	void pushOperand(Term term){
+		operands.push(term);
+		expected=ExpectClass.INFIX_OR_POSTFIX;
+	}
+	boolean pushOperator(String name,PushBackIterator lex){
+		if(expected==ExpectClass.INFIX_OR_POSTFIX){
+			Operator infix=DEFAULT_OPERATOR_TABLE.getInfixOperators().get(name);
+			Operator postfix=DEFAULT_OPERATOR_TABLE.getPostfixOperators().get(name);
+			if(infix==null){
+				if(postfix==null)
+					if(name.equals("."))return true;
+					else throw new ParseException();
+				else
+					pushOperator(postfix);
+			}else if(postfix==null){
+				pushOperator(infix);
+			}else{
+				Object peek=lex.peek();
+				if(peek instanceof String&&(DEFAULT_OPERATOR_TABLE.getInfixOperators().containsKey(peek)
+						||DEFAULT_OPERATOR_TABLE.getPostfixOperators().containsKey(peek))){
+					pushOperator(postfix);
+				}else{
+					pushOperator(infix);
+				}
+			}
+		}else{
+			Object peek=lex.peek();
+			if(peek.equals("(")){
+				pushOperator(new Operator(name,0,Operator.Class.PREFIX,Operator.Associativity.RIGHT));
+			}else{
+				if(peek instanceof String&&(DEFAULT_OPERATOR_TABLE.getInfixOperators().containsKey(peek)
+						||DEFAULT_OPERATOR_TABLE.getPostfixOperators().containsKey(peek))){
+					pushOperand(new Atom(name));
+				}else{
+					pushOperator(DEFAULT_OPERATOR_TABLE.getPrefixOperators().get(name));
+				}
+			}
+		}
+		return false;
+	}
+	void pushOperator(Operator next){
+		if(next.getCls()==Operator.Class.POSTFIX)
+			expected=ExpectClass.INFIX_OR_POSTFIX;
+		else
+			expected=ExpectClass.PREFIX;
+		while(true){
+			Operator top=operators.peek();
+			if(top.getPriority()<next.getPriority()){
+				reduceTopOperator();
+			}else if(top.getPriority()>next.getPriority()){
+				break;
+			}else if(top.getAssociativity()==Operator.Associativity.LEFT){//top must be infix
+				Term right=operands.pop();
+				operands.push(new CompoundTerm(top.getToken(),Arrays.asList(operands.pop(),right)));
+			}else if(next.getAssociativity()==Operator.Associativity.RIGHT){
+				break;
+			}else{
+				throw new ParseException();
+			}
+		}
+		if(next.getCls()==Operator.Class.POSTFIX)
+			operands.push(new CompoundTerm(next,Collections.singletonList(operands.pop())));
+		else
+			operators.push(next);
+	}
+	void pushOpenBracket(PushBackIterator lex){
+		if(lex.peek().equals("]")){
+			lex.next();
+			pushOperand(EMPTY_LIST);
+		}else{
+			operators.push(OPEN_BRACKET);
+			expected=ExpectClass.PREFIX;
+		}
+	}
+	void pushOpenParen(PushBackIterator lex){
+		if(lex.peek().equals(")")){
+			lex.next();
+			pushOperand(new CompoundTerm(operators.pop().getToken(),Collections.EMPTY_LIST));
+		}else{
+			operators.push(OPEN_PAREN);
+			expected=ExpectClass.PREFIX;
+		}
+	}
+	void pushOpenCurly(PushBackIterator lex){
+		if(lex.peek().equals("}")){
+			lex.next();
+			pushOperator(new Operator("{}",0,Operator.Class.PREFIX,Operator.Associativity.RIGHT));
+		}else{
+			operators.push(OPEN_CURLY);
+			expected=ExpectClass.PREFIX;
+		}
+	}
+	void pushCloseCurly(){
+		LinkedList<Term> lst=new LinkedList<>();
+		Operator top=operators.peek();
+		while(top!=OPEN_CURLY){
+			reduceTopOperator();
+			top=operators.peek();
+		}
+		operators.pop();
+		operands.push(new CompoundTerm("{}",Collections.singletonList(operands.pop())));
+	}
+	void pushCloseBracket(){
+		Operator top=operators.peek();
+		Term lst=EMPTY_LIST;
+		while(top!=OPEN_BRACKET){
+			if(top.getToken().equals(",")){
+				operators.pop();
+				lst=new CompoundTerm(".",Arrays.asList(operands.pop(),lst));
+			}else if(top.getToken().equals("|")){
+				operators.pop();
+				lst=operands.pop();
+			}else
+				reduceTopOperator();
+			top=operators.peek();
+		}
+		operators.pop();
+		operands.push(new CompoundTerm(".",Arrays.asList(operands.pop(),lst)));
+	}
+	void pushCloseParen(){
+		LinkedList<Term> lst=new LinkedList<>();
+		Operator top=operators.peek();
+		while(top!=OPEN_PAREN){
+			if(top.getToken().equals(",")){
+				operators.pop();
+				lst.addFirst(operands.pop());
+			}else
+				reduceTopOperator();
+			top=operators.peek();
+		}
+		operators.pop();
+		if(operators.peek().getCls()==Operator.Class.PREFIX){
+			lst.addFirst(operands.pop());
+			operands.push(new CompoundTerm(operators.pop().getToken(),lst));
+		}
+	}
+	void reduceTopOperator(){
+		Operator top=operators.pop();
+		if(top.getCls()==Operator.Class.INFIX){
+			Term right=operands.pop();
+			operands.push(new CompoundTerm(top.getToken(),Arrays.asList(operands.pop(),right)));
+		}else{
+			operands.push(new CompoundTerm(top.getToken(),Collections.singletonList(operands.pop())));
+		}
+	}
+	void end(){
+		while(operators.size()>1)
+			reduceTopOperator();
+		expected=ExpectClass.PREFIX;
+	}
+	public String toString(){
+		return "Operands="+operands+"\nOperators="+operators+"\nExpected="+expected;
+	}
+}
+class ParseException extends RuntimeException{
+	public ParseException(){
+		super("Failed to parse");
+	}
 }
