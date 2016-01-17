@@ -34,17 +34,13 @@ public class Substitution{
 		}
 		return obj;
 	}
-	public void assign(Term var,Term val){
+	public boolean assign(Term var,Term val){
 		Term root=findRoot(var);
-		if(root!=var){
-			if(!(root instanceof Variable)){
-				if(root.equals(val))
-					return;
-				else
-					throw new RuntimeException(var+" already instantiated");
-			}
+		if(root!=var&&!(root instanceof Variable)){
+			return root.equals(val);
 		}
 		assignment.put(root,val);
+		return true;
 	}
 	@Override
 	public String toString(){

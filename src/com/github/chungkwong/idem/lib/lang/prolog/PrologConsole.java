@@ -18,6 +18,7 @@ package com.github.chungkwong.idem.lib.lang.prolog;
 import com.github.chungkwong.swingconsole.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 import javax.swing.*;
 /**
  *
@@ -25,13 +26,40 @@ import javax.swing.*;
  */
 public class PrologConsole implements Shell{
 	Database db=new Database();
-	String result;
+	List<Predication> predications;
+	@Override
 	public boolean acceptLine(String line){
-		throw new UnsupportedOperationException();
+		PrologParser parser=new PrologParser(new PrologLex(line));
+		try{
+			predications=parser.getRemaining();
+		}catch(Exception ex){
+			return false;
+		}
+		return true;
 	}
+	@Override
 	public String evaluate(){
-		return result;
+		StringBuilder buf=new StringBuilder();
+		for(Predication pred:predications){
+			if(pred.getPredicate().getFunctor().equals("?-")){
+				Processor exec=new Processor((Predication)pred.getArguments().get(0),db);
+				Substitution subst=exec.getSubstitution();
+				if(subst==null)
+					buf.append("Gaol failed\n");
+				else
+					buf.append(subst).append('\n');
+			}else if(pred.getPredicate().getFunctor().equals(":-")){
+				db.addClause(new Clause((Predication)pred.getArguments().get(0),
+						(Predication)pred.getArguments().get(1)));
+				buf.append("Rule added\n");
+			}else{
+				db.addClause(new Clause(pred,new Atom("true")));
+				buf.append("Fact added\n");
+			}
+		}
+		return buf.toString();
 	}
+	@Override
 	public java.util.List<String> getHints(String prefix){
 		ArrayList<String> lst=new ArrayList<String>();
 

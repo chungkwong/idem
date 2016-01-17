@@ -86,8 +86,10 @@ public class PrologLex implements SimpleIterator<Object>{
 	}
 	private char getChar(int base)throws IOException{
 		int c=in.read(),ch=0;
-		while(c!='\\'&&c!=-1)
+		while(c!='\\'&&c!=-1){
 			ch=ch*base+Character.digit(c,base);
+			c=in.read();
+		}
 		return (char)ch;
 	}
 	private char getEspaceCharacter() throws IOException{
@@ -111,8 +113,11 @@ public class PrologLex implements SimpleIterator<Object>{
 				return '\u000B';
 			case 'x':
 				return getChar(16);
-			case '\n':
 			case '\r':
+				c=in.read();
+				if(c!='\n')
+					unreadIfNotEOF(c);
+			case '\n':
 				return '\0';
 			case -1:
 				throw new LexicalException("reached end of the stream");
@@ -211,21 +216,23 @@ public class PrologLex implements SimpleIterator<Object>{
 					start=in.read();
 					if(start=='\'')
 						in.read();
+					else if(start=='\\')
+						start=getEspaceCharacter();
 					return BigInteger.valueOf(start);
-				default:
-					throw new LexicalException("A number is expected");
 			}
 		}
-		in.unread(start);
+		unreadIfNotEOF(start);
 		BigInteger intPart=getInteger(10);
 		start=in.read();
 		if(start=='.'){
-			BigInteger fracPart=getInteger(10);
-			BigDecimal val=new BigDecimal(fracPart);
-			while(val.compareTo(BigDecimal.ONE)>=0)
-				val=val.movePointLeft(1);
-			val=val.add(new BigDecimal(intPart));
+			int offset=0;
+			BigDecimal val=new BigDecimal(intPart),pos=BigDecimal.ONE.movePointLeft(1);
 			start=in.read();
+			while(start>='0'&&start<='9'){
+				val=val.add(BigDecimal.valueOf(start-'0').multiply(pos));
+				pos=pos.movePointLeft(1);
+				start=in.read();
+			}
 			if(start=='E'||start=='e'){
 				start=in.read();
 				boolean neg=false;

@@ -62,7 +62,7 @@ public class PrologParser implements SimpleIterator<Predication>{
 			}else{
 				assert false;
 			}
-			System.err.println(state);
+			//System.err.println(state);
 		}
 		state.end();
 		if(state.operands.isEmpty())
@@ -123,11 +123,11 @@ class ParseState{
 			if(peek.equals("(")){
 				pushOperator(new Operator(name,0,Operator.Class.PREFIX,Operator.Associativity.RIGHT));
 			}else{
-				if(peek instanceof String&&(DEFAULT_OPERATOR_TABLE.getInfixOperators().containsKey(peek)
-						||DEFAULT_OPERATOR_TABLE.getPostfixOperators().containsKey(peek))){
+				Operator prefix=DEFAULT_OPERATOR_TABLE.getPrefixOperators().get(name);
+				if(prefix==null){
 					pushOperand(new Atom(name));
 				}else{
-					pushOperator(DEFAULT_OPERATOR_TABLE.getPrefixOperators().get(name));
+					pushOperator(prefix);
 				}
 			}
 		}
@@ -243,6 +243,7 @@ class ParseState{
 			reduceTopOperator();
 		expected=ExpectClass.PREFIX;
 	}
+	@Override
 	public String toString(){
 		return "Operands="+operands+"\nOperators="+operators+"\nExpected="+expected;
 	}
