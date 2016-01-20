@@ -21,7 +21,7 @@ import java.util.*;
  * @author kwong
  */
 public class Substitution{
-	HashMap<Term,Term> assignment;
+	HashMap<Variable,Term> assignment;
 	public Substitution(){
 		assignment=new HashMap<>();
 	}
@@ -34,20 +34,36 @@ public class Substitution{
 		}
 		return obj;
 	}
-	public boolean assign(Term var,Term val){
+	public boolean assign(Variable var,Term val){
 		Term root=findRoot(var);
-		if(root!=var&&!(root instanceof Variable)){
-			return root.equals(val);
+		if(root instanceof Variable){
+			if(!var.equals(val))
+				assignment.put((Variable)root,val);
+			return true;
+		}else{
+			if(val.unities(root,this)){
+				val=val.substitute(this);
+				if(val.getVariableSet().contains(root)){
+					return false;
+				}else{
+					for(Map.Entry<Variable,Term> entry:assignment.entrySet())
+						entry.setValue(entry.getValue().substitute(this));
+					return true;
+				}
+			}else
+				return false;
 		}
-		assignment.put(root,val);
-		return true;
+	}
+	public boolean occurCheck(){
+		return assignment.entrySet().stream().allMatch((entry)->entry.getValue().getVariableSet().contains(entry.getKey()));
 	}
 	@Override
 	public String toString(){
 		StringBuilder buf=new StringBuilder();
 		buf.append("{");
-		for(Map.Entry<Term,Term> assign:assignment.entrySet())
+		assignment.entrySet().stream().forEach((assign)->{
 			buf.append(assign.getKey()).append('=').append(assign.getValue()).append(',');
+		});
 		buf.append('}');
 		return buf.toString();
 	}

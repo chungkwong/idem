@@ -57,7 +57,7 @@ public class Processor{
 	public boolean isSuccessed(){
 		return stack.peek().getDecsglstk().isEmpty();
 	}
-	final int MAX_ITERATOR_COUNT=10;
+	final int MAX_ITERATOR_COUNT=50;
 	private void execute(){
 		int i=0;
 		while(!isFailed()&&!isSuccessed()&&++i<MAX_ITERATOR_COUNT){//FIXME
@@ -108,10 +108,10 @@ public class Processor{
 		return stack.peek();
 	}
 	public DecoratedSubgoal getCurrentDecoratedSubgoal(){
-		return stack.peek().getDecsglstk().get(0);
+		return stack.peek().getDecsglstk().peek();
 	}
 	public Predication getCurrentActivator(){
-		return stack.peek().getDecsglstk().get(0).getActivator();
+		return stack.peek().getDecsglstk().peek().getActivator();
 	}
 	public void raise(PrologException ex){
 		ExecutionState cutparent=stack.peek().getDecsglstk().pop().getCutparent();

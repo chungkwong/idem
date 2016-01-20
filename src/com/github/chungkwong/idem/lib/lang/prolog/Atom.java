@@ -48,11 +48,9 @@ public class Atom<T> extends Predication{
 	public boolean unities(Term term,Substitution subst){
 		if(term instanceof Atom)
 			return ((Atom)term).val.equals(val);
-		else if(term instanceof Variable){
-			if(!((Variable)term).isWildcard())
-				subst.assign((Variable)term,this);
-			return true;
-		}else
+		else if(term instanceof Variable)
+			return ((Variable)term).isWildcard()||subst.assign((Variable)term,this);
+		else
 			return false;
 	}
 	@Override

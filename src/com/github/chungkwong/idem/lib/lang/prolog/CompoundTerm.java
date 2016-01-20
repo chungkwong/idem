@@ -47,11 +47,7 @@ public class CompoundTerm extends Predication{
 		if(term instanceof Atom)
 			return false;
 		else if(term instanceof Variable){
-			if(getVariableSet().contains((Variable)term))
-				return false;
-			if(!((Variable)term).isWildcard())
-				subst.assign((Variable)term,this);
-			return true;
+			return ((Variable)term).isWildcard()||subst.assign((Variable)term,this);
 		}else if(term instanceof CompoundTerm){
 			CompoundTerm t=(CompoundTerm)term;
 			if(!t.functor.equals(functor)||t.argments.size()!=argments.size())

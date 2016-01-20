@@ -63,6 +63,12 @@ public class Database{
 			}
 		}
 	}
+	public void addPredication(Predication pred){
+		if(pred.getPredicate().getFunctor().equals(":-"))
+			addClause(new Clause((Predication)pred.getArguments().get(0),(Predication)pred.getArguments().get(1)));
+		else
+			addClause(new Clause(pred,new Atom("true")));
+	}
 	Procedure getProcedure(Predicate predicate){
 		return procedures.get(predicate);
 	}

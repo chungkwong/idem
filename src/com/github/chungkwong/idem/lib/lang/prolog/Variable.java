@@ -29,9 +29,6 @@ public class Variable implements Term{
 	public boolean isWildcard(){
 		return this==WILDCARD;
 	}
-	public static Variable getNewVariable(){
-		return InternalVariable.newInstance();
-	}
 	@Override
 	public boolean equals(Object obj){
 		return obj!=null&&obj instanceof Variable&&!(obj instanceof InternalVariable)
@@ -51,21 +48,7 @@ public class Variable implements Term{
 	}
 	@Override
 	public boolean unities(Term term,Substitution subst){
-		if(!isWildcard()){
-			if(term instanceof Atom){
-				subst.assign(this,term);
-			}else if(term instanceof Variable){
-				if(!((Variable)term).isWildcard()){
-					subst.assign(this,term);
-				}
-			}else if(term instanceof CompoundTerm){
-				if(term.getVariableSet().contains(this)){
-					return false;
-				}
-				subst.assign(this,term);
-			}
-		}
-		return true;
+		return this==WILDCARD||term==WILDCARD||subst.assign(this,term);
 	}
 	@Override
 	public Term renameVariable(Variable org,Variable then){
@@ -83,7 +66,7 @@ public class Variable implements Term{
 	public Term renameAllVariable(HashMap<Variable,Variable> renameTo){
 		if(renameTo.containsKey(this))
 			return renameTo.get(this);
-		Variable fresh=Variable.getNewVariable();
+		Variable fresh=InternalVariable.newInstance();
 		renameTo.put(this,fresh);
 		return fresh;
 	}
@@ -95,19 +78,19 @@ public class Variable implements Term{
 	public Predication toBody(){
 		return new CompoundTerm("call",Collections.singletonList(this));
 	}
-}
-class InternalVariable extends Variable{
-	static int used=0;
-	int id;
-	private InternalVariable(){
-		super(Integer.toString(used));
-		id=used++;
-	}
-	public static InternalVariable newInstance(){
-		return new InternalVariable();
-	}
-	@Override
-	public boolean equals(Object obj){
-		return obj instanceof InternalVariable&&((InternalVariable)obj).id==id;
+	public static class InternalVariable extends Variable{
+		static int used=0;
+		int id;
+		private InternalVariable(){
+			super('_'+Integer.toString(used));
+			id=used++;
+		}
+		public static InternalVariable newInstance(){
+			return new InternalVariable();
+		}
+		@Override
+		public boolean equals(Object obj){
+			return obj instanceof InternalVariable&&((InternalVariable)obj).id==id;
+		}
 	}
 }
