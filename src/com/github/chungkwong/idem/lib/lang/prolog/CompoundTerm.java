@@ -85,7 +85,9 @@ public class CompoundTerm extends Predication{
 		return this;
 	}
 	@Override
-	public Predication toBody(){
+	public Predication toBody()throws TypeException{
+		if(functor.equals(",")||functor.equals(";")||functor.equals("->"))
+			return new CompoundTerm(functor,Arrays.asList(argments.get(0).toBody(),argments.get(1).toBody()));
 		return this;
 	}
 }

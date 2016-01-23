@@ -14,30 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.predicate;
+package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
-import java.util.*;
 /**
  *
  * @author kwong
  */
-public class Catch extends ControlConstruct{
-	public static Catch CATCH=new Catch();
-	private Catch(){}
-	private static final Predicate pred=new Predicate("catch",3);
+public class Fail extends ControlConstruct{
+	public static final Fail FAIL=new Fail();
+	private Fail(){}
+	private static final Predicate pred=new Predicate("fail",0);
 	@Override
 	public void firstexecute(Processor exec){
-		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
-		ccs.getDecsglstk().peek().setActivator(
-				new CompoundTerm("call",Collections.singletonList(exec.getCurrentActivator().getArguments().get(0))));
-		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
-		exec.getStack().push(ccs);
-	}
-	@Override
-	public void reexecute(Processor exec){
 		exec.getStack().pop();
 		exec.backtrack();
 	}
+	@Override
+	public void reexecute(Processor exec){}
 	@Override
 	public Predicate getPredicate(){
 		return pred;

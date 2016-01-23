@@ -35,7 +35,8 @@ public class UserPredicate implements Procedure{
 	}
 	@Override
 	public void reexecute(Processor exec){
-		exec.getStack().peek().getCl().next();
+		if(exec.getStack().peek().getCl().hasNext())
+			exec.getStack().peek().getCl().next();
 		executeUser(exec);
 	}
 	private void executeUser(Processor exec){
@@ -47,7 +48,8 @@ public class UserPredicate implements Procedure{
 				ExecutionState ccs=new ExecutionState(exec.getStack().peek());
 				ccs.setSubst(context);
 				ccs.getDecsglstk().pop();
-				ccs.getDecsglstk().push(new DecoratedSubgoal(c.getBody().substitute(context),exec.getStack().get(exec.getStack().size()-2)));
+				ccs.getDecsglstk().push(new DecoratedSubgoal(c.getBody(),exec.getStack().get(exec.getStack().size()-2)));
+				ccs.substitute(context);
 				ccs.setBI(ExecutionState.BacktraceInfo.NIL);
 				exec.getStack().push(ccs);
 				return;

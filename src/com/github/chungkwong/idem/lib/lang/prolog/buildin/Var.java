@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,23 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.predicate;
+package com.github.chungkwong.idem.lib.lang.prolog.buildin;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
+import java.util.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class True extends ControlConstruct{
-	public static True TRUE=new True();
-	private True(){}
-	private static final Predicate pred=new Predicate("true",0);
+public class Var extends BuildinPredicate{
+	public static final Predicate pred=new Predicate("var",1);
 	@Override
-	public void firstexecute(Processor exec){
-		exec.getStack().peek().getDecsglstk().pop();
-		exec.getStack().peek().setBI(ExecutionState.BacktraceInfo.NIL);
+	public boolean activate(List<Term> argments,Processor exec){
+		return argments.get(0) instanceof Variable;
 	}
-	@Override
-	public void reexecute(Processor exec){}
 	@Override
 	public Predicate getPredicate(){
 		return pred;

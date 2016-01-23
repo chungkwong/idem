@@ -212,21 +212,34 @@ class ParseState{
 		operators.pop();
 		operands.push(new CompoundTerm(".",Arrays.asList(operands.pop(),lst)));
 	}
+	private static List<Term> convertTermtoList(Term t,boolean multi){
+		if(multi){
+			List<Term> lst=new ArrayList<>();
+			while(t instanceof CompoundTerm&&((CompoundTerm)t).getFunctor().equals(",")){
+				lst.add(((CompoundTerm)t).getArguments().get(0));
+				t=((CompoundTerm)t).getArguments().get(1);
+			}
+			lst.add(t);
+			return lst;
+		}else{
+			return Collections.singletonList(t);
+		}
+	}
 	void pushCloseParen(){
-		LinkedList<Term> lst=new LinkedList<>();
 		Operator top=operators.peek();
+		int multi=0;
 		while(top!=OPEN_PAREN){
-			if(top.getToken().equals(",")){
-				operators.pop();
-				lst.addFirst(operands.pop());
-			}else
-				reduceTopOperator();
+			if(top.getToken().equals(",")&&multi!=-1)
+				multi=1;
+			else if(top.getPriority()>1000)//1000 is the priority of ','
+				multi=-1;
+			reduceTopOperator();
 			top=operators.peek();
 		}
 		operators.pop();
 		if(operators.peek().getCls()==Operator.Class.PREFIX){
-			lst.addFirst(operands.pop());
-			operands.push(new CompoundTerm(operators.pop().getToken(),lst));
+			List<Term> arg=convertTermtoList(operands.pop(),multi==1);
+			operands.push(new CompoundTerm(operators.pop().getToken(),arg));
 		}
 	}
 	void reduceTopOperator(){

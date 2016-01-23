@@ -14,28 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.predicate;
+package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
+import java.util.*;
 /**
  *
  * @author kwong
  */
-public class Cut extends ControlConstruct{
-	public static Cut CUT=new Cut();
-	private Cut(){}
-	private static final Predicate pred=new Predicate("!",0);
+public class Catch extends ControlConstruct{
+	public static Catch CATCH=new Catch();
+	private Catch(){}
+	private static final Predicate pred=new Predicate("catch",3);
 	@Override
 	public void firstexecute(Processor exec){
-		ExecutionState ccs=exec.getCurrentState();
-		exec.getCurrentDecoratedSubgoal().setActivator(new Atom("true"));
+		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
+		ccs.getDecsglstk().peek().setActivator(new CompoundTerm("call",
+				Collections.singletonList(exec.getCurrentActivator().getArguments().get(0))));
+		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
 		exec.getStack().push(ccs);
 	}
 	@Override
 	public void reexecute(Processor exec){
-		ExecutionState cut=exec.getCurrentDecoratedSubgoal().getCutparent();
-		do{
-			exec.getStack().pop();
-		}while(exec.getStack().peek()!=cut);
+		exec.getStack().pop();
 		exec.backtrack();
 	}
 	@Override

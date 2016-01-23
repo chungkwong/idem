@@ -14,27 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.predicate;
+package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 /**
  *
  * @author kwong
  */
-public class Disjunction extends ControlConstruct{
-	public static Disjunction DISJUNCTION=new Disjunction();
-	private Disjunction(){}
-	private static final Predicate pred=new Predicate(";",2);
+public class Call extends ControlConstruct{
+	public static Call CALL=new Call();
+	private Call(){}
+	private static final Predicate pred=new Predicate("call",1);
 	@Override
 	public void firstexecute(Processor exec){
-		ExecutionState ccs=new ExecutionState(exec.getCurrentState());
+		ExecutionState ccs=exec.getStack().peek();
 		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
-		DecoratedSubgoal currdecsgl=ccs.getDecsglstk().pop();
-		ExecutionState checkpoint=exec.getStack().get(exec.getStack().size()-2);
-		ccs.getDecsglstk().push(new DecoratedSubgoal(
-				(Predication)currdecsgl.getActivator().getArguments().get(1),currdecsgl.getCutparent()));
-		ccs.getDecsglstk().push(new DecoratedSubgoal(new Atom("!"),checkpoint));
-		ccs.getDecsglstk().push(new DecoratedSubgoal(
-				(Predication)currdecsgl.getActivator().getArguments().get(0),checkpoint));
+		Term goal=ccs.getDecsglstk().peek().getActivator().getArguments().get(0);
+		if(goal instanceof Variable){
+			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)goal);
+		}else if(goal instanceof Atom&&((Atom)goal).getValue()instanceof Number){
+			throw new com.github.chungkwong.idem.lib.lang.prolog.TypeException(String.class,goal);
+		}
+		ExecutionState cutparent=exec.getStack().get(exec.getStack().size()-2);
+		DecoratedSubgoal subgoal=new DecoratedSubgoal(goal.toBody(),cutparent);
+		ccs.getDecsglstk().pop();
+		ccs.getDecsglstk().push(subgoal);
 		exec.getStack().push(ccs);
 	}
 	@Override

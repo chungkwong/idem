@@ -43,5 +43,8 @@ public class DecoratedSubgoal{
 	public void setCutparent(ExecutionState cutparent){
 		this.cutparent=cutparent;
 	}
-
+	@Override
+	public DecoratedSubgoal clone(){
+		return new DecoratedSubgoal(activator,cutparent);
+	}
 }

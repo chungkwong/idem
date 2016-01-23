@@ -14,35 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.predicate;
+package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
-import java.util.*;
 /**
  *
  * @author kwong
  */
-public class Conjunction extends ControlConstruct{
-	public static Conjunction CONJUNCTION=new Conjunction();
-	private Conjunction(){}
-	private static final Predicate pred=new Predicate(",",2);
-	@Override
-	public Predicate getPredicate(){
-		return pred;
-	}
+public class Cut extends ControlConstruct{
+	public static Cut CUT=new Cut();
+	private Cut(){}
+	private static final Predicate pred=new Predicate("!",0);
 	@Override
 	public void firstexecute(Processor exec){
-		List<Term> argments=exec.getCurrentActivator().getArguments();
-		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
-		ExecutionState cutparent=ccs.getDecsglstk().pop().getCutparent();
-		ccs.getDecsglstk().push(new DecoratedSubgoal((Predication)argments.get(1),cutparent));
-		ccs.getDecsglstk().push(new DecoratedSubgoal((Predication)argments.get(0),cutparent));
-		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
+		ExecutionState ccs=new ExecutionState(exec.getCurrentState());
+		ccs.getDecsglstk().peek().setActivator(new Atom("true"));
 		exec.getStack().push(ccs);
-		exec.selectClause();
 	}
 	@Override
 	public void reexecute(Processor exec){
-		exec.getStack().pop();
+		ExecutionState cut=exec.getCurrentDecoratedSubgoal().getCutparent();
+		do{
+			exec.getStack().pop();
+		}while(exec.getStack().peek()!=cut);
 		exec.backtrack();
+	}
+	@Override
+	public Predicate getPredicate(){
+		return pred;
 	}
 }

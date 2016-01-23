@@ -14,27 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.predicate;
+package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 /**
  *
  * @author kwong
  */
-public class Call extends ControlConstruct{
-	public static Call CALL=new Call();
-	private Call(){}
-	private static final Predicate pred=new Predicate("call",1);
+public class If  extends ControlConstruct{
+	public static final If IF=new If();
+	private If(){}
+	private static final Predicate pred=new Predicate("->",2);
 	@Override
 	public void firstexecute(Processor exec){
-		ExecutionState ccs=exec.getStack().peek();
-		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
-		Term goal=ccs.getDecsglstk().pop().getActivator().getArguments().get(0);
-		if(goal instanceof Variable){
-			exec.raise(new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)goal));
-		}
-		ExecutionState cutparent=exec.getStack().get(exec.getStack().size()-2);
-		ccs.getDecsglstk().push(new DecoratedSubgoal(goal.toBody(),cutparent));
-		exec.getStack().push(ccs);
+		ExecutionState ccs2=new ExecutionState(exec.getStack().peek());
+		ccs2.setBI(ExecutionState.BacktraceInfo.NIL);
+		ccs2.getDecsglstk().peek().setActivator(new Atom("or"));
+		exec.getStack().push(ccs2);
+		ExecutionState ccs1=new ExecutionState(exec.getStack().peek());
+		ccs1.setBI(ExecutionState.BacktraceInfo.NIL);
+		ccs1.getDecsglstk().peek().setActivator(new Atom("either"));
+		exec.getStack().push(ccs1);
 	}
 	@Override
 	public void reexecute(Processor exec){

@@ -15,15 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
+import java.util.*;
 /**
  *
  * @author kwong
  */
 public abstract class BuildinPredicate implements Procedure{
-	public abstract void firstexecute(Processor exec);
+	public abstract boolean activate(List<Term> argments,Processor exec);
 	@Override
 	public void execute(Processor exec){
 		exec.getStack().peek().setBI(ExecutionState.BacktraceInfo.BIP);
+		ExecutionState ccs=new ExecutionState(exec.getCurrentState());
+		exec.getStack().push(ccs);
+
+		if(activate(exec.getCurrentActivator().getArguments(),exec)){
+			ccs.getDecsglstk().peek().setActivator(new Atom("true"));
+		}else{
+			ccs.getDecsglstk().peek().setActivator(new Atom("fail"));
+		}
+	}
+	@Override
+	public void reexecute(Processor exec){
+
 	}
 	@Override
 	public String toString(){

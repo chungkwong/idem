@@ -23,23 +23,24 @@ import java.util.logging.*;
  * @author kwong
  */
 public class Processor{
-	private UndefinedPredicate undefpred=UndefinedPredicate.FAIL;
+	private UndefinedPredicate undefpred;
 	private final Stack<ExecutionState> stack=new Stack<>();
 	private final Database db;
-	public Processor(Predication goal,Database db){
+	public Processor(Predication goal,Database db,UndefinedPredicate undefpred){
 		this.db=db;
+		this.undefpred=undefpred;
 		stack.push(new ExecutionState());
 		stack.push(new ExecutionState(new DecoratedSubgoal(goal,stack.peek()),new Substitution()));
 		execute();
+	}
+	public Processor(Predication goal,Database db){
+		this(goal,db,UndefinedPredicate.FAIL);
 	}
 	public Database getDatabase(){
 		return db;
 	}
 	public UndefinedPredicate getUndefpred(){
 		return undefpred;
-	}
-	public void setUndefpred(UndefinedPredicate undefpred){
-		this.undefpred=undefpred;
 	}
 	public Stack<ExecutionState> getStack(){
 		return stack;
@@ -57,12 +58,17 @@ public class Processor{
 	public boolean isSuccessed(){
 		return stack.peek().getDecsglstk().isEmpty();
 	}
-	final int MAX_ITERATOR_COUNT=50;
+	final int MAX_ITERATOR_COUNT=100;
 	private void execute(){
 		int i=0;
+		System.out.println();
 		while(!isFailed()&&!isSuccessed()&&++i<MAX_ITERATOR_COUNT){//FIXME
-			//System.out.println(stack);
-			selectClause();
+			System.out.println(stack);
+			try{
+				selectClause();
+			}catch(PrologException ex){
+				raise(ex);
+			}
 		}
 		if(i==MAX_ITERATOR_COUNT)
 			throw new RuntimeException("Iteration reach limit");
@@ -78,8 +84,7 @@ public class Processor{
 		if(proc==null){
 			switch(undefpred){
 				case ERROR:
-					raise(new ExistenceException(Procedure.class,new Atom(currpred.getFunctor())));
-					break;
+					throw new ExistenceException(Procedure.class,new Atom(currpred.getFunctor()));
 				case WARNING:
 					LOG.log(Level.WARNING,"Functor not found: {0}",currpred);
 				case FAIL:
@@ -117,30 +122,6 @@ public class Processor{
 		ExecutionState cutparent=stack.peek().getDecsglstk().pop().getCutparent();
 		Predication throwPred=new CompoundTerm("throw",Collections.singletonList(ex.getErrorTerm()));
 		stack.peek().getDecsglstk().push(new DecoratedSubgoal(throwPred,cutparent));
-	}
-	static List<Substitution> multiquery(Predication goal,Database db){
-		List<Substitution> substs=new ArrayList<>();
-		Processor processor=new Processor(goal,db);
-		while(processor.getSubstitution()!=null){
-			substs.add(processor.getSubstitution());
-			processor.reexecute();
-		}
-		return substs;
-	}
-
-	public static void main(String[] args){
-		Database db=new Database();
-		db.addClause(new Clause(new CompoundTerm("woman",Collections.singletonList(new Atom("mia"))),new Atom("true")));
-		db.addClause(new Clause(new CompoundTerm("woman",Collections.singletonList(new Atom("jody"))),new Atom("true")));
-		db.addClause(new Clause(new CompoundTerm("woman",Collections.singletonList(new Atom("yolanda"))),new Atom("true")));
-		db.addClause(new Clause(new CompoundTerm("playAirGuitar",Collections.singletonList(new Atom("jody"))),new Atom("true")));
-		db.addClause(new Clause(new CompoundTerm("party",Collections.emptyList()),new Atom("true")));
-		//System.out.println(db);
-		//System.out.println(new Processor(new Atom("partycat"),db).getSubstitution());
-		//System.out.println(new Processor(new Atom("party"),db).getSubstitution());
-		//System.out.println(new Processor(new CompoundTerm("woman",Collections.singletonList(new Variable("X"))),db).getSubstitution());
-		//System.out.println(new Processor(new CompoundTerm("woman",Collections.singletonList(new Variable("X"))),db).getSubstitution());
-		multiquery(new CompoundTerm("woman",Collections.singletonList(new Variable("X"))),db);
 	}
 	public enum UndefinedPredicate{
 		ERROR,WARNING,FAIL;

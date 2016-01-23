@@ -21,6 +21,6 @@ package com.github.chungkwong.idem.lib.lang.prolog;
  *
  * @author kwong
  */
-public abstract class PrologException extends Exception{
+public abstract class PrologException extends RuntimeException{
 	public abstract Term getErrorTerm();
 }

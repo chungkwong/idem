@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.predicate;
+package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 import java.util.*;
 /**
@@ -28,11 +28,11 @@ public class Throw extends ControlConstruct{
 	@Override
 	public void firstexecute(Processor exec){
 		Predication throwPred=exec.getCurrentActivator();
-		ExecutionState cutparent=exec.getStack().peek().getDecsglstk().peek().getCutparent();
-		exec.getStack().pop();
+		ExecutionState cutparent=exec.getCurrentDecoratedSubgoal().getCutparent();
 		Substitution subst=null;
 		while(true){
-			if(exec.getStack().isEmpty())
+			exec.getStack().pop();
+			if(exec.getStack().size()<=1)
 				throw new SystemException("Uncaught prolog error");
 			if((subst=matchCatch(throwPred,cutparent,exec))!=null)
 				break;
@@ -40,7 +40,7 @@ public class Throw extends ControlConstruct{
 		}
 		DecoratedSubgoal currdec=exec.getStack().peek().getDecsglstk().pop();
 		Predication recover=new CompoundTerm("call",Collections.singletonList(currdec.getActivator().getArguments().get(2).substitute(subst)));
-		exec.getStack().peek().getDecsglstk().push(new DecoratedSubgoal(throwPred,currdec.getCutparent()));
+		exec.getStack().peek().getDecsglstk().push(new DecoratedSubgoal(recover,currdec.getCutparent()));
 		exec.getStack().peek().setBI(ExecutionState.BacktraceInfo.NIL);
 	}
 	private Substitution matchCatch(Predication throwPred,ExecutionState cutparent,Processor exec){
@@ -50,7 +50,7 @@ public class Throw extends ControlConstruct{
 		Substitution subst=new Substitution();
 		if(!curract.getArguments().get(1).unities(throwPred.getArguments().get(0),subst))
 			return null;
-		if(exec.getStack().search(cutparent)<exec.getStack().search(exec.getCurrentDecoratedSubgoal().getCutparent()))
+		if(exec.getStack().search(cutparent)>=exec.getStack().search(exec.getCurrentDecoratedSubgoal().getCutparent()))
 			return null;
 		return subst;
 	}

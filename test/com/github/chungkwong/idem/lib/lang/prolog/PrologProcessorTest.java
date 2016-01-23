@@ -17,8 +17,6 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.*;
 /**
@@ -29,17 +27,36 @@ public class PrologProcessorTest{
 
 	public PrologProcessorTest(){
 	}
-	public void checkFail(String query,String data){
+	private List<Substitution> multiquery(String query,String data){
 		Database db=new Database();
 		new PrologParser(new PrologLex(data)).getRemaining().stream().forEach((pred)->db.addPredication(pred));
-		Substitution subst=new Processor(new PrologParser(new PrologLex(query)).next(),db).getSubstitution();
-		assertNull(subst);
+		List<Substitution> substs=new ArrayList<>();
+		Processor processor=new Processor(new PrologParser(new PrologLex(query)).next(),db,Processor.UndefinedPredicate.ERROR);
+		while(processor.getSubstitution()!=null){
+			substs.add(processor.getSubstitution());
+			processor.reexecute();
+		}
+		//System.out.println(substs);
+		return substs;
 	}
-	public void checkSuccess(String query,String data){
+	private void assertSuccessCount(String query,String data,int count){
+		Assert.assertEquals(multiquery(query,data).size(),count);
+	}
+	private void assertGoalFail(String query,String data){
+		assertSuccessCount(query,data,0);
+	}
+	private void assertGoalSuccess(String query,String data){
+		Assert.assertTrue(multiquery(query,data).size()!=0);
+	}
+	private void assertGoalError(String query,String data){
 		Database db=new Database();
 		new PrologParser(new PrologLex(data)).getRemaining().stream().forEach((pred)->db.addPredication(pred));
-		Substitution subst=new Processor(new PrologParser(new PrologLex(query)).next(),db).getSubstitution();
-		assertNotNull(subst);
+		try{
+			Substitution subst=new Processor(new PrologParser(new PrologLex(query)).next(),db,Processor.UndefinedPredicate.ERROR).getSubstitution();
+			Assert.assertTrue(false);
+		}catch(Exception ex){
+
+		}
 	}
     @Test
 	public void testUnification(){
@@ -58,17 +75,60 @@ public class PrologProcessorTest{
 	}
     @Test
 	public void testFact(){
-		checkSuccess("m(pete).","m(pete).");
+		assertGoalSuccess("m(pete).","m(pete).");
 	}
     @Test
 	public void testRule(){
-		checkFail("p(X,Y).","p(M,W):-m(M),f(W).");
+		assertGoalError("p(X,Y).","p(M,W):-m(M),f(W).");
+	}
+	@Test
+	public void testTrue(){
+		assertGoalSuccess("true.","");
+	}
+	@Test
+	public void testFail(){
+		assertGoalFail("fail.","");
 	}
     @Test
-	public void testControl(){
-		checkSuccess("true.","");
-		checkFail("fail.","");
-		checkFail("call(fail).","");
-		checkFail("call(fail,X).","");
+	public void testCall(){
+		assertGoalSuccess("true.","");
+		assertGoalFail("fail.","");
+		assertGoalFail("call(fail).","");
+		assertGoalFail("call((fail,X)).","");
+		assertGoalFail("call((fail,call(1))).","");
+		assertGoalError("b(_).","b(X):-Y=(write(X),X),call(Y).");
+		assertGoalError("b(3).","b(X):-Y=(write(X),X),call(Y).");
+		assertGoalError("call((write(3),X)).","");
+		assertGoalError("call((write(3),call(1))).","");
+		assertGoalError("call(X).","");
+		assertGoalError("call(1).","");
+		assertGoalError("call((fail,1)).","");
+		assertGoalError("call((write(3),1)).","");
+		assertGoalError("call((1;true)).","");
+		assertSuccessCount("Z=! ,call((Z=!,a(X),Z)).","a(1).a(2).",1);
+		assertSuccessCount("call((Z=!,a(X),Z)).","a(1).a(2).",2);
 	}
+	@Test
+	public void testCut(){
+		assertGoalSuccess("!.","");
+		assertGoalFail("(!,fail;true).","");
+		//assertGoalSuccess("(call(!),fail;true).","");
+	}
+	@Test
+	public void testConjunction(){
+		
+	}
+	@Test
+	public void testThrow(){
+		//assertGoalSuccess("catch(foo(5),test(Y),true).","foo(X):-Y is X*2,throw(test(Y)).");
+		assertGoalSuccess("catch(true,Z,true).","");
+		assertGoalFail("catch(fail,Z,true).","");
+		assertGoalSuccess("catch(bar(3),Z,true).","bar(X):-X=Y,throw(Y).");
+		assertGoalError("catch(true,C,write(demoen)),throw(bla).","");
+		assertGoalSuccess("catch(coo(X),Y,true).","coo(X):-throw(X).");
+		assertGoalSuccess("catch(car(X),Y,true).","car(X):-X=1,throw(X).");
+	}
+	/*@Test public void some(){
+		assertSuccessCount("call((Z=!,a(X),Z)).","a(1).a(2).",2);
+	}*/
 }

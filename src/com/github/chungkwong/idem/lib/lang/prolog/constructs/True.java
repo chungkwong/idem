@@ -14,20 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.predicate;
+package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 /**
  *
  * @author kwong
  */
-public class Fail extends ControlConstruct{
-	public static final Fail FAIL=new Fail();
-	private Fail(){}
-	private static final Predicate pred=new Predicate("fail",0);
+public class True extends ControlConstruct{
+	public static True TRUE=new True();
+	private True(){}
+	private static final Predicate pred=new Predicate("true",0);
 	@Override
 	public void firstexecute(Processor exec){
-		exec.getStack().pop();
-		exec.backtrack();
+		exec.getStack().peek().getDecsglstk().pop();
+		exec.getStack().peek().setBI(ExecutionState.BacktraceInfo.NIL);
 	}
 	@Override
 	public void reexecute(Processor exec){}

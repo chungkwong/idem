@@ -46,8 +46,13 @@ public class PrologConsole implements Shell{
 				Substitution subst=exec.getSubstitution();
 				if(subst==null)
 					buf.append("Gaol failed\n");
-				else
-					buf.append(subst).append('\n');
+				else{
+					while(subst!=null){
+						buf.append(subst).append('\n');
+						exec.reexecute();
+						subst=exec.getSubstitution();
+					}
+				}
 			}else if(pred.getPredicate().getFunctor().equals(":-")){
 				db.addClause(new Clause((Predication)pred.getArguments().get(0),
 						(Predication)pred.getArguments().get(1)));

@@ -40,7 +40,10 @@ public class ExecutionState{
 		cl=null;
 	}
 	public ExecutionState(ExecutionState state){
-		this.decsglstk=(Stack)state.decsglstk.clone();
+		decsglstk=new Stack<>();
+		decsglstk.ensureCapacity(state.decsglstk.size());
+		for(DecoratedSubgoal subgoal:state.decsglstk)
+			decsglstk.add(subgoal.clone());
 		this.BI=state.BI;
 		this.subst=state.subst;
 		this.cl=state.cl;
@@ -78,6 +81,10 @@ public class ExecutionState{
 	public void setCl(PeekableIterator<Clause> cl){
 		if(BI==BacktraceInfo.UP)
 			this.cl=cl;
+	}
+	void substitute(Substitution subst){
+		for(DecoratedSubgoal subgoal:decsglstk)
+			subgoal.setActivator(subgoal.getActivator().substitute(subst));
 	}
 	public static enum BacktraceInfo{
 		NIL,CTRL,BIP,UP;

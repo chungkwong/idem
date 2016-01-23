@@ -14,34 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.predicate;
+package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
+import java.util.*;
 /**
  *
  * @author kwong
  */
-public class If  extends ControlConstruct{
-	public static final If IF=new If();
-	private If(){}
-	private static final Predicate pred=new Predicate("->",2);
+public class Conjunction extends ControlConstruct{
+	public static Conjunction CONJUNCTION=new Conjunction();
+	private Conjunction(){}
+	private static final Predicate pred=new Predicate(",",2);
+	@Override
+	public Predicate getPredicate(){
+		return pred;
+	}
 	@Override
 	public void firstexecute(Processor exec){
-		ExecutionState ccs2=new ExecutionState(exec.getStack().peek());
-		ccs2.setBI(ExecutionState.BacktraceInfo.NIL);
-		ccs2.getDecsglstk().peek().setActivator(new Atom("or"));
-		exec.getStack().push(ccs2);
-		ExecutionState ccs1=new ExecutionState(exec.getStack().peek());
-		ccs1.setBI(ExecutionState.BacktraceInfo.NIL);
-		ccs1.getDecsglstk().peek().setActivator(new Atom("either"));
-		exec.getStack().push(ccs1);
+		List<Term> argments=exec.getCurrentActivator().getArguments();
+		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
+		ExecutionState cutparent=ccs.getDecsglstk().pop().getCutparent();
+		ccs.getDecsglstk().push(new DecoratedSubgoal(argments.get(1).toBody(),cutparent));
+		ccs.getDecsglstk().push(new DecoratedSubgoal(argments.get(0).toBody(),cutparent));
+		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
+		exec.getStack().push(ccs);
+		exec.selectClause();
 	}
 	@Override
 	public void reexecute(Processor exec){
 		exec.getStack().pop();
 		exec.backtrack();
-	}
-	@Override
-	public Predicate getPredicate(){
-		return pred;
 	}
 }
