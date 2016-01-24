@@ -26,22 +26,50 @@ public class Disjunction extends ControlConstruct{
 	private static final Predicate pred=new Predicate(";",2);
 	@Override
 	public void firstexecute(Processor exec){
-		ExecutionState ccs=new ExecutionState(exec.getCurrentState());
+		Predication disjunction=exec.getCurrentActivator();
+		if(disjunction.getPredicate().equals(If.IF.getPredicate())){
+			pushIfThen(disjunction,exec);
+		}else{
+			pushCase(disjunction.getArguments().get(1).toBody(),exec);
+			pushCase(disjunction.getArguments().get(0).toBody(),exec);
+		}
+	}
+	private void pushCase(Predication pred,Processor exec){
+		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
+		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
+		ccs.getDecsglstk().peek().setActivator(pred);
+		exec.getStack().push(ccs);
+	}
+	private void pushIfThen(Predication pred,Processor exec){
+		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
+		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
+		ExecutionState checkpoint=exec.getStack().get(exec.getStack().size()-2);
+		pred=((Predication)pred.getArguments().get(0));
+		ccs.getDecsglstk().peek().setActivator((Predication)pred.getArguments().get(1));
+		ccs.getDecsglstk().push(new DecoratedSubgoal(new Atom("!"),checkpoint));
+		ccs.getDecsglstk().push(new DecoratedSubgoal((Predication)pred.getArguments().get(0),exec.getStack().peek()));
+		exec.getStack().push(ccs);
+	}
+	private void pushElse(Processor exec){
+		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
 		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
 		DecoratedSubgoal currdecsgl=ccs.getDecsglstk().pop();
 		ExecutionState checkpoint=exec.getStack().get(exec.getStack().size()-2);
 		ccs.getDecsglstk().push(new DecoratedSubgoal(
 				(Predication)currdecsgl.getActivator().getArguments().get(1),currdecsgl.getCutparent()));
 		ccs.getDecsglstk().push(new DecoratedSubgoal(new Atom("!"),checkpoint));
-		ccs.getDecsglstk().push(new DecoratedSubgoal(
-				(Predication)currdecsgl.getActivator().getArguments().get(0),checkpoint));
 		exec.getStack().push(ccs);
 	}
 	@Override
 	public void reexecute(Processor exec){
-		exec.getStack().pop();
-		exec.backtrack();
+		if(exec.getCurrentActivator().getPredicate().equals(If.IF.getPredicate())){
+			pushElse(exec);
+		}else{
+			exec.getStack().pop();
+			exec.backtrack();
+		}
 	}
+
 	@Override
 	public Predicate getPredicate(){
 		return pred;

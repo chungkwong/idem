@@ -26,14 +26,16 @@ public class If  extends ControlConstruct{
 	private static final Predicate pred=new Predicate("->",2);
 	@Override
 	public void firstexecute(Processor exec){
-		ExecutionState ccs2=new ExecutionState(exec.getStack().peek());
-		ccs2.setBI(ExecutionState.BacktraceInfo.NIL);
-		ccs2.getDecsglstk().peek().setActivator(new Atom("or"));
-		exec.getStack().push(ccs2);
-		ExecutionState ccs1=new ExecutionState(exec.getStack().peek());
-		ccs1.setBI(ExecutionState.BacktraceInfo.NIL);
-		ccs1.getDecsglstk().peek().setActivator(new Atom("either"));
-		exec.getStack().push(ccs1);
+		ExecutionState ccs=new ExecutionState(exec.getCurrentState());
+		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
+		DecoratedSubgoal currdecsgl=ccs.getDecsglstk().pop();
+		ExecutionState checkpoint=exec.getStack().get(exec.getStack().size()-2);
+		ccs.getDecsglstk().push(new DecoratedSubgoal(
+				(Predication)currdecsgl.getActivator().getArguments().get(1),currdecsgl.getCutparent()));
+		ccs.getDecsglstk().push(new DecoratedSubgoal(new Atom("!"),checkpoint));
+		ccs.getDecsglstk().push(new DecoratedSubgoal(
+				(Predication)currdecsgl.getActivator().getArguments().get(0),checkpoint));
+		exec.getStack().push(ccs);
 	}
 	@Override
 	public void reexecute(Processor exec){

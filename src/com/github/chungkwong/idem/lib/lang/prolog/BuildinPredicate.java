@@ -25,18 +25,17 @@ public abstract class BuildinPredicate implements Procedure{
 	@Override
 	public void execute(Processor exec){
 		exec.getStack().peek().setBI(ExecutionState.BacktraceInfo.BIP);
-		ExecutionState ccs=new ExecutionState(exec.getCurrentState());
-		exec.getStack().push(ccs);
-
-		if(activate(exec.getCurrentActivator().getArguments(),exec)){
-			ccs.getDecsglstk().peek().setActivator(new Atom("true"));
-		}else{
-			ccs.getDecsglstk().peek().setActivator(new Atom("fail"));
-		}
+		reexecute(exec);
 	}
 	@Override
 	public void reexecute(Processor exec){
-
+		//ExecutionState ccs=new ExecutionState(exec.getCurrentState());
+		//exec.getStack().push(ccs);
+		if(activate(exec.getCurrentActivator().getArguments(),exec)){
+			exec.getCurrentDecoratedSubgoal().setActivator(new Atom("true"));
+		}else{
+			exec.getCurrentDecoratedSubgoal().setActivator(new Atom("fail"));
+		}
 	}
 	@Override
 	public String toString(){

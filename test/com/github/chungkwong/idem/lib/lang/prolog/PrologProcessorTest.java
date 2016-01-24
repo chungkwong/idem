@@ -112,11 +112,40 @@ public class PrologProcessorTest{
 	public void testCut(){
 		assertGoalSuccess("!.","");
 		assertGoalFail("(!,fail;true).","");
-		//assertGoalSuccess("(call(!),fail;true).","");
+		assertGoalSuccess("(call(!),fail;true).","");
 	}
 	@Test
 	public void testConjunction(){
-		
+		//assertGoalFail("X=1,var(X).","");
+		//assertGoalSuccess("var(X),X=1.","");
+		assertGoalSuccess("X=foo,call(X).","foo.");
+		assertGoalSuccess("X=true,call(X).","");
+	}
+	@Test
+	public void testDisjunction(){
+		assertGoalSuccess("true;fail.","");
+		assertGoalFail("(!,fail);true.","");
+		assertGoalSuccess("!;call(3).","foo.");
+		assertGoalSuccess("(X=2,!);X=2.","");
+	}
+	@Test
+	public void testIf(){
+		assertGoalSuccess("\'->\'(true,true).","");
+		assertGoalFail("\'->\'(true,fail).","");
+		assertGoalFail("\'->\'(fail,true).","");
+		assertGoalSuccess("\'->\'(true,X=1).","");
+		assertSuccessCount("\'->\'(true,(X=1;X=2))","",2);
+		assertSuccessCount("\'->\'((X=1;X=2),true).","",1);
+	}
+	@Test
+	public void testIfThenElse(){
+		assertGoalSuccess("\';\'(\'->\'(true,true),fail).","");
+		assertGoalSuccess("\';\'(\'->\'(fail,true),true).","");
+		assertGoalFail("\';\'(\'->\'(true,fail),fail).","");
+		assertGoalFail("\';\'(\'->\'(fail,true),fail).","");
+		assertGoalSuccess("\';\'(\'->\'(true,X=1),X=2).","");
+		assertGoalSuccess("\';\'(\'->\'(fail,X=1),X=2).","");
+		assertSuccessCount("\';\'(\'->\'((X=1;X=2),true),true).","",2);
 	}
 	@Test
 	public void testThrow(){

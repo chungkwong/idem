@@ -61,9 +61,9 @@ public class Processor{
 	final int MAX_ITERATOR_COUNT=100;
 	private void execute(){
 		int i=0;
-		System.out.println();
+		//System.out.println();
 		while(!isFailed()&&!isSuccessed()&&++i<MAX_ITERATOR_COUNT){//FIXME
-			System.out.println(stack);
+			//System.out.println(stack);
 			try{
 				selectClause();
 			}catch(PrologException ex){
