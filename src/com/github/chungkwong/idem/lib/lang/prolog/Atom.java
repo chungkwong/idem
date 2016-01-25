@@ -54,14 +54,6 @@ public class Atom<T> extends Predication{
 			return false;
 	}
 	@Override
-	public Atom<T> renameVariable(Variable org,Variable then){
-		return this;
-	}
-	@Override
-	public Atom<T> substitute(Variable org,Term then){
-		return this;
-	}
-	@Override
 	public Atom<T> substitute(Substitution subst){
 		return this;
 	}

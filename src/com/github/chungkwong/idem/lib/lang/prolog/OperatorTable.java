@@ -81,10 +81,6 @@ public class OperatorTable{
 				break;
 		}
 	}
-	public boolean hasOperator(String spec){
-		return infixOperators.containsKey(spec)||prefixOperators.containsKey(spec)
-				||postfixOperators.containsKey(spec);
-	}
 	public Map<String,Operator> getInfixOperators(){
 		return infixOperators;
 	}

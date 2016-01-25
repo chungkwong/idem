@@ -27,17 +27,20 @@ public class PrologProcessorTest{
 
 	public PrologProcessorTest(){
 	}
-	private List<Substitution> multiquery(String query,String data){
+	private List<Substitution> multiquery(String query,String data,Processor.UndefinedPredicate mode){
 		Database db=new Database();
 		new PrologParser(new PrologLex(data)).getRemaining().stream().forEach((pred)->db.addPredication(pred));
 		List<Substitution> substs=new ArrayList<>();
-		Processor processor=new Processor(new PrologParser(new PrologLex(query)).next(),db,Processor.UndefinedPredicate.ERROR);
+		Processor processor=new Processor(new PrologParser(new PrologLex(query)).next(),db,mode);
 		while(processor.getSubstitution()!=null){
 			substs.add(processor.getSubstitution());
 			processor.reexecute();
 		}
 		//System.out.println(substs);
 		return substs;
+	}
+	private List<Substitution> multiquery(String query,String data){
+		return multiquery(query,data,Processor.UndefinedPredicate.ERROR);
 	}
 	private void assertSuccessCount(String query,String data,int count){
 		Assert.assertEquals(multiquery(query,data).size(),count);
@@ -145,7 +148,7 @@ public class PrologProcessorTest{
 		assertGoalFail("\';\'(\'->\'(fail,true),fail).","");
 		assertGoalSuccess("\';\'(\'->\'(true,X=1),X=2).","");
 		assertGoalSuccess("\';\'(\'->\'(fail,X=1),X=2).","");
-		assertSuccessCount("\';\'(\'->\'((X=1;X=2),true),true).","",2);
+		assertGoalSuccess("\';\'(\'->\'(\';\'(X=1,X=2),true),true).","");
 	}
 	@Test
 	public void testThrow(){
@@ -156,8 +159,10 @@ public class PrologProcessorTest{
 		assertGoalError("catch(true,C,write(demoen)),throw(bla).","");
 		assertGoalSuccess("catch(coo(X),Y,true).","coo(X):-throw(X).");
 		assertGoalSuccess("catch(car(X),Y,true).","car(X):-X=1,throw(X).");
+		assertGoalError("catch(throw(b),a(C),true).","");
 	}
-	/*@Test public void some(){
-		assertSuccessCount("call((Z=!,a(X),Z)).","a(1).a(2).",2);
-	}*/
+	@Test public void testCorner(){
+		assertTrue(multiquery("p(X,Y).","p(M,W):-m(M),f(W).",Processor.UndefinedPredicate.FAIL).isEmpty());
+		assertGoalSuccess("p(c).","p(a).p(b).");
+	}
 }

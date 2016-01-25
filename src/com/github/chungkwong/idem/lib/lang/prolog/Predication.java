@@ -20,8 +20,6 @@ import java.util.*;
 public abstract class Predication implements Term{
 	public abstract Predicate getPredicate();
 	public abstract List<Term> getArguments();
-	public abstract Predication renameVariable(Variable org,Variable then);
 	public abstract Predication renameAllVariable(HashMap<Variable,Variable> renameTo);
-	public abstract Predication substitute(Variable org,Term then);
 	public abstract Predication substitute(Substitution subst);
 }

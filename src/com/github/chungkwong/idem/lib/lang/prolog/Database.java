@@ -15,15 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
-import com.github.chungkwong.idem.lib.lang.prolog.constructs.Disjunction;
-import com.github.chungkwong.idem.lib.lang.prolog.constructs.Throw;
-import com.github.chungkwong.idem.lib.lang.prolog.constructs.Catch;
-import com.github.chungkwong.idem.lib.lang.prolog.constructs.Fail;
-import com.github.chungkwong.idem.lib.lang.prolog.constructs.If;
-import com.github.chungkwong.idem.lib.lang.prolog.constructs.Cut;
-import com.github.chungkwong.idem.lib.lang.prolog.constructs.Conjunction;
-import com.github.chungkwong.idem.lib.lang.prolog.constructs.Call;
-import com.github.chungkwong.idem.lib.lang.prolog.constructs.True;
+import com.github.chungkwong.idem.lib.lang.prolog.buildin.*;
+import com.github.chungkwong.idem.lib.lang.prolog.constructs.*;
 import java.io.*;
 import java.util.*;
 import java.util.stream.*;
@@ -43,6 +36,7 @@ public class Database{
 		addProcedure(If.IF);
 		addProcedure(Throw.THROW);
 		addProcedure(True.TRUE);
+		addProcedure(Var.VAR);
 		InputStream resource=Database.class.getResourceAsStream("StandardProcedures");
 		PrologParser parser=new PrologParser(new PrologLex(new InputStreamReader(resource)));
 		Predication pred=parser.next();

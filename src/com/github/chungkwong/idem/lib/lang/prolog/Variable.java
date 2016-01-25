@@ -51,14 +51,6 @@ public class Variable implements Term{
 		return this==WILDCARD||term==WILDCARD||subst.assign(this,term);
 	}
 	@Override
-	public Term renameVariable(Variable org,Variable then){
-		return equals(org)?then:this;
-	}
-	@Override
-	public Term substitute(Variable org,Term then){
-		return equals(org)?then:this;
-	}
-	@Override
 	public Term substitute(Substitution subst){
 		return subst.findRoot(this);
 	}

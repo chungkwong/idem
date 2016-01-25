@@ -145,8 +145,7 @@ class ParseState{
 			}else if(top.getPriority()>next.getPriority()){
 				break;
 			}else if(top.getAssociativity()==Operator.Associativity.LEFT){//top must be infix
-				Term right=operands.pop();
-				operands.push(new CompoundTerm(top.getToken(),Arrays.asList(operands.pop(),right)));
+				reduceTopOperator();
 			}else if(next.getAssociativity()==Operator.Associativity.RIGHT){
 				break;
 			}else{

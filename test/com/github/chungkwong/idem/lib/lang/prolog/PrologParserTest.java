@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
 
+import static org.junit.Assert.assertEquals;
 import org.junit.*;
 
 /**
@@ -25,8 +26,47 @@ import org.junit.*;
 public class PrologParserTest{
 	public PrologParserTest(){
 	}
+	private void assertParse(String in,String out){
+		assertEquals(new PrologParser(new PrologLex(in)).getRemaining().toString(),out);
+	}
 	@Test
-	public void test(){
-
+	public void testText(){
+		assertParse("fact.","[fact]");
+		assertParse("a:-b,c.","[:-(a,,(b,c))]");
+		assertParse("?-d(X),e(Y,Z).","[?-(,(d(X),e(Y,Z)))]");
+	}
+	@Test
+	public void testBracket(){
+		assertParse("[]","[[]]");
+		assertParse("[a]","[.(a,[])]");
+		assertParse("[a,b]","[.(a,.(b,[]))]");
+		assertParse("[a,b,c]","[.(a,.(b,.(c,[])))]");
+		assertParse("[a|b]","[.(a,b)]");
+		assertParse("[a,b|c]","[.(a,.(b,c))]");
+		assertParse("{a}","[{}(a)]");
+		assertParse("{}(5)","[{}(5)]");
+		assertParse(".(1,2)","[.(1,2)]");
+		assertParse("([],[])","[,([],[])]");
+		assertParse("(([],[]),[],([]))","[,(,([],[]),,([],[]))]");
+		assertParse("sin(x)","[sin(x)]");
+		assertParse("sin((x))","[sin(x)]");
+		assertParse("sin((x,y))","[sin(,(x,y))]");
+		assertParse("sin(x,y,z)","[sin(x,y,z)]");
+		assertParse("sin((x,y,z))","[sin(,(x,,(y,z)))]");
+	}
+	@Test
+	public void testOperator(){
+		assertParse("1+2","[+(1,2)]");
+		assertParse("1+2+3","[+(+(1,2),3)]");
+		assertParse("1+(2+3)","[+(1,+(2,3))]");
+		assertParse("(1+2)+3","[+(+(1,2),3)]");
+		assertParse("((1+2))+3","[+(+(1,2),3)]");
+		assertParse("2^3^4","[^(2,^(3,4))]");
+		assertParse("1+2*3","[+(1,*(2,3))]");
+		assertParse("1*2+3","[+(*(1,2),3)]");
+		assertParse("2*(3+4)","[*(2,+(3,4))]");
+		assertParse("-1","[-(1)]");
+		assertParse("- -2","[-(-(2))]");
+		assertParse("1+5^3*2","[+(1,*(^(5,3),2))]");
 	}
 }

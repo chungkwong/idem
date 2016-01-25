@@ -23,9 +23,7 @@ import java.util.*;
 public interface Term{
 	Set<Variable> getVariableSet();
 	boolean unities(Term term,Substitution subst);
-	Term renameVariable(Variable org,Variable then);
 	Term renameAllVariable(HashMap<Variable,Variable> renameTo);
-	Term substitute(Variable org,Term then);
 	Term substitute(Substitution subst);
 	Predication toHead();
 	Predication toBody();

@@ -27,12 +27,16 @@ public class Disjunction extends ControlConstruct{
 	@Override
 	public void firstexecute(Processor exec){
 		Predication disjunction=exec.getCurrentActivator();
-		if(disjunction.getPredicate().equals(If.IF.getPredicate())){
+		if(isIf(disjunction)){
 			pushIfThen(disjunction,exec);
 		}else{
 			pushCase(disjunction.getArguments().get(1).toBody(),exec);
 			pushCase(disjunction.getArguments().get(0).toBody(),exec);
 		}
+	}
+	private boolean isIf(Predication pred){
+		Term first=pred.getArguments().get(0);
+		return first instanceof Predication&&((Predication)first).getPredicate().equals(If.IF.getPredicate());
 	}
 	private void pushCase(Predication pred,Processor exec){
 		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
@@ -62,7 +66,7 @@ public class Disjunction extends ControlConstruct{
 	}
 	@Override
 	public void reexecute(Processor exec){
-		if(exec.getCurrentActivator().getPredicate().equals(If.IF.getPredicate())){
+		if(isIf(exec.getCurrentActivator())){
 			pushElse(exec);
 		}else{
 			exec.getStack().pop();

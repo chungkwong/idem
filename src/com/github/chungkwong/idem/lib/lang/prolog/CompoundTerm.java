@@ -61,16 +61,8 @@ public class CompoundTerm extends Predication{
 			return false;
 	}
 	@Override
-	public CompoundTerm renameVariable(Variable org,Variable then){
-		return new CompoundTerm(functor,argments.stream().map((t)->t.renameVariable(org,then)).collect(Collectors.toList()));
-	}
-	@Override
 	public CompoundTerm renameAllVariable(HashMap<Variable,Variable> renameTo){
 		return new CompoundTerm(functor,argments.stream().map((t)->t.renameAllVariable(renameTo)).collect(Collectors.toList()));
-	}
-	@Override
-	public CompoundTerm substitute(Variable org,Term then){
-		return new CompoundTerm(functor,argments.stream().map((t)->t.substitute(org,then)).collect(Collectors.toList()));
 	}
 	@Override
 	public CompoundTerm substitute(Substitution subst){

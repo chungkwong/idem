@@ -55,7 +55,7 @@ public class Substitution{
 		}
 	}
 	public boolean occurCheck(){
-		return assignment.entrySet().stream().allMatch((entry)->entry.getValue().getVariableSet().contains(entry.getKey()));
+		return assignment.entrySet().stream().anyMatch((entry)->entry.getValue().getVariableSet().contains(entry.getKey()));
 	}
 	@Override
 	public String toString(){
