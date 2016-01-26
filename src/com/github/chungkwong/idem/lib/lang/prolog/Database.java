@@ -37,6 +37,7 @@ public class Database{
 		addProcedure(Throw.THROW);
 		addProcedure(True.TRUE);
 		addProcedure(Var.VAR);
+		addProcedure(UnifyWithOccurCheck.INSTANCE);
 		InputStream resource=Database.class.getResourceAsStream("StandardProcedures");
 		PrologParser parser=new PrologParser(new PrologLex(new InputStreamReader(resource)));
 		Predication pred=parser.next();

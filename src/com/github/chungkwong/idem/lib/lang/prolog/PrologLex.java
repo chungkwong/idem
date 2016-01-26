@@ -175,7 +175,7 @@ public class PrologLex implements SimpleIterator<Object>{
 	}
 	private Object getIdentifier(int start) throws IOException{
 		StringBuilder buf=new StringBuilder();
-		while(Character.isLetter(start)||Character.isDigit(start)){
+		while(Character.isLetter(start)||Character.isDigit(start)||start=='_'){
 			buf.append((char)start);
 			start=in.read();
 		}
