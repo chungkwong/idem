@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Parser.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;MIDE&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">com.github.chungkwong.idem.parser</a> &gt; <span class="el_source">Parser.java</span></div><h1>Parser.java</h1><pre class="source lang-java linenums">package com.github.chungkwong.idem.parser;
+import com.github.chungkwong.idem.lib.base.*;
+import com.github.chungkwong.idem.math.*;
+import java.util.*;
+public final class Parser implements TokenIterator{
+	Lex lex;
+<span class="nc" id="L7">	private Stack&lt;Level&gt; stack=new Stack&lt;Level&gt;();</span>
+<span class="nc" id="L8">	HashMap&lt;String,Object&gt; datumRef=new HashMap&lt;String,Object&gt;();</span>
+<span class="nc" id="L9">	static final HashMap&lt;String,String&gt; abbreviation=new HashMap&lt;String,String&gt;();</span>
+	static{
+<span class="nc" id="L11">		abbreviation.put(&quot;\'&quot;,&quot;quote&quot;);</span>
+<span class="nc" id="L12">		abbreviation.put(&quot;`&quot;,&quot;quasiquote&quot;);</span>
+<span class="nc" id="L13">		abbreviation.put(&quot;,&quot;,&quot;unquote&quot;);</span>
+<span class="nc" id="L14">		abbreviation.put(&quot;,@&quot;,&quot;unquote-splicing&quot;);</span>
+		/*abbreviation.put(&quot;#’&quot;,&quot;syntax&quot;);
+		abbreviation.put(&quot;#`&quot;,&quot;quasisyntax&quot;);
+		abbreviation.put(&quot;#,&quot;,&quot;unsyntax&quot;);
+		abbreviation.put(&quot;#,@&quot;,&quot;unsyntax-splicing&quot;);*/
+<span class="nc" id="L19">	}</span>
+<span class="nc" id="L20">	public Parser(Lex lex){</span>
+<span class="nc" id="L21">		this.lex=lex;</span>
+<span class="nc" id="L22">	}</span>
+	public Parser(String str){
+<span class="nc" id="L24">		this(new Lex(str));</span>
+<span class="nc" id="L25">	}</span>
+	public Object nextDatum(){
+<span class="nc" id="L27">		boolean nonComment=true;</span>
+<span class="nc" id="L28">		stack.add(new ListLevel());</span>
+		do{//tail recursive optimization by hand
+<span class="nc" id="L30">			Object token=lex.nextToken();</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">			if(token==null)</span>
+<span class="nc" id="L32">				break;</span>
+<span class="nc bnc" id="L33" title="All 14 branches missed.">			if(token instanceof Boolean||token instanceof Character||token instanceof String||token instanceof Identifier</span>
+				||token instanceof Number||token instanceof Rational||token instanceof Tuple)
+<span class="nc" id="L35">					nonComment=addDatum(token);</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">			else if(token instanceof Token){</span>
+<span class="nc" id="L37">				String name=token.toString();</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">				if(abbreviation.containsKey(name)){</span>
+<span class="nc" id="L39">					stack.push(new ListLevel(abbreviation.get(name)));</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">				}else if(name.equals(&quot;)&quot;)){</span>
+<span class="nc" id="L41">					nonComment=addDatum(stack.pop().getContent());</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">				}else if(name.equals(&quot;(&quot;)){</span>
+<span class="nc" id="L43">					stack.push(new ListLevel());</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">				}else if(name.equals(&quot;#(&quot;)){</span>
+<span class="nc" id="L45">					stack.push(new VectorLevel());</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">				}else if(name.equals(&quot;#u8(&quot;)){</span>
+<span class="nc" id="L47">					stack.push(new ByteVectorLevel());</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">				}else if(name.equals(&quot;#;&quot;)){</span>
+<span class="nc" id="L49">					stack.push(new ListLevel(token));</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">				}else if(name.equals(&quot;.&quot;)){</span>
+<span class="nc" id="L51">					stack.peek().addDot();</span>
+				}
+<span class="nc bnc" id="L53" title="All 2 branches missed.">			}else if(token instanceof DatumLabelRef){</span>
+<span class="nc" id="L54">				nonComment=addDatum(datumRef.get(((DatumLabelRef)token).getLabel()));</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">			}else if(token instanceof DatumLabelSrc){</span>
+<span class="nc" id="L56">				stack.push(new ListLevel(token));</span>
+			}
+<span class="nc bnc" id="L58" title="All 4 branches missed.">		}while(stack.size()&gt;1||!nonComment);</span>
+<span class="nc" id="L59">		ScmPairOrNil ret=(ScmPairOrNil)stack.pop().getContent();</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">		return ret instanceof ScmPair?((ScmPair)ret).getCar():null;</span>
+	}
+	private final boolean addDatum(Object datum){
+<span class="nc bnc" id="L63" title="All 2 branches missed.">		while(stack.peek().add(datum)){</span>
+<span class="nc" id="L64">			Object pair=stack.pop().getContent();</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">			if(pair instanceof ScmPair){</span>
+<span class="nc" id="L66">				Object car=((ScmPair)pair).getCar();</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">				if(car instanceof DatumLabelSrc){</span>
+<span class="nc" id="L68">					datumRef.put(((DatumLabelSrc)car).getLabel(),datum);</span>
+<span class="nc bnc" id="L69" title="All 4 branches missed.">				}else if(car instanceof Token&amp;&amp;car.toString().equals(&quot;#;&quot;)){</span>
+<span class="nc" id="L70">					return false;</span>
+				}else{
+<span class="nc" id="L72">					datum=pair;</span>
+				}
+			}
+<span class="nc" id="L75">		}</span>
+<span class="nc" id="L76">		return true;</span>
+	}
+	public ArrayList&lt;Object&gt; getRemainingDatums(){
+<span class="nc" id="L79">		ArrayList&lt;Object&gt; datums=new ArrayList&lt;Object&gt;();</span>
+<span class="nc" id="L80">		Object datum=nextDatum();</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">		while(datum!=null){</span>
+<span class="nc" id="L82">			datums.add(datum);</span>
+<span class="nc" id="L83">			datum=nextDatum();</span>
+		}
+<span class="nc" id="L85">		return datums;</span>
+	}
+	/*public static void main(String[] args) throws Exception{
+		BufferedReader in=new BufferedReader(new InputStreamReader(System.in));
+		String s=null;
+		while((s=in.readLine())!=null){
+			System.out.println(new Parser(s).getDatums());
+		}
+	}*/
+}
+interface Level{
+	boolean add(Object obj);
+	void addDot();
+	Object getContent();
+}
+class ListLevel implements Level{
+	ScmPairOrNil first;
+	Object end;
+	boolean last,pop;
+<span class="nc" id="L104">	public ListLevel(Object car){</span>
+<span class="nc" id="L105">		pop=true;</span>
+<span class="nc" id="L106">		end=first=new ScmPair(car,ScmNil.NIL);</span>
+<span class="nc" id="L107">	}</span>
+<span class="nc" id="L108">	public ListLevel(){</span>
+<span class="nc" id="L109">		pop=last=false;</span>
+<span class="nc" id="L110">		end=first=ScmNil.NIL;</span>
+<span class="nc" id="L111">	}</span>
+	public boolean add(Object obj){
+<span class="nc bnc" id="L113" title="All 2 branches missed.">		if(last){</span>
+<span class="nc" id="L114">			((ScmPair)end).setCdr(obj);</span>
+		}else{
+<span class="nc" id="L116">			ScmPair pair=new ScmPair(obj,ScmNil.NIL);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">			if(first==ScmNil.NIL){</span>
+<span class="nc" id="L118">				end=first=pair;</span>
+			}else{
+<span class="nc" id="L120">				((ScmPair)end).setCdr(pair);</span>
+<span class="nc" id="L121">				end=pair;</span>
+			}
+		}
+<span class="nc" id="L124">		return pop;</span>
+	}
+	public void addDot(){
+<span class="nc" id="L127">		last=true;</span>
+<span class="nc" id="L128">	}</span>
+	public Object getContent(){
+<span class="nc" id="L130">		return first;</span>
+	}
+}
+class VectorLevel implements Level{
+<span class="nc" id="L134">	ArrayList&lt;Object&gt; vector=new ArrayList&lt;Object&gt;();</span>
+<span class="nc" id="L135">	public VectorLevel(){</span>
+
+<span class="nc" id="L137">	}</span>
+	public boolean add(Object obj){
+<span class="nc" id="L139">		vector.add(obj);</span>
+<span class="nc" id="L140">		return false;</span>
+	}
+	public void addDot(){
+<span class="nc" id="L143">		throw new RuntimeException(&quot;Dot in vector&quot;);</span>
+	}
+	public Object getContent(){
+<span class="nc" id="L146">		return vector;</span>
+	}
+}
+class ByteVectorLevel implements Level{
+<span class="nc" id="L150">	ArrayList&lt;Byte&gt; vector=new ArrayList&lt;Byte&gt;();</span>
+<span class="nc" id="L151">	public ByteVectorLevel(){</span>
+
+<span class="nc" id="L153">	}</span>
+	public boolean add(Object obj){
+<span class="nc" id="L155">		vector.add(((java.math.BigInteger)obj).byteValue());</span>
+<span class="nc" id="L156">		return false;</span>
+	}
+	public void addDot(){
+<span class="nc" id="L159">		throw new RuntimeException(&quot;Dot in bytevector&quot;);</span>
+	}
+	public Object getContent(){
+<span class="nc" id="L162">		return vector;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

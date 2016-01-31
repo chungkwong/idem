@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ClassExplorer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;MIDE&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">com.github.chungkwong.idem.test</a> &gt; <span class="el_source">ClassExplorer.java</span></div><h1>ClassExplorer.java</h1><pre class="source lang-java linenums">package com.github.chungkwong.idem.test;
+import static com.github.chungkwong.idem.global.Log.LOG;
+import java.awt.*;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.jar.*;
+import java.util.logging.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.tree.*;
+public final class ClassExplorer extends JPanel implements TreeSelectionListener,ChangeListener{
+<span class="nc" id="L13">	static final char PATH_SEPARATOR=System.getProperty(&quot;file.separator&quot;).charAt(0);</span>
+<span class="nc" id="L14">	final JTree classChooser=new JTree(getPathRoot());</span>
+	//final Vector&lt;String&gt; classList=getClasses();
+	//final JList&lt;String&gt; classChooser=new JList&lt;String&gt;(classList);
+<span class="nc" id="L17">	final Vector&lt;Constructor&gt; constructorList=new Vector&lt;Constructor&gt;();</span>
+<span class="nc" id="L18">	final JList&lt;Constructor&gt; constructorChooser=new JList&lt;Constructor&gt;(constructorList);</span>
+<span class="nc" id="L19">	final Vector&lt;Method&gt; methodList=new Vector&lt;Method&gt;();</span>
+<span class="nc" id="L20">	final JList&lt;Method&gt; methodChooser=new JList&lt;Method&gt;(methodList);</span>
+<span class="nc" id="L21">	final Vector&lt;Field&gt; fieldList=new Vector&lt;Field&gt;();</span>
+<span class="nc" id="L22">	final JList&lt;Field&gt; fieldChooser=new JList&lt;Field&gt;(fieldList);</span>
+<span class="nc" id="L23">	final JLabel classInfo=new JLabel();</span>
+<span class="nc" id="L24">	final JCheckBox showDeclared=new JCheckBox(&quot;Show all&quot;,false);</span>
+<span class="nc" id="L25">	public ClassExplorer(){</span>
+<span class="nc" id="L26">		setLayout(new BorderLayout());</span>
+<span class="nc" id="L27">		showDeclared.addChangeListener(this);</span>
+<span class="nc" id="L28">		classChooser.addTreeSelectionListener(this);</span>
+<span class="nc" id="L29">		JSplitPane vsplit=new JSplitPane(JSplitPane.VERTICAL_SPLIT);</span>
+<span class="nc" id="L30">		vsplit.setTopComponent(new JSplitPane(JSplitPane.VERTICAL_SPLIT,false,new JScrollPane(constructorChooser),new JScrollPane(methodChooser)));</span>
+<span class="nc" id="L31">		vsplit.setBottomComponent(new JScrollPane(fieldChooser));</span>
+<span class="nc" id="L32">		add(new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,false,new JScrollPane(classChooser),vsplit),BorderLayout.CENTER);</span>
+<span class="nc" id="L33">		add(classInfo,BorderLayout.SOUTH);</span>
+<span class="nc" id="L34">		add(showDeclared,BorderLayout.NORTH);</span>
+<span class="nc" id="L35">	}</span>
+	void updateClass(){
+<span class="nc" id="L37">		methodList.clear();</span>
+<span class="nc" id="L38">		fieldList.clear();</span>
+<span class="nc" id="L39">		constructorList.clear();</span>
+<span class="nc" id="L40">		classInfo.setText(&quot;&quot;);</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">		if(((TreeNode)classChooser.getSelectionPath().getLastPathComponent()).isLeaf())</span>
+			try{
+<span class="nc" id="L43">				Object[] path=classChooser.getSelectionPath().getPath();</span>
+<span class="nc" id="L44">				String cp=path[1].toString();</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">				for(int i=2;i&lt;path.length;i++){</span>
+<span class="nc" id="L46">					cp+=&quot;.&quot;+path[i].toString();</span>
+				}
+<span class="nc" id="L48">				Class cls=Class.forName(cp);</span>
+<span class="nc" id="L49">				classInfo.setText(getClassDescription(cls));</span>
+<span class="nc" id="L50">				boolean showAll=showDeclared.isSelected();</span>
+<span class="nc bnc" id="L51" title="All 4 branches missed.">				for(Constructor constructor:showAll?cls.getDeclaredConstructors():cls.getConstructors())</span>
+<span class="nc" id="L52">					constructorList.add(constructor);</span>
+<span class="nc bnc" id="L53" title="All 4 branches missed.">				for(Method method:showAll?cls.getDeclaredMethods():cls.getMethods())</span>
+<span class="nc" id="L54">					methodList.add(method);</span>
+<span class="nc bnc" id="L55" title="All 4 branches missed.">				for(Field field:showAll?cls.getDeclaredFields():cls.getFields())</span>
+<span class="nc" id="L56">					fieldList.add(field);</span>
+<span class="nc" id="L57">			}catch(Exception ex){</span>
+<span class="nc" id="L58">				LOG.log(Level.WARNING,null,ex);</span>
+<span class="nc" id="L59">			}</span>
+<span class="nc" id="L60">		methodChooser.setListData(methodList);</span>
+<span class="nc" id="L61">		fieldChooser.setListData(fieldList);</span>
+<span class="nc" id="L62">		constructorChooser.setListData(constructorList);</span>
+<span class="nc" id="L63">	}</span>
+	public void valueChanged(TreeSelectionEvent e){
+<span class="nc" id="L65">		updateClass();</span>
+<span class="nc" id="L66">	}</span>
+	public void stateChanged(ChangeEvent e){
+<span class="nc" id="L68">		updateClass();</span>
+<span class="nc" id="L69">	}</span>
+	static String getClassDescription(Class cls){
+<span class="nc" id="L71">		String description=cls.toString();</span>
+<span class="nc" id="L72">		Class&lt;?&gt; supClass=cls.getSuperclass();</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">		if(supClass!=null)</span>
+<span class="nc" id="L74">			description+=&quot; extends &quot;+supClass.getName();</span>
+<span class="nc" id="L75">		Class&lt;?&gt;[] faces=cls.getInterfaces();</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">		if(faces.length&gt;0){</span>
+<span class="nc" id="L77">			description+=&quot; implements &quot;+faces[0].getName();</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">			for(int i=1;i&lt;faces.length;i++)</span>
+<span class="nc" id="L79">				description+=&quot;,&quot;+faces[i].getName();</span>
+		}
+<span class="nc" id="L81">		return description;</span>
+	}
+	static DefaultMutableTreeNode getPathRoot(){
+<span class="nc" id="L84">		return getPathRoot(System.getProperty(&quot;sun.boot.class.path&quot;).split(System.getProperty(&quot;path.separator&quot;)));</span>
+	}
+	static DefaultMutableTreeNode getPathRoot(String[] roots){
+<span class="nc" id="L87">		DefaultMutableTreeNode root=new DefaultMutableTreeNode();</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">		for(String rt:roots)</span>
+			try{
+<span class="nc" id="L90">				File file=new File(rt);</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">				if(file.exists()){</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">					if(rt.endsWith(&quot;.jar&quot;)){</span>
+<span class="nc" id="L93">						Enumeration&lt;JarEntry&gt; entries=new JarFile(rt).entries();</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">						while(entries.hasMoreElements()){</span>
+<span class="nc" id="L95">							JarEntry entry=entries.nextElement();</span>
+<span class="nc" id="L96">							String path=entry.getName();</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">							if(path.endsWith(&quot;.class&quot;)){</span>
+<span class="nc" id="L98">								addNode(root,path.replace(PATH_SEPARATOR,'.').substring(0,path.length()-6));</span>
+							}
+<span class="nc" id="L100">						}</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">					}else if(file.isDirectory()){</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">						for(String name:file.list())</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">							if(name.endsWith(&quot;.class&quot;))</span>
+<span class="nc" id="L104">								addNode(root,name.substring(0,name.length()-6));</span>
+					}
+				}
+<span class="nc" id="L107">			}catch(Exception ex){</span>
+<span class="nc" id="L108">				LOG.log(Level.WARNING,null,ex);</span>
+<span class="nc" id="L109">			}</span>
+<span class="nc" id="L110">		return root;</span>
+	}
+	private static void addNode(DefaultMutableTreeNode parent,String path){
+<span class="nc" id="L113">		addNode(parent,path.split(&quot;\\.&quot;),0);</span>
+<span class="nc" id="L114">	}</span>
+	private static void addNode(DefaultMutableTreeNode parent,String[] path,int lv){
+<span class="nc bnc" id="L116" title="All 2 branches missed.">		if(lv&gt;=path.length)</span>
+<span class="nc" id="L117">			return;</span>
+<span class="nc" id="L118">		int low=0;</span>
+<span class="nc" id="L119">		DefaultMutableTreeNode child=null;</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">		for(int high=parent.getChildCount()-1;low&lt;=high;){</span>
+<span class="nc" id="L121">			int mid=(low+high)/2;</span>
+<span class="nc" id="L122">			DefaultMutableTreeNode c=(DefaultMutableTreeNode)parent.getChildAt(mid);</span>
+<span class="nc" id="L123">			int cmp=path[lv].compareTo((String)c.getUserObject());</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">			if(cmp==0){</span>
+<span class="nc" id="L125">				child=c;</span>
+<span class="nc" id="L126">				break;</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">			}else if(cmp&lt;0){</span>
+<span class="nc" id="L128">				high=mid-1;</span>
+			}else{
+<span class="nc" id="L130">				low=mid+1;</span>
+			}
+<span class="nc" id="L132">		}</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">		if(child==null){</span>
+<span class="nc" id="L134">			child=new DefaultMutableTreeNode(path[lv]);</span>
+<span class="nc" id="L135">			parent.insert(child,low);</span>
+		}
+<span class="nc" id="L137">		addNode(child,path,lv+1);</span>
+<span class="nc" id="L138">	}</span>
+	/*static Vector&lt;String&gt; getClasses(){
+		return getClasses(System.getProperty(&quot;sun.boot.class.path&quot;).split(System.getProperty(&quot;path.separator&quot;)));
+	}
+	static Vector&lt;String&gt; getClasses(String[] roots){
+		Vector&lt;String&gt; vector=new Vector&lt;String&gt;();
+		for(String root:roots)
+			try{
+				File file=new File(root);
+				if(file.exists()){
+					if(root.endsWith(&quot;.jar&quot;)){
+						Enumeration&lt;JarEntry&gt; entries=new JarFile(root).entries();
+						while(entries.hasMoreElements()){
+							JarEntry entry=entries.nextElement();
+							String path=entry.getName();
+							if(path.endsWith(&quot;.class&quot;)){
+								vector.add(path.replace(PATH_SEPARATOR,'.').substring(0,path.length()-6));
+							}
+						}
+					}else if(file.isDirectory()){
+						for(String name:file.list())
+							if(name.endsWith(&quot;.class&quot;))
+								vector.add(name.substring(0,name.length()-6));
+					}
+				}
+			}catch(Exception ex){
+				LOG.log(Level.WARNING,null,ex);
+			}
+		return vector;
+	}*/
+	public static void main(String[] args) throws Exception{
+<span class="nc" id="L169">		JFrame f=new JFrame(&quot;ClassExplorer&quot;);</span>
+<span class="nc" id="L170">		f.add(new ClassExplorer(),BorderLayout.CENTER);//the use of SwingConsole can be so simple</span>
+<span class="nc" id="L171">		f.setExtendedState(JFrame.MAXIMIZED_BOTH);</span>
+<span class="nc" id="L172">		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
+<span class="nc" id="L173">		f.setVisible(true);</span>
+<span class="nc" id="L174">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

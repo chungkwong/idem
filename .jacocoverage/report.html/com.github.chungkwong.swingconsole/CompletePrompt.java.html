@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CompletePrompt.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;MIDE&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">com.github.chungkwong.swingconsole</a> &gt; <span class="el_source">CompletePrompt.java</span></div><h1>CompletePrompt.java</h1><pre class="source lang-java linenums">/* CompletePrompt.java
+ * =========================================================================
+ * This file is originally part of the SwingConsole Project
+ *
+ * Copyright (C) 2015 Chan Chung Kwong
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ */
+package com.github.chungkwong.swingconsole;
+import static com.github.chungkwong.idem.global.Log.LOG;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import java.util.List;
+import java.util.logging.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
+/**
+ * A swing component that show auto-complete choice
+ */
+public final class CompletePrompt extends JPopupMenu implements KeyListener,UndoableEditListener,MouseListener,ComponentListener{
+<span class="nc" id="L32">	List&lt;String&gt; options=new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L33">	DefaultListModel&lt;String&gt; vec=new DefaultListModel&lt;String&gt;();</span>
+<span class="nc" id="L34">	JTextField input=new JTextField();</span>
+<span class="nc" id="L35">	JList&lt;String&gt; loc=new JList&lt;String&gt;(vec);</span>
+	Document doc;
+	int pos;
+	/**
+	 * Construct a CompletePrompt
+	 * @param options all possible choices
+	 * @param area the JTextArea where this component is shown
+	 * @param doc the Document that the final choice is to be inserted
+	 * @param pos offset that the final choice is to be inserted
+	 */
+<span class="nc" id="L45">	public CompletePrompt(List&lt;String&gt; options,JTextArea area,Document doc,int pos){</span>
+<span class="nc" id="L46">		this.options=options;</span>
+<span class="nc" id="L47">		this.doc=doc;</span>
+<span class="nc" id="L48">		this.pos=pos;</span>
+<span class="nc" id="L49">		Collections.sort(options);</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">		for(String option:options)</span>
+<span class="nc" id="L51">			vec.addElement(option);</span>
+<span class="nc" id="L52">		loc.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);</span>
+<span class="nc" id="L53">		loc.setSelectedIndex(0);</span>
+<span class="nc" id="L54">		input.getDocument().addUndoableEditListener(this);</span>
+<span class="nc" id="L55">		input.addKeyListener(this);</span>
+<span class="nc" id="L56">		loc.addMouseListener(this);</span>
+<span class="nc" id="L57">		this.addComponentListener(this);</span>
+<span class="nc" id="L58">		add(input);</span>
+<span class="nc" id="L59">		add(loc);</span>
+<span class="nc" id="L60">		pack();</span>
+		try{
+<span class="nc" id="L62">			Rectangle rect=area.modelToView(pos);</span>
+<span class="nc" id="L63">			show(area,(int)rect.getX(),(int)rect.getY());</span>
+<span class="nc" id="L64">		}catch(Exception ex){</span>
+<span class="nc" id="L65">			LOG.log(Level.WARNING,null,ex);</span>
+<span class="nc" id="L66">		}</span>
+<span class="nc" id="L67">	}</span>
+	public void keyPressed(KeyEvent e){
+		//System.out.println(e.getKeyChar());
+<span class="nc" id="L70">		int code=e.getKeyCode();</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">		if(code==KeyEvent.VK_UP){</span>
+<span class="nc" id="L72">			loc.setSelectedIndex((loc.getSelectedIndex()+vec.size()-1)%vec.size());</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">		}else if(code==KeyEvent.VK_DOWN){</span>
+<span class="nc" id="L74">			loc.setSelectedIndex((loc.getSelectedIndex()+1)%vec.size());</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">		}else if(code==KeyEvent.VK_ENTER){</span>
+<span class="nc" id="L76">			choose(input.getText());</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">		}else if(code==KeyEvent.VK_SPACE){</span>
+<span class="nc" id="L78">			choose(loc.getSelectedValue());</span>
+		}
+<span class="nc" id="L80">	}</span>
+<span class="nc" id="L81">	public void keyReleased(KeyEvent e){}</span>
+<span class="nc" id="L82">	public void keyTyped(KeyEvent e){}</span>
+	/**
+	 * Update the choices in the list according to current input
+	 */
+	public void undoableEditHappened(UndoableEditEvent e){
+<span class="nc" id="L87">		vec.clear();</span>
+<span class="nc" id="L88">		String text=input.getText();</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">		for(String option:options)</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">			if(option.startsWith(text))</span>
+<span class="nc" id="L91">				vec.addElement(option);</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">		if(vec.isEmpty())</span>
+<span class="nc" id="L93">			choose(input.getText());</span>
+		else{
+<span class="nc" id="L95">			pack();</span>
+<span class="nc" id="L96">			loc.setSelectedIndex(0);</span>
+<span class="nc" id="L97">			input.requestFocus();</span>
+<span class="nc" id="L98">			loc.repaint();</span>
+		}
+<span class="nc" id="L100">	}</span>
+	/**
+	 * Make final choice if a list item is double-clicked
+	 */
+	public void mouseClicked(MouseEvent e){
+<span class="nc bnc" id="L105" title="All 2 branches missed.">		if(e.getClickCount()==2){</span>
+<span class="nc" id="L106">			choose(vec.get(loc.locationToIndex(e.getPoint())));</span>
+		}
+<span class="nc" id="L108">	}</span>
+<span class="nc" id="L109">	public void mouseEntered(MouseEvent e){}</span>
+<span class="nc" id="L110">	public void mouseExited(MouseEvent e){}</span>
+<span class="nc" id="L111">	public void mousePressed(MouseEvent e){}</span>
+<span class="nc" id="L112">	public void mouseReleased(MouseEvent e){}</span>
+<span class="nc" id="L113">	public void componentHidden(ComponentEvent e){}</span>
+	public void componentMoved(ComponentEvent e){
+<span class="nc" id="L115">		input.requestFocus();</span>
+<span class="nc" id="L116">	}</span>
+	public void componentResized(ComponentEvent e){
+<span class="nc" id="L118">		input.requestFocus();</span>
+<span class="nc" id="L119">	}</span>
+<span class="nc" id="L120">	public void componentShown(ComponentEvent e){}</span>
+	/**
+	 * Make the final choice
+	 * @param choice final choice
+	 */
+	public void choose(String choice){
+		try{
+<span class="nc" id="L127">			doc.insertString(pos,choice,null);</span>
+<span class="nc" id="L128">			setVisible(false);</span>
+<span class="nc" id="L129">		}catch(Exception ex){</span>
+<span class="nc" id="L130">			LOG.log(Level.WARNING,null,ex);</span>
+<span class="nc" id="L131">		}</span>
+<span class="nc" id="L132">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

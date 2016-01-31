@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Disjunction.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;MIDE&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">com.github.chungkwong.idem.lib.lang.prolog.constructs</a> &gt; <span class="el_source">Disjunction.java</span></div><h1>Disjunction.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Chan Chung Kwong &lt;1m02math@126.com&gt;
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package com.github.chungkwong.idem.lib.lang.prolog.constructs;
+import com.github.chungkwong.idem.lib.lang.prolog.*;
+/**
+ *
+ * @author kwong
+ */
+public class Disjunction extends ControlConstruct{
+<span class="fc" id="L24">	public static Disjunction DISJUNCTION=new Disjunction();</span>
+<span class="fc" id="L25">	private Disjunction(){}</span>
+<span class="fc" id="L26">	private static final Predicate pred=new Predicate(&quot;;&quot;,2);</span>
+	@Override
+	public void firstexecute(Processor exec){
+<span class="fc" id="L29">		Predication disjunction=exec.getCurrentActivator();</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">		if(isIf(disjunction)){</span>
+<span class="fc" id="L31">			pushIfThen(disjunction,exec);</span>
+		}else{
+<span class="fc" id="L33">			pushCase(disjunction.getArguments().get(1).toBody(),exec);</span>
+<span class="fc" id="L34">			pushCase(disjunction.getArguments().get(0).toBody(),exec);</span>
+		}
+<span class="fc" id="L36">	}</span>
+	private boolean isIf(Predication pred){
+<span class="fc" id="L38">		Term first=pred.getArguments().get(0);</span>
+<span class="pc bpc" id="L39" title="1 of 4 branches missed.">		return first instanceof Predication&amp;&amp;((Predication)first).getPredicate().equals(If.IF.getPredicate());</span>
+	}
+	private void pushCase(Predication pred,Processor exec){
+<span class="fc" id="L42">		ExecutionState ccs=new ExecutionState(exec.getStack().peek());</span>
+<span class="fc" id="L43">		ccs.setBI(ExecutionState.BacktraceInfo.NIL);</span>
+<span class="fc" id="L44">		ccs.getDecsglstk().peek().setActivator(pred);</span>
+<span class="fc" id="L45">		exec.getStack().push(ccs);</span>
+<span class="fc" id="L46">	}</span>
+	private void pushIfThen(Predication pred,Processor exec){
+<span class="fc" id="L48">		ExecutionState ccs=new ExecutionState(exec.getStack().peek());</span>
+<span class="fc" id="L49">		ccs.setBI(ExecutionState.BacktraceInfo.NIL);</span>
+<span class="fc" id="L50">		ExecutionState checkpoint=exec.getStack().get(exec.getStack().size()-2);</span>
+<span class="fc" id="L51">		pred=((Predication)pred.getArguments().get(0));</span>
+<span class="fc" id="L52">		ccs.getDecsglstk().peek().setActivator((Predication)pred.getArguments().get(1));</span>
+<span class="fc" id="L53">		ccs.getDecsglstk().push(new DecoratedSubgoal(new Atom(&quot;!&quot;),checkpoint));</span>
+<span class="fc" id="L54">		ccs.getDecsglstk().push(new DecoratedSubgoal((Predication)pred.getArguments().get(0),exec.getStack().peek()));</span>
+<span class="fc" id="L55">		exec.getStack().push(ccs);</span>
+<span class="fc" id="L56">	}</span>
+	private void pushElse(Processor exec){
+<span class="fc" id="L58">		ExecutionState ccs=new ExecutionState(exec.getStack().peek());</span>
+<span class="fc" id="L59">		ccs.setBI(ExecutionState.BacktraceInfo.NIL);</span>
+<span class="fc" id="L60">		DecoratedSubgoal currdecsgl=ccs.getDecsglstk().pop();</span>
+<span class="fc" id="L61">		ExecutionState checkpoint=exec.getStack().get(exec.getStack().size()-2);</span>
+<span class="fc" id="L62">		ccs.getDecsglstk().push(new DecoratedSubgoal(</span>
+<span class="fc" id="L63">				(Predication)currdecsgl.getActivator().getArguments().get(1),currdecsgl.getCutparent()));</span>
+<span class="fc" id="L64">		ccs.getDecsglstk().push(new DecoratedSubgoal(new Atom(&quot;!&quot;),checkpoint));</span>
+<span class="fc" id="L65">		exec.getStack().push(ccs);</span>
+<span class="fc" id="L66">	}</span>
+	@Override
+	public void reexecute(Processor exec){
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		if(isIf(exec.getCurrentActivator())){</span>
+<span class="fc" id="L70">			pushElse(exec);</span>
+		}else{
+<span class="fc" id="L72">			exec.getStack().pop();</span>
+<span class="fc" id="L73">			exec.backtrack();</span>
+		}
+<span class="fc" id="L75">	}</span>
+
+	@Override
+	public Predicate getPredicate(){
+<span class="fc" id="L79">		return pred;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

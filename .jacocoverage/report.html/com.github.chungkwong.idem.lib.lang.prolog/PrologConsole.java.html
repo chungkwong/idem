@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PrologConsole.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;MIDE&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">com.github.chungkwong.idem.lib.lang.prolog</a> &gt; <span class="el_source">PrologConsole.java</span></div><h1>PrologConsole.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2016 Chan Chung Kwong &lt;1m02math@126.com&gt;
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package com.github.chungkwong.idem.lib.lang.prolog;
+import com.github.chungkwong.swingconsole.*;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+import javax.swing.*;
+/**
+ *
+ * @author kwong
+ */
+<span class="nc" id="L27">public class PrologConsole implements Shell{</span>
+<span class="nc" id="L28">	Database db=new Database();</span>
+	List&lt;Predication&gt; predications;
+	@Override
+	public boolean acceptLine(String line){
+<span class="nc" id="L32">		PrologParser parser=new PrologParser(new PrologLex(line));</span>
+		try{
+<span class="nc" id="L34">			predications=parser.getRemaining();</span>
+<span class="nc" id="L35">		}catch(Exception ex){</span>
+<span class="nc" id="L36">			return false;</span>
+<span class="nc" id="L37">		}</span>
+<span class="nc" id="L38">		return true;</span>
+	}
+	@Override
+	public String evaluate(){
+<span class="nc" id="L42">		StringBuilder buf=new StringBuilder();</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">		for(Predication pred:predications){</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">			if(pred.getPredicate().getFunctor().equals(&quot;?-&quot;)){</span>
+<span class="nc" id="L45">				Processor exec=new Processor((Predication)pred.getArguments().get(0),db);</span>
+<span class="nc" id="L46">				Substitution subst=exec.getSubstitution();</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">				if(subst==null)</span>
+<span class="nc" id="L48">					buf.append(&quot;Gaol failed\n&quot;);</span>
+				else{
+<span class="nc bnc" id="L50" title="All 2 branches missed.">					while(subst!=null){</span>
+<span class="nc" id="L51">						buf.append(subst).append('\n');</span>
+<span class="nc" id="L52">						exec.reexecute();</span>
+<span class="nc" id="L53">						subst=exec.getSubstitution();</span>
+					}
+				}
+<span class="nc bnc" id="L56" title="All 2 branches missed.">			}else if(pred.getPredicate().getFunctor().equals(&quot;:-&quot;)){</span>
+<span class="nc" id="L57">				db.addClause(new Clause((Predication)pred.getArguments().get(0),</span>
+<span class="nc" id="L58">						(Predication)pred.getArguments().get(1)));</span>
+<span class="nc" id="L59">				buf.append(&quot;Rule added\n&quot;);</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">			}else if(pred.getPredicate().getFunctor().equals(&quot;inspect&quot;)){//FIXME</span>
+<span class="nc" id="L61">				buf.append(db);</span>
+			}else{
+<span class="nc" id="L63">				db.addClause(new Clause(pred,new Atom(&quot;true&quot;)));</span>
+<span class="nc" id="L64">				buf.append(&quot;Fact added\n&quot;);</span>
+			}
+<span class="nc" id="L66">		}</span>
+<span class="nc" id="L67">		return buf.toString();</span>
+	}
+	@Override
+	public java.util.List&lt;String&gt; getHints(String prefix){
+<span class="nc" id="L71">		ArrayList&lt;String&gt; lst=new ArrayList&lt;String&gt;();</span>
+
+<span class="nc" id="L73">		return lst;</span>
+	}
+	public static void main(String[] args) throws Exception{
+<span class="nc" id="L76">		JFrame f=new JFrame(&quot;Console&quot;);</span>
+<span class="nc" id="L77">		f.add(new SwingConsole(new PrologConsole()),BorderLayout.CENTER);</span>
+<span class="nc" id="L78">		f.setExtendedState(JFrame.MAXIMIZED_BOTH);</span>
+<span class="nc" id="L79">		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
+<span class="nc" id="L80">		f.setVisible(true);</span>
+<span class="nc" id="L81">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

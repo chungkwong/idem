@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ExecutionState.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;MIDE&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">com.github.chungkwong.idem.lib.lang.prolog</a> &gt; <span class="el_source">ExecutionState.java</span></div><h1>ExecutionState.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Chan Chung Kwong &lt;1m02math@126.com&gt;
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package com.github.chungkwong.idem.lib.lang.prolog;
+import com.github.chungkwong.idem.lib.*;
+import java.util.*;
+/**
+ *
+ * @author kwong
+ */
+public class ExecutionState{
+	private Stack&lt;DecoratedSubgoal&gt; decsglstk;
+	private BacktraceInfo BI;
+	private Substitution subst;
+	private PeekableIterator&lt;Clause&gt; cl;
+<span class="fc" id="L29">	public ExecutionState(){</span>
+<span class="fc" id="L30">		decsglstk=new Stack&lt;&gt;();</span>
+<span class="fc" id="L31">		subst=new Substitution();</span>
+<span class="fc" id="L32">		BI=BacktraceInfo.NIL;</span>
+<span class="fc" id="L33">		cl=null;</span>
+<span class="fc" id="L34">	}</span>
+<span class="fc" id="L35">	public ExecutionState(DecoratedSubgoal goal,Substitution subst){</span>
+<span class="fc" id="L36">		decsglstk=new Stack&lt;&gt;();</span>
+<span class="fc" id="L37">		decsglstk.push(goal);</span>
+<span class="fc" id="L38">		this.subst=subst;</span>
+<span class="fc" id="L39">		BI=BacktraceInfo.NIL;</span>
+<span class="fc" id="L40">		cl=null;</span>
+<span class="fc" id="L41">	}</span>
+<span class="fc" id="L42">	public ExecutionState(ExecutionState state){</span>
+<span class="fc" id="L43">		decsglstk=new Stack&lt;&gt;();</span>
+<span class="fc" id="L44">		decsglstk.ensureCapacity(state.decsglstk.size());</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		for(DecoratedSubgoal subgoal:state.decsglstk)</span>
+<span class="fc" id="L46">			decsglstk.add(subgoal.clone());</span>
+<span class="fc" id="L47">		this.BI=state.BI;</span>
+<span class="fc" id="L48">		this.subst=state.subst;</span>
+<span class="fc" id="L49">		this.cl=state.cl;</span>
+<span class="fc" id="L50">	}</span>
+	public String toString(){
+<span class="nc" id="L52">		StringBuilder buf=new StringBuilder(&quot;    &quot;);</span>
+<span class="nc" id="L53">		buf.append(getDecsglstk()).append(',').append(getBI()).append(',').append(getSubst());</span>
+<span class="nc" id="L54">		return buf.toString();</span>
+	}
+	public Stack&lt;DecoratedSubgoal&gt; getDecsglstk(){
+<span class="fc" id="L57">		return decsglstk;</span>
+	}
+	public void setDecsglstk(Stack&lt;DecoratedSubgoal&gt; decsglstk){
+<span class="nc" id="L60">		this.decsglstk=decsglstk;</span>
+<span class="nc" id="L61">	}</span>
+	public BacktraceInfo getBI(){
+<span class="fc" id="L63">		return BI;</span>
+	}
+	public void setBI(BacktraceInfo BI){
+<span class="fc" id="L66">		this.BI=BI;</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if(BI==BacktraceInfo.UP)</span>
+<span class="fc" id="L68">			cl=PeekableIterator.EMPTY;</span>
+		else
+<span class="fc" id="L70">			cl=null;</span>
+<span class="fc" id="L71">	}</span>
+	public Substitution getSubst(){
+<span class="fc" id="L73">		return subst;</span>
+	}
+	public void setSubst(Substitution subst){
+<span class="fc" id="L76">		this.subst=subst;</span>
+<span class="fc" id="L77">	}</span>
+	public PeekableIterator&lt;Clause&gt; getCl(){
+<span class="fc" id="L79">		return cl;</span>
+	}
+	public void setCl(PeekableIterator&lt;Clause&gt; cl){
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">		if(BI==BacktraceInfo.UP)</span>
+<span class="fc" id="L83">			this.cl=cl;</span>
+<span class="fc" id="L84">	}</span>
+	void substitute(Substitution subst){
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		for(DecoratedSubgoal subgoal:decsglstk)</span>
+<span class="fc" id="L87">			subgoal.setActivator(subgoal.getActivator().substitute(subst));</span>
+<span class="fc" id="L88">	}</span>
+<span class="pc" id="L89">	public static enum BacktraceInfo{</span>
+<span class="fc" id="L90">		NIL,CTRL,BIP,UP;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

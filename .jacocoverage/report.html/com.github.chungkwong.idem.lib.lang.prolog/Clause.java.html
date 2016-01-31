@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Clause.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;MIDE&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">com.github.chungkwong.idem.lib.lang.prolog</a> &gt; <span class="el_source">Clause.java</span></div><h1>Clause.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Chan Chung Kwong &lt;1m02math@126.com&gt;
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package com.github.chungkwong.idem.lib.lang.prolog;
+import java.util.*;
+/**
+ *
+ * @author kwong
+ */
+public class Clause{
+	private Predication head,body;
+	/*public Clause(Predication head){
+		this.head=head;
+		this.body=True.TRUE;
+	}*/
+<span class="fc" id="L29">	public Clause(Predication head,Predication body){</span>
+<span class="fc" id="L30">		this.head=head;</span>
+<span class="fc" id="L31">		this.body=body;</span>
+<span class="fc" id="L32">	}</span>
+	public Predication getHead(){
+<span class="fc" id="L34">		return head;</span>
+	}
+	public Term getHeadAsTerm(){
+<span class="nc bnc" id="L37" title="All 2 branches missed.">		if(head.getPredicate().getArity()==0)</span>
+<span class="nc" id="L38">			return new Atom(head.getPredicate());</span>
+		else
+<span class="nc" id="L40">			return new CompoundTerm(body.getPredicate().getFunctor(),body.getArguments()).renameAllVariable(new HashMap&lt;&gt;());</span>
+	}
+	public Predication getBody(){
+<span class="fc" id="L43">		return body;</span>
+	}
+	public Term getBodyAsTerm(){
+<span class="nc bnc" id="L46" title="All 2 branches missed.">		if(body.getPredicate().getArity()==0)</span>
+<span class="nc" id="L47">			return new Atom(body.getPredicate());</span>
+<span class="nc" id="L48">		return new CompoundTerm(body.getPredicate().getFunctor(),body.getArguments()).renameAllVariable(new HashMap&lt;&gt;());</span>
+	}
+	public Clause rename(){
+<span class="fc" id="L51">		HashMap&lt;Variable,Variable&gt; renameTo=new HashMap&lt;&gt;();</span>
+<span class="fc" id="L52">		return new Clause(head.renameAllVariable(renameTo),body.renameAllVariable(renameTo));</span>
+	}
+	@Override
+	public String toString(){
+<span class="nc" id="L56">		return head.toString()+&quot;:-&quot;+body.toString();</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

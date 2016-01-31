@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Processor.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;MIDE&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">com.github.chungkwong.idem.lib.lang.prolog</a> &gt; <span class="el_source">Processor.java</span></div><h1>Processor.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Chan Chung Kwong &lt;1m02math@126.com&gt;
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package com.github.chungkwong.idem.lib.lang.prolog;
+import static com.github.chungkwong.idem.global.Log.LOG;
+import java.util.*;
+import java.util.logging.*;
+/**
+ *
+ * @author kwong
+ */
+public class Processor{
+	private UndefinedPredicate undefpred;
+<span class="fc" id="L27">	private final Stack&lt;ExecutionState&gt; stack=new Stack&lt;&gt;();</span>
+	private final Database db;
+<span class="fc" id="L29">	public Processor(Predication goal,Database db,UndefinedPredicate undefpred){</span>
+<span class="fc" id="L30">		this.db=db;</span>
+<span class="fc" id="L31">		this.undefpred=undefpred;</span>
+<span class="fc" id="L32">		stack.push(new ExecutionState());</span>
+<span class="fc" id="L33">		stack.push(new ExecutionState(new DecoratedSubgoal(goal,stack.peek()),new Substitution()));</span>
+<span class="fc" id="L34">		execute();</span>
+<span class="fc" id="L35">	}</span>
+	public Processor(Predication goal,Database db){
+<span class="nc" id="L37">		this(goal,db,UndefinedPredicate.FAIL);</span>
+<span class="nc" id="L38">	}</span>
+	public Database getDatabase(){
+<span class="nc" id="L40">		return db;</span>
+	}
+	public UndefinedPredicate getUndefpred(){
+<span class="nc" id="L43">		return undefpred;</span>
+	}
+	public Stack&lt;ExecutionState&gt; getStack(){
+<span class="fc" id="L46">		return stack;</span>
+	}
+	public Substitution getSubstitution(){
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		if(isFailed())</span>
+<span class="fc" id="L50">			return null;</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if(isSuccessed())</span>
+<span class="fc" id="L52">			return stack.peek().getSubst();</span>
+<span class="nc" id="L53">		throw new RuntimeException(&quot;Illegal status&quot;);</span>
+	}
+	public boolean isFailed(){
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		return stack.size()&lt;=1;</span>
+	}
+	public boolean isSuccessed(){
+<span class="fc" id="L59">		return stack.peek().getDecsglstk().isEmpty();</span>
+	}
+<span class="fc" id="L61">	final int MAX_ITERATOR_COUNT=100;</span>
+	private void execute(){
+<span class="fc" id="L63">		int i=0;</span>
+		//System.out.println();
+<span class="pc bpc" id="L65" title="1 of 6 branches missed.">		while(!isFailed()&amp;&amp;!isSuccessed()&amp;&amp;++i&lt;MAX_ITERATOR_COUNT){//FIXME</span>
+			//System.out.println(stack);
+			try{
+<span class="fc" id="L68">				selectClause();</span>
+<span class="fc" id="L69">			}catch(PrologException ex){</span>
+<span class="fc" id="L70">				raise(ex);</span>
+<span class="fc" id="L71">			}</span>
+		}
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">		if(i==MAX_ITERATOR_COUNT)</span>
+<span class="nc" id="L74">			throw new RuntimeException(&quot;Iteration reach limit&quot;);</span>
+<span class="fc" id="L75">	}</span>
+	public void reexecute(){
+<span class="fc" id="L77">		stack.pop();</span>
+<span class="fc" id="L78">		backtrack();</span>
+<span class="fc" id="L79">		execute();</span>
+<span class="fc" id="L80">	}</span>
+	public void selectClause(){
+<span class="fc" id="L82">		Predicate currpred=getCurrentActivator().getPredicate();</span>
+<span class="fc" id="L83">		Procedure proc=db.getProcedure(currpred);</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		if(proc==null){</span>
+<span class="pc bpc" id="L85" title="2 of 4 branches missed.">			switch(undefpred){</span>
+				case ERROR:
+<span class="fc" id="L87">					throw new ExistenceException(Procedure.class,new Atom(currpred.getFunctor()));</span>
+				case WARNING:
+<span class="nc" id="L89">					LOG.log(Level.WARNING,&quot;Functor not found: {0}&quot;,currpred);</span>
+				case FAIL:
+<span class="fc" id="L91">					ExecutionState cutparent=stack.peek().getDecsglstk().pop().getCutparent();</span>
+<span class="fc" id="L92">					stack.peek().getDecsglstk().push(new DecoratedSubgoal(new Atom(&quot;fail&quot;),cutparent));</span>
+<span class="fc" id="L93">					break;</span>
+			}
+		}else{
+<span class="fc" id="L96">			proc.execute(this);</span>
+		}
+<span class="fc" id="L98">	}</span>
+	public void backtrack(){
+<span class="fc bfc" id="L100" title="All 4 branches covered.">		if(isFailed()||isSuccessed())</span>
+<span class="fc" id="L101">			return;</span>
+<span class="fc" id="L102">		Procedure proc=db.getProcedure(getCurrentActivator().getPredicate());</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		if(stack.peek().getBI()!=ExecutionState.BacktraceInfo.NIL){</span>
+<span class="fc" id="L104">			proc.reexecute(this);</span>
+		}else
+<span class="fc" id="L106">			proc.execute(this);</span>
+<span class="fc" id="L107">	}</span>
+	public void noMoreClause(){
+<span class="fc" id="L109">		stack.pop();</span>
+<span class="fc" id="L110">		backtrack();</span>
+<span class="fc" id="L111">	}</span>
+	public ExecutionState getCurrentState(){
+<span class="fc" id="L113">		return stack.peek();</span>
+	}
+	public DecoratedSubgoal getCurrentDecoratedSubgoal(){
+<span class="fc" id="L116">		return stack.peek().getDecsglstk().peek();</span>
+	}
+	public Predication getCurrentActivator(){
+<span class="fc" id="L119">		return stack.peek().getDecsglstk().peek().getActivator();</span>
+	}
+	public void raise(PrologException ex){
+<span class="fc" id="L122">		ExecutionState cutparent=stack.peek().getDecsglstk().pop().getCutparent();</span>
+<span class="fc" id="L123">		Predication throwPred=new CompoundTerm(&quot;throw&quot;,Collections.singletonList(ex.getErrorTerm()));</span>
+<span class="fc" id="L124">		stack.peek().getDecsglstk().push(new DecoratedSubgoal(throwPred,cutparent));</span>
+<span class="fc" id="L125">	}</span>
+<span class="pc" id="L126">	public enum UndefinedPredicate{</span>
+<span class="fc" id="L127">		ERROR,WARNING,FAIL;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

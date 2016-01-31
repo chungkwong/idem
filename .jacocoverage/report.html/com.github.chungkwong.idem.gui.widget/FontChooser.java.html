@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>FontChooser.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;MIDE&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">com.github.chungkwong.idem.gui.widget</a> &gt; <span class="el_source">FontChooser.java</span></div><h1>FontChooser.java</h1><pre class="source lang-java linenums">package com.github.chungkwong.idem.gui.widget;
+import static com.github.chungkwong.idem.global.Log.LOG;
+import java.awt.*;
+import java.io.*;
+import javax.swing.*;
+import static com.github.chungkwong.idem.global.UILanguageManager.*;
+import java.util.logging.*;
+public final class FontChooser extends JPanel implements Chooser&lt;Font&gt;,ListCellRenderer&lt;Font&gt;{
+	JComboBox&lt;Font&gt; sysfonts;
+<span class="nc" id="L10">	int style=Font.PLAIN;</span>
+<span class="nc" id="L11">	float size=12;</span>
+<span class="nc" id="L12">	JSpinner fontSize=new JSpinner(new SpinnerNumberModel(size,0.5,256.0,1));</span>
+<span class="nc" id="L13">	JCheckBox bold=new JCheckBox(getDefaultTranslation(&quot;BOLD&quot;)),italic=new JCheckBox(getDefaultTranslation(&quot;ITALIC&quot;));</span>
+<span class="nc" id="L14">	JButton addFont=new JButton(&quot;+&quot;);</span>
+<span class="nc" id="L15">	JFileChooser fileChooser=new JFileChooser();</span>
+<span class="nc" id="L16">	Color itemBackground=Color.CYAN;</span>
+<span class="nc" id="L17">	JTextField previewText=new JTextField(&quot;ABCD abcd 1234 +-*/ ()[]&quot;);</span>
+	public FontChooser(){
+<span class="nc" id="L19">		this(Font.decode(null));</span>
+<span class="nc" id="L20">	}</span>
+<span class="nc" id="L21">	public FontChooser(Font init){</span>
+<span class="nc" id="L22">		setLayout(new BoxLayout(this,BoxLayout.X_AXIS));</span>
+<span class="nc" id="L23">		size=init.getSize2D();</span>
+<span class="nc" id="L24">		fontSize.setValue(size);</span>
+<span class="nc" id="L25">		fontSize.addChangeListener((e)-&gt;updateFontSize());</span>
+<span class="nc" id="L26">		sysfonts=new JComboBox&lt;Font&gt;(GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts());</span>
+<span class="nc" id="L27">		addAndSetFont(init);</span>
+<span class="nc" id="L28">		sysfonts.addItemListener((e)-&gt;updatePreview());//previewText.setFont(((Font)e.getItem()).deriveFont(size)));</span>
+<span class="nc" id="L29">		add(sysfonts);</span>
+<span class="nc" id="L30">		updatePreview();</span>
+<span class="nc" id="L31">		sysfonts.setRenderer(this);</span>
+<span class="nc" id="L32">		add(previewText);</span>
+<span class="nc" id="L33">		add(fontSize);</span>
+<span class="nc" id="L34">		bold.setSelected(init.isBold());</span>
+<span class="nc" id="L35">		italic.setSelected(init.isItalic());</span>
+<span class="nc" id="L36">		bold.addChangeListener((e)-&gt;updateStyle());</span>
+<span class="nc" id="L37">		italic.addChangeListener((e)-&gt;updateStyle());</span>
+<span class="nc" id="L38">		add(bold);</span>
+<span class="nc" id="L39">		add(italic);</span>
+<span class="nc" id="L40">		addFont.addActionListener((e)-&gt;addFont());</span>
+<span class="nc" id="L41">		add(addFont);</span>
+<span class="nc" id="L42">	}</span>
+	public void addFont(){
+<span class="nc bnc" id="L44" title="All 2 branches missed.">		if(fileChooser.showOpenDialog(null)==JFileChooser.APPROVE_OPTION)</span>
+<span class="nc" id="L45">			addFont(fileChooser.getSelectedFile());</span>
+<span class="nc" id="L46">	}</span>
+	public void addFont(File file){
+		try{
+<span class="nc bnc" id="L49" title="All 4 branches missed.">			Font font=Font.createFont(file.getName().endsWith(&quot;.ttf&quot;)||file.getName().endsWith(&quot;.otf&quot;)?Font.TRUETYPE_FONT:Font.TYPE1_FONT,file);</span>
+<span class="nc" id="L50">			GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);</span>
+<span class="nc" id="L51">			sysfonts.addItem(font);</span>
+<span class="nc" id="L52">			sysfonts.setSelectedItem(font);</span>
+<span class="nc" id="L53">		}catch(Exception ex){</span>
+<span class="nc" id="L54">			LOG.log(Level.WARNING,null,ex);</span>
+<span class="nc" id="L55">		}</span>
+<span class="nc" id="L56">	}</span>
+	private void addAndSetFont(Font font){
+<span class="nc" id="L58">		DefaultComboBoxModel model=(DefaultComboBoxModel)sysfonts.getModel();</span>
+<span class="nc" id="L59">		String name=font.getName();</span>
+<span class="nc" id="L60">		int n=model.getSize(),i=0;</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">		for(;i&lt;n;i++){</span>
+<span class="nc" id="L62">			int cmp=((Font)model.getElementAt(i)).getName().compareTo(name);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">			if(cmp&gt;0)</span>
+<span class="nc" id="L64">				break;</span>
+		}
+<span class="nc" id="L66">		model.insertElementAt(font,i);</span>
+<span class="nc" id="L67">		sysfonts.setSelectedIndex(i);</span>
+<span class="nc" id="L68">	}</span>
+	/*
+	public void setFontSize(float size){
+		this.size=size;
+		fontSize.setValue(size);
+	}
+	public void setBold(boolean bold){
+		bold.setSelected(true);
+	}
+	public void setItalic(boolean bold){
+		bold.setSelected(true);
+	}
+	*/
+	private void updateFontSize(){
+<span class="nc" id="L82">		size=((Number)fontSize.getValue()).floatValue();</span>
+<span class="nc" id="L83">		updatePreview();</span>
+<span class="nc" id="L84">	}</span>
+	private void updateStyle(){
+<span class="nc" id="L86">		style=0;</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">		if(bold.isSelected())</span>
+<span class="nc" id="L88">			style+=Font.BOLD;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">		if(italic.isSelected())</span>
+<span class="nc" id="L90">			style+=Font.ITALIC;</span>
+<span class="nc" id="L91">		updatePreview();</span>
+<span class="nc" id="L92">	}</span>
+	private void updatePreview(){
+<span class="nc" id="L94">		previewText.setFont(getValue());</span>
+<span class="nc" id="L95">	}</span>
+	public JComponent getComponent(){
+<span class="nc" id="L97">		return this;</span>
+	}
+	public Font getValue(){
+<span class="nc" id="L100">		return ((Font)sysfonts.getSelectedItem()).deriveFont(style,size);</span>
+	}
+	public Component 	getListCellRendererComponent(JList&lt;? extends Font&gt; list,Font value,int index,boolean isSelected,boolean cellHasFocus){
+<span class="nc" id="L103">		JLabel entry=new JLabel(value.getName());</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">		if(isSelected){</span>
+<span class="nc" id="L105">			entry.setOpaque(true);</span>
+<span class="nc" id="L106">			entry.setBackground(itemBackground);</span>
+		}
+<span class="nc" id="L108">		return entry;</span>
+	}
+	public static void main(String[] args) throws Exception{
+<span class="nc" id="L111">		JFrame f=new JFrame(&quot;Console&quot;);</span>
+<span class="nc" id="L112">		f.add(new FontChooser(),BorderLayout.CENTER);//the use of SwingConsole can be so simple</span>
+<span class="nc" id="L113">		f.setExtendedState(JFrame.MAXIMIZED_BOTH);</span>
+<span class="nc" id="L114">		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
+<span class="nc" id="L115">		f.setVisible(true);</span>
+<span class="nc" id="L116">   }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

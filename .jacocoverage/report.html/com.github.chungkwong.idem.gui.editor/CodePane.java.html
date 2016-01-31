@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CodePane.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;MIDE&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">com.github.chungkwong.idem.gui.editor</a> &gt; <span class="el_source">CodePane.java</span></div><h1>CodePane.java</h1><pre class="source lang-java linenums">package  com.github.chungkwong.idem.gui.editor;
+import static com.github.chungkwong.idem.global.Log.LOG;
+import java.awt.*;
+import java.util.logging.*;
+import javax.swing.*;
+import javax.swing.text.*;
+public final class CodePane extends JPanel{
+<span class="nc" id="L8">	JTextPane pane=new JTextPane();</span>
+<span class="nc" id="L9">	Highlighter highlighter=new DefaultHighlighter();</span>
+<span class="nc" id="L10">	JTextField field=new JTextField();</span>
+<span class="nc" id="L11">	public CodePane(){</span>
+<span class="nc" id="L12"> 		setLayout(new BorderLayout());</span>
+<span class="nc" id="L13"> 		field.getDocument().addUndoableEditListener((e)-&gt;search());</span>
+<span class="nc" id="L14">		pane.setHighlighter(highlighter);</span>
+<span class="nc" id="L15">		add(field,BorderLayout.NORTH);</span>
+<span class="nc" id="L16"> 		add(new JScrollPane(pane),BorderLayout.CENTER);</span>
+<span class="nc" id="L17">	}</span>
+	void search(){
+<span class="nc" id="L19">		highlighter.removeAllHighlights();</span>
+<span class="nc" id="L20">		String tosearch=pane.getText(),search=field.getText();</span>
+<span class="nc bnc" id="L21" title="All 2 branches missed.">		if(search.isEmpty())</span>
+<span class="nc" id="L22">			return;</span>
+<span class="nc" id="L23">		int i=0;</span>
+		try{
+<span class="nc bnc" id="L25" title="All 2 branches missed.">			while((i=tosearch.indexOf(search,i))&gt;=0){</span>
+<span class="nc" id="L26">				highlighter.addHighlight(i,i+=search.length(),new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW));</span>
+			}
+<span class="nc" id="L28">		}catch(Exception ex){</span>
+<span class="nc" id="L29">			LOG.log(Level.WARNING,null,ex);</span>
+<span class="nc" id="L30">		}</span>
+<span class="nc" id="L31">	}</span>
+	public static void main(String[] args) throws Exception{
+<span class="nc" id="L33">		JFrame f=new JFrame(&quot;Console&quot;);</span>
+<span class="nc" id="L34">		f.add(new CodePane(),BorderLayout.CENTER);//the use of SwingConsole can be so simple</span>
+<span class="nc" id="L35">		f.setExtendedState(JFrame.MAXIMIZED_BOTH);</span>
+<span class="nc" id="L36">		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
+<span class="nc" id="L37">		f.setVisible(true);</span>
+<span class="nc" id="L38">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

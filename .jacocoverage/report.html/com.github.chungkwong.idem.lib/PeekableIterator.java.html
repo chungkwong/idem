@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PeekableIterator.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;MIDE&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">com.github.chungkwong.idem.lib</a> &gt; <span class="el_source">PeekableIterator.java</span></div><h1>PeekableIterator.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Chan Chung Kwong &lt;1m02math@126.com&gt;
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package com.github.chungkwong.idem.lib;
+import java.util.*;
+
+public class PeekableIterator&lt;T&gt; implements ListIterator&lt;T&gt;{
+<span class="fc" id="L21">	public static final PeekableIterator EMPTY=new PeekableIterator(Collections.EMPTY_LIST.listIterator());</span>
+	ListIterator&lt;T&gt; iter;
+<span class="fc" id="L23">	public PeekableIterator(ListIterator&lt;T&gt; iter){</span>
+<span class="fc" id="L24">		this.iter=iter;</span>
+<span class="fc" id="L25">	}</span>
+	public T peek(){
+<span class="fc" id="L27">		T curr=iter.next();</span>
+<span class="fc" id="L28">		iter.previous();</span>
+<span class="fc" id="L29">		return curr;</span>
+	}
+	@Override
+	public boolean hasNext(){
+<span class="fc" id="L33">		return iter.hasNext();</span>
+	}
+	@Override
+	public T next(){
+<span class="fc" id="L37">		return iter.next();</span>
+	}
+	@Override
+	public boolean hasPrevious(){
+<span class="nc" id="L41">		return iter.hasPrevious();</span>
+	}
+	@Override
+	public T previous(){
+<span class="nc" id="L45">		return iter.previous();</span>
+	}
+	@Override
+	public int nextIndex(){
+<span class="nc" id="L49">		return iter.nextIndex();</span>
+	}
+	@Override
+	public int previousIndex(){
+<span class="nc" id="L53">		return iter.previousIndex();</span>
+	}
+	@Override
+	public void remove(){
+<span class="nc" id="L57">		iter.remove();</span>
+<span class="nc" id="L58">	}</span>
+	@Override
+	public void set(T e){
+<span class="nc" id="L61">		iter.set(e);</span>
+<span class="nc" id="L62">	}</span>
+	@Override
+	public void add(T e){
+<span class="nc" id="L65">		iter.add(e);</span>
+<span class="nc" id="L66">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

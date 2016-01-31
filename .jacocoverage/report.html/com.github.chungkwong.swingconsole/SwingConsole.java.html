@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SwingConsole.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;MIDE&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">com.github.chungkwong.swingconsole</a> &gt; <span class="el_source">SwingConsole.java</span></div><h1>SwingConsole.java</h1><pre class="source lang-java linenums">/* SwingConsole.java
+ * =========================================================================
+ * This file is originally part of the SwingConsole Project
+ *
+ * Copyright (C) 2015 Chan Chung Kwong
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or (at
+ * your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ */
+package com.github.chungkwong.swingconsole;
+import static com.github.chungkwong.idem.global.Log.LOG;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import java.util.logging.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
+import javax.swing.undo.*;
+/**
+ * A swing component intended to provide user interface to command-line style program(somewhat shell)
+ */
+public final class SwingConsole extends JPanel implements CaretListener,KeyListener{
+<span class="nc" id="L33">	static String lineSeparator=System.getProperty(&quot;line.separator&quot;);</span>
+<span class="nc" id="L34">	PlainDocument doc=new PlainDocument();</span>
+<span class="nc" id="L35">	JTextArea area=new JTextArea(doc);</span>
+	final Shell shell;
+<span class="nc" id="L37">	int start=0,caretPosition=0,count=0,historyLimit=10;</span>
+<span class="nc" id="L38">	String PS1=&quot;$ &quot;,currentEdit=null;</span>
+<span class="nc" id="L39">	LinkedList&lt;String&gt; history=new LinkedList&lt;String&gt;();</span>
+<span class="nc" id="L40">	ListIterator&lt;String&gt; iter=null;</span>
+<span class="nc" id="L41">	JFileChooser jfc=new JFileChooser();</span>
+<span class="nc" id="L42">	final UndoManager undoManager=new UndoManager();</span>
+	/**
+	 * Construct a SwingConsole
+	 * @param sh the shell
+	 * @param initPrompt the first prompt text
+	 */
+<span class="nc" id="L48">	public SwingConsole(Shell sh,String initPrompt){</span>
+<span class="nc" id="L49">		this.shell=sh;</span>
+<span class="nc" id="L50">		area.setBackground(Color.BLACK);</span>
+<span class="nc" id="L51">		area.setForeground(Color.GREEN);</span>
+<span class="nc" id="L52">		area.setCaretColor(Color.GREEN);</span>
+<span class="nc" id="L53">		area.setFont(new Font(&quot;MONOSPACED&quot;,Font.PLAIN,20));</span>
+<span class="nc" id="L54">		area.setLineWrap(true);</span>
+<span class="nc" id="L55">		area.addCaretListener(this);</span>
+<span class="nc" id="L56">		area.addKeyListener(this);</span>
+<span class="nc" id="L57">		doc.setDocumentFilter(new DocumentFilter(){</span>
+			public void insertString(DocumentFilter.FilterBypass fb,int offset,String string,AttributeSet attr)throws BadLocationException{
+<span class="nc" id="L59">				String command=null;</span>
+<span class="nc bnc" id="L60" title="All 4 branches missed.">				if(string.equals(lineSeparator)&amp;&amp;shell.acceptLine(command=area.getText().substring(start))){</span>
+<span class="nc" id="L61">					fb.insertString(doc.getLength(),&quot;\n&quot;,null);</span>
+<span class="nc" id="L62">					fb.insertString(doc.getLength(),shell.evaluate(),null);</span>
+<span class="nc" id="L63">					fb.insertString(doc.getLength(),PS1,null);</span>
+<span class="nc" id="L64">					start=doc.getLength();</span>
+<span class="nc" id="L65">					area.setCaretPosition(start);</span>
+<span class="nc" id="L66">					addHistoryItem(command);</span>
+<span class="nc" id="L67">					currentEdit=null;</span>
+<span class="nc" id="L68">					iter=null;</span>
+<span class="nc" id="L69">					undoManager.discardAllEdits();</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">				}else if(string.equals(&quot;\t&quot;)){</span>
+<span class="nc" id="L71">					java.util.List&lt;String&gt; options=shell.getHints(doc.getText(start,offset-start));</span>
+<span class="nc bnc" id="L72" title="All 4 branches missed.">					if(options!=null&amp;&amp;!options.isEmpty())</span>
+<span class="nc" id="L73">						new CompletePrompt(options,area,doc,offset);</span>
+<span class="nc" id="L74">				}else</span>
+<span class="nc" id="L75">					fb.insertString(Math.max(offset,start),string,attr);</span>
+<span class="nc" id="L76">			}</span>
+			public void remove(DocumentFilter.FilterBypass fb,int offset,int length)throws BadLocationException{
+<span class="nc" id="L78">				fb.remove(Math.max(offset,start),length);</span>
+<span class="nc" id="L79">				iter=null;</span>
+<span class="nc" id="L80">			}</span>
+			public void replace(DocumentFilter.FilterBypass fb,int offset,int length,String text,AttributeSet attrs)throws BadLocationException{
+<span class="nc" id="L82">				String command=null;</span>
+<span class="nc bnc" id="L83" title="All 4 branches missed.">				if(text.equals(lineSeparator)&amp;&amp;shell.acceptLine(command=area.getText().substring(start))){</span>
+<span class="nc" id="L84">					fb.insertString(doc.getLength(),&quot;\n&quot;,null);</span>
+<span class="nc" id="L85">					fb.insertString(doc.getLength(),shell.evaluate(),null);</span>
+<span class="nc" id="L86">					fb.insertString(doc.getLength(),PS1,null);</span>
+<span class="nc" id="L87">					start=doc.getLength();</span>
+<span class="nc" id="L88">					area.setCaretPosition(start);</span>
+<span class="nc" id="L89">					addHistoryItem(command);</span>
+<span class="nc" id="L90">					currentEdit=null;</span>
+<span class="nc" id="L91">					iter=null;</span>
+<span class="nc" id="L92">					undoManager.discardAllEdits();</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">				}else if(text.equals(&quot;\t&quot;)){</span>
+<span class="nc" id="L94">					fb.remove(offset,length);</span>
+<span class="nc" id="L95">					java.util.List&lt;String&gt; options=shell.getHints(doc.getText(start,offset-start));</span>
+<span class="nc bnc" id="L96" title="All 4 branches missed.">					if(options!=null&amp;&amp;!options.isEmpty())</span>
+<span class="nc" id="L97">						new CompletePrompt(options,area,doc,offset);</span>
+<span class="nc" id="L98">				}else</span>
+<span class="nc" id="L99">					fb.replace(Math.max(offset,start),length,text,attrs);</span>
+<span class="nc" id="L100">			}</span>
+		});
+<span class="nc" id="L102">		doc.addUndoableEditListener(new UndoableEditListener(){</span>
+			public void undoableEditHappened(UndoableEditEvent e){
+<span class="nc" id="L104">				undoManager.addEdit(e.getEdit());</span>
+<span class="nc" id="L105">			}</span>
+		});
+<span class="nc" id="L107">		InputMap im=area.getInputMap();</span>
+<span class="nc" id="L108">		ActionMap am=area.getActionMap();</span>
+<span class="nc" id="L109">		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_S,InputEvent.CTRL_DOWN_MASK),&quot;Save&quot;);</span>
+<span class="nc" id="L110">		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z,InputEvent.CTRL_DOWN_MASK),&quot;Undo&quot;);</span>
+<span class="nc" id="L111">		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_Z,InputEvent.CTRL_DOWN_MASK|InputEvent.SHIFT_DOWN_MASK),&quot;Redo&quot;);</span>
+<span class="nc" id="L112">		am.put(&quot;Save&quot;,new AbstractAction(){</span>
+			public void actionPerformed(ActionEvent e){
+				try{
+<span class="nc bnc" id="L115" title="All 2 branches missed.">					if(jfc.showSaveDialog(null)==JFileChooser.APPROVE_OPTION){</span>
+<span class="nc" id="L116">						File file=jfc.getSelectedFile();</span>
+<span class="nc" id="L117">						Writer out=new OutputStreamWriter(new FileOutputStream(file),&quot;UTF-8&quot;);</span>
+<span class="nc" id="L118">						out.write(area.getText());</span>
+<span class="nc" id="L119">						out.close();</span>
+					}
+<span class="nc" id="L121">				}catch(Exception ex){</span>
+<span class="nc" id="L122">					LOG.log(Level.INFO,null,ex);</span>
+<span class="nc" id="L123">				}</span>
+<span class="nc" id="L124">			}</span>
+		});
+<span class="nc" id="L126">		am.put(&quot;Undo&quot;,new AbstractAction(){</span>
+			public void actionPerformed(ActionEvent e){
+				try{
+<span class="nc bnc" id="L129" title="All 2 branches missed.">					if(undoManager.canUndo())</span>
+<span class="nc" id="L130">						undoManager.undo();</span>
+<span class="nc" id="L131">				}catch(CannotUndoException ex){</span>
+<span class="nc" id="L132">					LOG.log(Level.INFO,null,ex);</span>
+<span class="nc" id="L133">				}</span>
+<span class="nc" id="L134">			}</span>
+		});
+<span class="nc" id="L136">		am.put(&quot;Redo&quot;, new AbstractAction(){</span>
+			public void actionPerformed(ActionEvent e){
+				try{
+<span class="nc bnc" id="L139" title="All 2 branches missed.">					if(undoManager.canRedo())</span>
+<span class="nc" id="L140">						undoManager.redo();</span>
+<span class="nc" id="L141">				}catch(CannotUndoException ex){</span>
+<span class="nc" id="L142">					LOG.log(Level.INFO,null,ex);</span>
+<span class="nc" id="L143">				}</span>
+<span class="nc" id="L144">			}</span>
+		});
+<span class="nc" id="L146">		setLayout(new BorderLayout());</span>
+<span class="nc" id="L147">		add(new JScrollPane(area),BorderLayout.CENTER);</span>
+<span class="nc" id="L148">		area.append(initPrompt);</span>
+<span class="nc" id="L149">		start=initPrompt.length();</span>
+<span class="nc" id="L150">		area.setCaretPosition(PS1.length());</span>
+<span class="nc" id="L151">	}</span>
+	/**
+	 * Construct a SwingConsole
+	 * @param sh the shell
+	 */
+	public SwingConsole(Shell sh){
+<span class="nc" id="L157">		this(sh,&quot;$ &quot;);</span>
+<span class="nc" id="L158">	}</span>
+	/**
+	 * Get background color of the console
+	 * @return background color currently used
+	 */
+	public Color getBackgroundColor(){
+<span class="nc" id="L164">		return area.getBackground();</span>
+	}
+	/**
+	 * Get foreground color of the console
+	 * @return foreground color currently used
+	 */
+	public Color getForegroundColor(){
+<span class="nc" id="L171">		return area.getForeground();</span>
+	}
+	/**
+	 * Set background color of the console
+	 * @param bg new background color
+	 */
+	public void setBackgroundColor(Color bg){
+<span class="nc" id="L178">		area.setBackground(bg);</span>
+<span class="nc" id="L179">	}</span>
+	/**
+	 * Set foreground color of the console
+	 * @param fg new foreground color
+	 */
+	public void setForegroundColor(Color fg){
+<span class="nc" id="L185">		area.setForeground(fg);</span>
+<span class="nc" id="L186">	}</span>
+	/**
+	 * Prevent caret from moving to inactive region
+	 * @param e a event notify move of caret
+	 */
+	public void caretUpdate(CaretEvent e){
+<span class="nc bnc" id="L192" title="All 2 branches missed.">		if(e.getDot()&lt;start){</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">			if(e.getDot()!=e.getMark()){</span>
+<span class="nc" id="L194">				area.copy();</span>
+			}
+<span class="nc" id="L196">			area.setCaretPosition(caretPosition);</span>
+		}else
+<span class="nc" id="L198">			caretPosition=e.getDot();</span>
+<span class="nc" id="L199">	}</span>
+	/**
+	 * Scroll in the history if needed
+	 */
+	public void keyPressed(KeyEvent e){
+<span class="nc bnc" id="L204" title="All 2 branches missed.">		if(e.isActionKey()){</span>
+			try{
+<span class="nc bnc" id="L206" title="All 4 branches missed.">				if(e.getKeyCode()==KeyEvent.VK_UP&amp;&amp;area.getLineOfOffset(start)==area.getLineOfOffset(area.getCaretPosition())){</span>
+<span class="nc" id="L207">					doc.replace(start,doc.getLength()-start,getPreviousRecord(),null);</span>
+<span class="nc bnc" id="L208" title="All 4 branches missed.">				}else if(e.getKeyCode()==KeyEvent.VK_DOWN&amp;&amp;area.getLineOfOffset(doc.getLength())==area.getLineOfOffset(area.getCaretPosition())){</span>
+<span class="nc" id="L209">					doc.replace(start,doc.getLength()-start,getNextRecord(),null);</span>
+				}
+<span class="nc" id="L211">			}catch(Exception ex){</span>
+<span class="nc" id="L212">				LOG.log(Level.INFO,null,ex);</span>
+<span class="nc" id="L213">			}</span>
+		}else
+<span class="nc" id="L215">			iter=null;</span>
+<span class="nc" id="L216">	}</span>
+<span class="nc" id="L217">	public void keyReleased(KeyEvent e){}</span>
+<span class="nc" id="L218">	public void keyTyped(KeyEvent e){}</span>
+	/**
+	 * Get prompt text of the console
+	 * @return prompt text currently used
+	 */
+	public String getPromptText(){
+<span class="nc" id="L224">		return PS1;</span>
+	}
+	/**
+	 * Set prompt of the console
+	 * @param PS1 new prompt
+	 */
+	public void setPromptText(String PS1){
+<span class="nc" id="L231">		this.PS1=PS1;</span>
+<span class="nc" id="L232">	}</span>
+	/**
+	 * Get the maximum number of history records allowed
+	 * @return the upper limit
+	 */
+	public int getHistoryLimit(){
+<span class="nc" id="L238">		return historyLimit;</span>
+	}
+	/**
+	 * Set the maximum number of history records allowed
+	 * @param historyLimit the upper limit
+	 */
+	public void setHistoryLimit(int historyLimit){
+<span class="nc" id="L245">		this.historyLimit=historyLimit;</span>
+<span class="nc" id="L246">	}</span>
+	/**
+	 * Get the maximum number of undo/redo records allowed
+	 * @return the upper limit
+	 */
+	public int getUndoLimit(){
+<span class="nc" id="L252">		return undoManager.getLimit();</span>
+	}
+	/**
+	 * Set the maximum number of undo/redo records allowed
+	 * @param undoLimit the upper limit
+	 */
+	public void setUndoLimit(int undoLimit){
+<span class="nc" id="L259">		undoManager.setLimit(undoLimit);</span>
+<span class="nc" id="L260">	}</span>
+	/**
+	 * Add a new history item to the list of history
+	 * @param command the item
+	 */
+	public void addHistoryItem(String command){
+<span class="nc bnc" id="L266" title="All 2 branches missed.">		if(historyLimit&gt;0){</span>
+<span class="nc" id="L267">			history.add(command);</span>
+<span class="nc bnc" id="L268" title="All 2 branches missed.">			if(history.size()&gt;historyLimit){</span>
+<span class="nc" id="L269">				history.poll();</span>
+			}
+<span class="nc" id="L271">			iter=null;</span>
+		}
+<span class="nc" id="L273">	}</span>
+	/**
+	 * Get the previous history record
+	 * @return record
+	 */
+	String getPreviousRecord(){
+<span class="nc bnc" id="L279" title="All 2 branches missed.">		if(iter==null){</span>
+<span class="nc" id="L280">			currentEdit=area.getText().substring(start);</span>
+<span class="nc" id="L281">			iter=history.listIterator(history.size());</span>
+		}
+<span class="nc bnc" id="L283" title="All 2 branches missed.">		if(iter.hasPrevious()){</span>
+<span class="nc" id="L284">			return iter.previous();</span>
+		}else{
+<span class="nc" id="L286">			iter=null;</span>
+<span class="nc" id="L287">			return currentEdit;</span>
+		}
+	}
+	/**
+	 * Get the next history record
+	 * @return record
+	 */
+	String getNextRecord(){
+<span class="nc bnc" id="L295" title="All 2 branches missed.">		if(iter==null){</span>
+<span class="nc" id="L296">			currentEdit=area.getText().substring(start);</span>
+<span class="nc bnc" id="L297" title="All 2 branches missed.">			if(!history.isEmpty()){</span>
+<span class="nc" id="L298">				iter=history.listIterator();</span>
+<span class="nc" id="L299">				return history.get(0);</span>
+			}else
+<span class="nc" id="L301">				return currentEdit;</span>
+		}
+<span class="nc bnc" id="L303" title="All 2 branches missed.">		if(iter.hasNext())</span>
+<span class="nc" id="L304">			iter.next();</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">		if(iter.hasNext()){</span>
+<span class="nc" id="L306">			String tmp=iter.next();</span>
+<span class="nc" id="L307">			iter.previous();</span>
+<span class="nc" id="L308">			return iter.next();</span>
+		}else{
+<span class="nc" id="L310">			iter=null;</span>
+<span class="nc" id="L311">			return currentEdit;</span>
+		}
+	}
+	/**
+	 * Get the font currently used
+	 * @return the font
+	 */
+	public Font getTextFont(){
+<span class="nc" id="L319">		return area.getFont();</span>
+	}
+	/**
+	 * Set the font to be used
+	 * @param font the font
+	 */
+	public void setTextFont(Font font){
+<span class="nc" id="L326">		area.setFont(font);</span>
+<span class="nc" id="L327">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

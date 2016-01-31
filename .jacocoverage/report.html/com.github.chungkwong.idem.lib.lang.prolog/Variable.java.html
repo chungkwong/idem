@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Variable.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;MIDE&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">com.github.chungkwong.idem.lib.lang.prolog</a> &gt; <span class="el_source">Variable.java</span></div><h1>Variable.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (C) 2015 Chan Chung Kwong &lt;1m02math@126.com&gt;
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package com.github.chungkwong.idem.lib.lang.prolog;
+import java.util.*;
+/**
+ *
+ * @author kwong
+ */
+public class Variable implements Term{
+<span class="fc" id="L24">	public static final Variable WILDCARD=new Variable(&quot;&quot;);</span>
+	String name;
+<span class="fc" id="L26">	public Variable(String name){</span>
+<span class="fc" id="L27">		this.name=name;</span>
+<span class="fc" id="L28">	}</span>
+	public boolean isWildcard(){
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">		return this==WILDCARD;</span>
+	}
+	@Override
+	public boolean equals(Object obj){
+<span class="pc bpc" id="L34" title="1 of 6 branches missed.">		return obj!=null&amp;&amp;obj instanceof Variable&amp;&amp;!(obj instanceof InternalVariable)</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">				&amp;&amp;((Variable)obj).name.equals(name);</span>
+	}
+	@Override
+	public int hashCode(){
+<span class="fc" id="L39">		return name.hashCode();</span>
+	}
+	@Override
+	public String toString(){
+<span class="fc" id="L43">		return name;</span>
+	}
+	@Override
+	public Set&lt;Variable&gt; getVariableSet(){
+<span class="nc" id="L47">		return Collections.singleton(this);</span>
+	}
+	@Override
+	public boolean unities(Term term,Substitution subst){
+<span class="pc bpc" id="L51" title="2 of 6 branches missed.">		return this==WILDCARD||term==WILDCARD||subst.assign(this,term);</span>
+	}
+	@Override
+	public Term substitute(Substitution subst){
+<span class="fc" id="L55">		return subst.findRoot(this);</span>
+	}
+	@Override
+	public Term renameAllVariable(HashMap&lt;Variable,Variable&gt; renameTo){
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		if(renameTo.containsKey(this))</span>
+<span class="fc" id="L60">			return renameTo.get(this);</span>
+<span class="fc" id="L61">		Variable fresh=InternalVariable.newInstance();</span>
+<span class="fc" id="L62">		renameTo.put(this,fresh);</span>
+<span class="fc" id="L63">		return fresh;</span>
+	}
+	@Override
+	public Predication toHead(){
+<span class="nc" id="L67">		throw new UnsupportedOperationException(&quot;Variable cannot be converted to head.&quot;);</span>
+	}
+	@Override
+	public Predication toBody(){
+<span class="fc" id="L71">		return new CompoundTerm(&quot;call&quot;,Collections.singletonList(this));</span>
+	}
+	public static class InternalVariable extends Variable{
+<span class="fc" id="L74">		static int used=0;</span>
+		int id;
+		private InternalVariable(){
+<span class="fc" id="L77">			super('_'+Integer.toString(used));</span>
+<span class="fc" id="L78">			id=used++;</span>
+<span class="fc" id="L79">		}</span>
+		public static InternalVariable newInstance(){
+<span class="fc" id="L81">			return new InternalVariable();</span>
+		}
+		@Override
+		public boolean equals(Object obj){
+<span class="pc bpc" id="L85" title="1 of 4 branches missed.">			return obj instanceof InternalVariable&amp;&amp;((InternalVariable)obj).id==id;</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
