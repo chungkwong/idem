@@ -24,7 +24,10 @@ import java.util.*;
  */
 public class CalculationException extends PrologException{
 	public static enum Type{
-		ZERO_DIVISOR(new CompoundTerm("calculation_error",Collections.singletonList(new Atom("zero_divisor"))));
+		ZERO_DIVISOR(new CompoundTerm("calculation_error",Collections.singletonList(new Atom("zero_divisor")))),
+		OVER_FLOW(new CompoundTerm("calculation_error",Collections.singletonList(new Atom("overflow")))),
+		UNDER_FLOW(new CompoundTerm("calculation_error",Collections.singletonList(new Atom("underflow")))),
+		UNDEFINED(new CompoundTerm("calculation_error",Collections.singletonList(new Atom("undefined"))));
 		Term errorTerm;
 		Type(Term errorTerm){
 			this.errorTerm=errorTerm;

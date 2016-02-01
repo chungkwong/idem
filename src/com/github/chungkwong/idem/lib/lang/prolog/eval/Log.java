@@ -15,27 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog.eval;
+import com.github.chungkwong.idem.lib.*;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 import java.math.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Helper{
-	public static final BigDecimal toReal(Object o){
-		if(o instanceof BigDecimal)
-			return (BigDecimal)o;
-		else if(o instanceof BigInteger)
-			return new BigDecimal((BigInteger)o);
-		else
-			throw new TypeException(BigDecimal.class,new Atom(o));
+public class Log extends Evaluable{
+	public static final Log INSTANCE=new Log();
+	public Log(){
+		super(new EvaluableFunctor("log",1));
 	}
-	public static final int signum(Object o){
-		if(o instanceof BigInteger)
-			return ((BigInteger)o).signum();
-		else if(o instanceof BigDecimal)
-			return ((BigDecimal)o).signum();
+	@Override
+	protected Term evaluate(Object[] args){
+		BigDecimal arg=Helper.toReal(args[0]);
+		if(arg.signum()<=0)
+			throw new CalculationException(CalculationException.Type.UNDEFINED);
 		else
-			throw new TypeException(BigDecimal.class,new Atom(o));
+			return new Atom(BigDecimalMath.log(arg,MathContext.UNLIMITED));
 	}
 }
