@@ -26,6 +26,7 @@ import java.util.stream.*;
  */
 public class Database{
 	HashMap<Predicate,Procedure> procedures=new HashMap<>();
+	HashMap<String,Flag> flags=new HashMap<>();
 	{
 		addProcedure(Call.CALL);
 		addProcedure(Catch.CATCH);
@@ -45,6 +46,11 @@ public class Database{
 			addPredication(pred);
 			pred=parser.next();
 		}
+		addFlag(new Flag("bounded","false",false,(o)->true,"character_list"));
+		addFlag(new Flag("intger_rounding_function","toward_zero",false,(o)->true,"character_list"));
+		addFlag(new Flag("char_conversion","on",true,(o)->o.equals("on")||o.equals("off"),"character_list"));
+		addFlag(new Flag("debug","off",true,(o)->o.equals("off")||o.equals("on"),"character_list"));
+		addFlag(new Flag("undefined_predicate","error",true,(o)->o.equals("error")||o.equals("fail")||o.equals("warning"),"character_list"));
 	}
 	public Database(){
 
@@ -52,13 +58,21 @@ public class Database{
 	public void addProcedure(Procedure clause){
 		procedures.put(clause.getPredicate(),clause);
 	}
-	public void removeProcedure(Procedure clause){
-		procedures.put(clause.getPredicate(),clause);
+	public void removeProcedure(Predicate pred){
+		procedures.remove(pred);
 	}
-	public void addClause(Clause clause){
+	public void addClauseToFirst(Clause clause){
 		Predicate predicate=clause.getHead().getPredicate();
 		if(procedures.containsKey(predicate)&&procedures.get(predicate) instanceof UserPredicate)
-			((UserPredicate)procedures.get(predicate)).addClause(clause);
+			((UserPredicate)procedures.get(predicate)).getClauses().add(0,clause);
+		else{
+			procedures.put(predicate,new UserPredicate(clause));
+		}
+	}
+	public void addClauseToLast(Clause clause){
+		Predicate predicate=clause.getHead().getPredicate();
+		if(procedures.containsKey(predicate)&&procedures.get(predicate) instanceof UserPredicate)
+			((UserPredicate)procedures.get(predicate)).getClauses().add(clause);
 		else{
 			procedures.put(predicate,new UserPredicate(clause));
 		}
@@ -68,7 +82,7 @@ public class Database{
 		if(procedures.containsKey(predicate)){
 			Procedure proc=procedures.get(predicate);
 			if(proc instanceof UserPredicate){
-				((UserPredicate)proc).removeClause(clause);
+				((UserPredicate)proc).getClauses().remove(clause);
 				if(((UserPredicate)proc).getClauses().isEmpty())
 					procedures.remove(predicate);
 			}
@@ -76,12 +90,21 @@ public class Database{
 	}
 	public void addPredication(Predication pred){
 		if(pred.getPredicate().getFunctor().equals(":-"))
-			addClause(new Clause((Predication)pred.getArguments().get(0),(Predication)pred.getArguments().get(1)));
+			addClauseToLast(new Clause((Predication)pred.getArguments().get(0),(Predication)pred.getArguments().get(1)));
 		else
-			addClause(new Clause(pred,new Atom("true")));
+			addClauseToLast(new Clause(pred,new Atom("true")));
 	}
-	Procedure getProcedure(Predicate predicate){
+	public Procedure getProcedure(Predicate predicate){
 		return procedures.get(predicate);
+	}
+	public void addFlag(Flag flag){
+		flags.put(flag.getName(),flag);
+	}
+	public void removeFlag(Flag flag){
+		flags.remove(flag.getName());
+	}
+	public Flag getFlag(String name){
+		return flags.get(name);
 	}
 	@Override
 	public String toString(){

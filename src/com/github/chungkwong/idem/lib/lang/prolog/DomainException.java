@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,27 +18,28 @@ package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
-public abstract class BuildinPredicate implements Procedure{
-	public abstract boolean activate(List<Term> argments,Processor exec);
-	@Override
-	public void execute(Processor exec){
-		exec.getStack().peek().setBI(ExecutionState.BacktraceInfo.BIP);
-		reexecute(exec);
+public class DomainException extends PrologException{
+	static final String FUNCTOR="domain_error";
+	private final String expected;
+	private final Term argument;
+	public DomainException(String expected,Term argument) {
+		this.expected=expected;
+		this.argument=argument;
 	}
 	@Override
-	public void reexecute(Processor exec){//FIXME
-		//ExecutionState ccs=new ExecutionState(exec.getCurrentState());
-		//exec.getStack().push(ccs);
-		if(activate(exec.getCurrentActivator().getArguments(),exec)){
-			exec.getCurrentDecoratedSubgoal().setActivator(new Atom("true"));
-		}else{
-			exec.getCurrentDecoratedSubgoal().setActivator(new Atom("fail"));
-		}
+	public String getMessage(){
+		return argument+" cannot be casted to "+expected;
+	}
+	public String getExpected(){
+		return expected;
+	}
+	public Term getArgument(){
+		return argument;
 	}
 	@Override
-	public String toString(){
-		return getPredicate().toString();
+	public Term getErrorTerm(){
+		return new CompoundTerm(FUNCTOR,Arrays.asList(new Atom(expected),argument));
 	}
 }

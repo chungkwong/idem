@@ -27,11 +27,12 @@ public class PrologProcessorTest{
 
 	public PrologProcessorTest(){
 	}
-	private List<Substitution> multiquery(String query,String data,Processor.UndefinedPredicate mode){
+	private List<Substitution> multiquery(String query,String data,String mode){
 		Database db=new Database();
+		db.getFlag("undefined_predicate").setValue(mode);
 		new PrologParser(new PrologLex(data)).getRemaining().stream().forEach((pred)->db.addPredication(pred));
 		List<Substitution> substs=new ArrayList<>();
-		Processor processor=new Processor(new PrologParser(new PrologLex(query)).next(),db,mode);
+		Processor processor=new Processor(new PrologParser(new PrologLex(query)).next(),db);
 		while(processor.getSubstitution()!=null){
 			substs.add(processor.getSubstitution());
 			processor.reexecute();
@@ -40,7 +41,7 @@ public class PrologProcessorTest{
 		return substs;
 	}
 	private List<Substitution> multiquery(String query,String data){
-		return multiquery(query,data,Processor.UndefinedPredicate.ERROR);
+		return multiquery(query,data,"error");
 	}
 	private void assertSuccessCount(String query,String data,int count){
 		Assert.assertEquals(multiquery(query,data).size(),count);
@@ -55,7 +56,7 @@ public class PrologProcessorTest{
 		Database db=new Database();
 		new PrologParser(new PrologLex(data)).getRemaining().stream().forEach((pred)->db.addPredication(pred));
 		try{
-			Substitution subst=new Processor(new PrologParser(new PrologLex(query)).next(),db,Processor.UndefinedPredicate.ERROR).getSubstitution();
+			Substitution subst=new Processor(new PrologParser(new PrologLex(query)).next(),db).getSubstitution();
 			Assert.assertTrue(false);
 		}catch(Exception ex){
 
@@ -162,7 +163,7 @@ public class PrologProcessorTest{
 		assertGoalError("catch(throw(b),a(C),true).","");
 	}
 	@Test public void testCorner(){
-		assertTrue(multiquery("p(X,Y).","p(M,W):-m(M),f(W).",Processor.UndefinedPredicate.FAIL).isEmpty());
+		assertTrue(multiquery("p(X,Y).","p(M,W):-m(M),f(W).","fail").isEmpty());
 		assertGoalSuccess("p(c).","p(a).p(b).");
 	}
 }

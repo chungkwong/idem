@@ -23,24 +23,16 @@ import java.util.logging.*;
  * @author kwong
  */
 public class Processor{
-	private UndefinedPredicate undefpred;
 	private final Stack<ExecutionState> stack=new Stack<>();
 	private final Database db;
-	public Processor(Predication goal,Database db,UndefinedPredicate undefpred){
+	public Processor(Predication goal,Database db){
 		this.db=db;
-		this.undefpred=undefpred;
 		stack.push(new ExecutionState());
 		stack.push(new ExecutionState(new DecoratedSubgoal(goal,stack.peek()),new Substitution()));
 		execute();
 	}
-	public Processor(Predication goal,Database db){
-		this(goal,db,UndefinedPredicate.FAIL);
-	}
 	public Database getDatabase(){
 		return db;
-	}
-	public UndefinedPredicate getUndefpred(){
-		return undefpred;
 	}
 	public Stack<ExecutionState> getStack(){
 		return stack;
@@ -82,12 +74,12 @@ public class Processor{
 		Predicate currpred=getCurrentActivator().getPredicate();
 		Procedure proc=db.getProcedure(currpred);
 		if(proc==null){
-			switch(undefpred){
-				case ERROR:
+			switch(db.getFlag("undefined_predicate").getName()){
+				case "error":
 					throw new ExistenceException(Procedure.class,new Atom(currpred.getFunctor()));
-				case WARNING:
+				case "warning":
 					LOG.log(Level.WARNING,"Functor not found: {0}",currpred);
-				case FAIL:
+				case "fail":
 					ExecutionState cutparent=stack.peek().getDecsglstk().pop().getCutparent();
 					stack.peek().getDecsglstk().push(new DecoratedSubgoal(new Atom("fail"),cutparent));
 					break;
@@ -122,8 +114,5 @@ public class Processor{
 		ExecutionState cutparent=stack.peek().getDecsglstk().pop().getCutparent();
 		Predication throwPred=new CompoundTerm("throw",Collections.singletonList(ex.getErrorTerm()));
 		stack.peek().getDecsglstk().push(new DecoratedSubgoal(throwPred,cutparent));
-	}
-	public enum UndefinedPredicate{
-		ERROR,WARNING,FAIL;
 	}
 }

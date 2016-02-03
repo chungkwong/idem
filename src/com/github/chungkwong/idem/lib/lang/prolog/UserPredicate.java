@@ -63,12 +63,6 @@ public class UserPredicate implements Procedure{
 	public Predicate getPredicate(){
 		return clauses.get(0).getHead().getPredicate();
 	}
-	public void addClause(Clause clause){
-		clauses.add(clause);
-	}
-	public void removeClause(Clause clause){
-		clauses.remove(clause);
-	}
 	public List<Clause> getClauses(){
 		return Collections.unmodifiableList(clauses);
 	}

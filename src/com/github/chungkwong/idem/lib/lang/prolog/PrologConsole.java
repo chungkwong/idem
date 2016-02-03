@@ -54,13 +54,13 @@ public class PrologConsole implements Shell{
 					}
 				}
 			}else if(pred.getPredicate().getFunctor().equals(":-")){
-				db.addClause(new Clause((Predication)pred.getArguments().get(0),
+				db.addClauseToLast(new Clause((Predication)pred.getArguments().get(0),
 						(Predication)pred.getArguments().get(1)));
 				buf.append("Rule added\n");
 			}else if(pred.getPredicate().getFunctor().equals("inspect")){//FIXME
 				buf.append(db);
 			}else{
-				db.addClause(new Clause(pred,new Atom("true")));
+				db.addClauseToLast(new Clause(pred,new Atom("true")));
 				buf.append("Fact added\n");
 			}
 		}
