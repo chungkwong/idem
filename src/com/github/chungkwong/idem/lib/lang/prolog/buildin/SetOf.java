@@ -21,9 +21,9 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class BagOf extends BuildinPredicate{
-	public static final BagOf INSTANCE=new BagOf();
-	public static final Predicate pred=new Predicate("bagof",3);
+public class SetOf extends BuildinPredicate{
+	public static final SetOf INSTANCE=new SetOf();
+	public static final Predicate pred=new Predicate("setof",3);
 	private static final Atom EMPTY_LIST=new Atom(Collections.EMPTY_LIST);
 	@Override
 	public boolean activate(List<Term> argments,Processor exec){
@@ -49,6 +49,7 @@ public class BagOf extends BuildinPredicate{
 					}
 					iter=((CompoundTerm)s).getArguments().get(1);
 				}
+				sort(next);
 				s=next;
 				if(instances.unities(tLst,exec.getStack().peek().getSubst()))
 					return true;
@@ -56,6 +57,23 @@ public class BagOf extends BuildinPredicate{
 			return false;
 		}else
 			return false;
+	}
+	private void sort(Term t){
+		boolean changed=true;
+		while(changed){
+			changed=false;
+			Term iter=t;
+			while(iter instanceof CompoundTerm&&((CompoundTerm)iter).getArguments().get(1) instanceof CompoundTerm){
+				Term prec=((CompoundTerm)iter).getArguments().get(0);
+				Term succ=((CompoundTerm)((CompoundTerm)iter).getArguments().get(1)).getArguments().get(0);
+				if(TermComparator.INSTANCE.compare(prec,succ)>0){
+					((CompoundTerm)((CompoundTerm)iter).getArguments().get(1)).getArguments().set(0,prec);
+					((CompoundTerm)iter).getArguments().set(0,succ);
+					changed=true;
+				}
+				iter=((CompoundTerm)iter).getArguments().get(1);
+			}
+		}
 	}
 	@Override
 	public Predicate getPredicate(){

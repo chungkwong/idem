@@ -22,6 +22,9 @@ import java.util.*;
  */
 public interface Term{
 	Set<Variable> getVariableSet();
+	Set<Variable> getExistentialVariableSet();
+	Term toIteratedTerm();
+	boolean isVariantOf(Term t,Map<Variable,Variable> perm);
 	boolean unities(Term term,Substitution subst);
 	Term renameAllVariable(HashMap<Variable,Variable> renameTo);
 	Term substitute(Substitution subst);

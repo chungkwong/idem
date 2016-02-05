@@ -43,6 +43,23 @@ public class CompoundTerm extends Predication{
 		return argments.stream().map(Term::getVariableSet).flatMap(Set::stream).collect(Collectors.toSet());
 	}
 	@Override
+	public Set<Variable> getExistentialVariableSet(){
+		if(functor.equals("^")&&argments.size()==2){
+			Set<Variable> vars=new HashSet<>();
+			vars.addAll(argments.get(0).getVariableSet());
+			vars.addAll(argments.get(1).getExistentialVariableSet());
+			return vars;
+		}else
+			return Collections.EMPTY_SET;
+	}
+	@Override
+	public Term toIteratedTerm(){
+		if(functor.equals("^")&&argments.size()==2){
+			return argments.get(1).toIteratedTerm();
+		}else
+			return this;
+	}
+	@Override
 	public boolean unities(Term term,Substitution subst){
 		if(term instanceof Atom)
 			return false;
@@ -81,5 +98,16 @@ public class CompoundTerm extends Predication{
 		if(functor.equals(",")||functor.equals(";")||functor.equals("->"))
 			return new CompoundTerm(functor,Arrays.asList(argments.get(0).toBody(),argments.get(1).toBody()));
 		return this;
+	}
+	@Override
+	public boolean isVariantOf(Term t,Map<Variable,Variable> perm){
+		if(t instanceof CompoundTerm&&((CompoundTerm)t).getFunctor().equals(functor)
+				&&((CompoundTerm)t).getArguments().size()==argments.size()){
+			for(int i=0;i<argments.size();i++)
+				if(!argments.get(i).isVariantOf(((CompoundTerm)t).getArguments().get(i),perm))
+					return false;
+			return true;
+		}else
+			return false;
 	}
 }

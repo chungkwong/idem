@@ -45,6 +45,14 @@ public class Atom<T> extends Predication{
 		return Collections.emptySet();
 	}
 	@Override
+	public Set<Variable> getExistentialVariableSet(){
+		return Collections.emptySet();
+	}
+	@Override
+	public Term toIteratedTerm(){
+		return this;
+	}
+	@Override
 	public boolean unities(Term term,Substitution subst){
 		if(term instanceof Atom)
 			return ((Atom)term).val.equals(val);
@@ -78,5 +86,9 @@ public class Atom<T> extends Predication{
 		if(val instanceof Number)
 			throw new TypeException(String.class,this);
 		return this;
+	}
+	@Override
+	public boolean isVariantOf(Term t,Map<Variable,Variable> perm){
+		return equals(t);
 	}
 }

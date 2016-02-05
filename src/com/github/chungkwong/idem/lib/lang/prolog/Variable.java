@@ -47,6 +47,10 @@ public class Variable implements Term{
 		return Collections.singleton(this);
 	}
 	@Override
+	public Set<Variable> getExistentialVariableSet(){
+		return Collections.EMPTY_SET;
+	}
+	@Override
 	public boolean unities(Term term,Substitution subst){
 		return this==WILDCARD||term==WILDCARD||subst.assign(this,term);
 	}
@@ -69,6 +73,21 @@ public class Variable implements Term{
 	@Override
 	public Predication toBody(){
 		return new CompoundTerm("call",Collections.singletonList(this));
+	}
+	@Override
+	public Term toIteratedTerm(){
+		return this;
+	}
+	@Override
+	public boolean isVariantOf(Term t,Map<Variable,Variable> perm){
+		if(t instanceof Variable&&perm.containsKey(t)){
+			if(!perm.containsKey(this)){
+				perm.put(this,(Variable)t);
+				return true;
+			}else
+				return perm.get(this).equals(t);
+		}else
+			return false;
 	}
 	public static class InternalVariable extends Variable{
 		static int used=0;
