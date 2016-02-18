@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,25 +18,32 @@ package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
-public abstract class BuildinPredicate implements Procedure{
-	public abstract boolean activate(List<Term> argments,Processor exec);
+public abstract class ReexecutableBuildinPredicate implements Procedure{
+	public abstract void firstActivate(List<Term> argments,Processor exec,Variable var);
+	public abstract boolean againActivate(List<Term> argments,Processor exec,Variable var);
 	@Override
 	public void execute(Processor exec){
 		exec.getStack().peek().setBI(ExecutionState.BacktraceInfo.BIP);
-		if(activate(exec.getCurrentActivator().getArguments(),exec)){
+		firstActivate(exec.getCurrentActivator().getArguments(),exec,getVariable(exec.getStack().size()));
+		reexecute(exec);
+	}
+	@Override
+	public void reexecute(Processor exec){
+		ExecutionState ccs=new ExecutionState(exec.getCurrentState());
+		exec.getStack().push(ccs);
+		if(againActivate(exec.getCurrentActivator().getArguments(),exec,getVariable(exec.getStack().size()-1))){
 			exec.getCurrentDecoratedSubgoal().setActivator(new Atom("true"));
 		}else{
 			exec.getCurrentDecoratedSubgoal().setActivator(new Atom("fail"));
 		}
 	}
 	@Override
-	public void reexecute(Processor exec){//FIXME
-		
-	}
-	@Override
 	public String toString(){
 		return getPredicate().toString();
+	}
+	private Variable getVariable(int index){
+		return new Variable("_"+getPredicate().getFunctor()+index);
 	}
 }

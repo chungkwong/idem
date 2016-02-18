@@ -37,8 +37,34 @@ public class Database{
 		addProcedure(If.IF);
 		addProcedure(Throw.THROW);
 		addProcedure(True.TRUE);
-		addProcedure(Var.VAR);
+
+		addProcedure(Abolish.INSTANCE);
+		addProcedure(Arg.INSTANCE);
+		addProcedure(AssertA.INSTANCE);
+		addProcedure(AssertZ.INSTANCE);
+		addProcedure(BagOf.INSTANCE);
+		addProcedure(ClauseOf.INSTANCE);
+		addProcedure(CopyTerm.INSTANCE);
+		addProcedure(CurrentPredicate.INSTANCE);
+		addProcedure(FindAll.INSTANCE);
+		addProcedure(Functor.INSTANCE);
+		addProcedure(Halt.INSTANCE);
+		addProcedure(HaltNow.INSTANCE);
+		addProcedure(Identical.INSTANCE);
+		addProcedure(Is.INSTANCE);
+		addProcedure(IsAtom.INSTANCE);
+		addProcedure(IsAtomic.INSTANCE);
+		addProcedure(IsCompound.INSTANCE);
+		addProcedure(IsInteger.INSTANCE);
+		addProcedure(IsReal.INSTANCE);
+		addProcedure(Precedes.INSTANCE);
+		addProcedure(Retract.INSTANCE);
+		addProcedure(SetOf.INSTANCE);
+		addProcedure(Succeed.INSTANCE);
 		addProcedure(UnifyWithOccurCheck.INSTANCE);
+		addProcedure(Univ.INSTANCE);
+		addProcedure(Var.INSTANCE);
+
 		InputStream resource=Database.class.getResourceAsStream("StandardProcedures");
 		PrologParser parser=new PrologParser(new PrologLex(new InputStreamReader(resource)));
 		Predication pred=parser.next();
@@ -96,6 +122,9 @@ public class Database{
 	}
 	public Procedure getProcedure(Predicate predicate){
 		return procedures.get(predicate);
+	}
+	public Map<Predicate,Procedure> getProcedures(){
+		return Collections.unmodifiableMap(procedures);
 	}
 	public void addFlag(Flag flag){
 		flags.put(flag.getName(),flag);

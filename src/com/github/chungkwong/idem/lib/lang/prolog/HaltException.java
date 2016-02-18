@@ -14,39 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.eval;
-import java.util.*;
+
+package com.github.chungkwong.idem.lib.lang.prolog;
+import java.math.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class EvaluableFunctor{
-	private final String functor;
-	private final int arity;
-	public EvaluableFunctor(String functor,int arity){
-		this.functor=functor;
-		this.arity=arity;
-	}
-	public String getFunctor(){
-		return functor;
-	}
-	public int getArity(){
-		return arity;
-	}
-	@Override
-	public boolean equals(Object obj){
-		return obj instanceof EvaluableFunctor&&((EvaluableFunctor)obj).getArity()==arity
-				&&((EvaluableFunctor)obj).getFunctor().equals(functor);
-	}
-	@Override
-	public int hashCode(){
-		int hash=7;
-		hash=11*hash+Objects.hashCode(this.functor);
-		hash=11*hash+this.arity;
-		return hash;
-	}
-	@Override
-	public String toString(){
-		return functor+"/"+arity;
+public class HaltException extends RuntimeException{
+	BigInteger code;
+	public HaltException(BigInteger code){
+		this.code=code;
 	}
 }

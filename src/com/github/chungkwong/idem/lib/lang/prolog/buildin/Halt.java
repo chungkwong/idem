@@ -15,26 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
+import com.github.chungkwong.idem.lib.lang.prolog.InstantiationException;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
+import java.math.*;
 import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class FindAll extends BuildinPredicate{
-	public static final FindAll INSTANCE=new FindAll();
-	public static final Predicate pred=new Predicate("findall",3);
-	private static final Atom EMPTY_LIST=new Atom(Collections.EMPTY_LIST);
+public class Halt extends BuildinPredicate{
+	public static final Halt INSTANCE=new Halt();
+	public static final Predicate pred=new Predicate("halt",1);
 	@Override
 	public boolean activate(List<Term> argments,Processor exec){
-		Term result=EMPTY_LIST;
-		Predication goal=new CompoundTerm("call",Collections.singletonList(argments.get(1)));
-		Processor processor=new Processor(goal,exec.getDatabase());
-		while(processor.isSuccessed()){
-			result=new CompoundTerm(".",Arrays.asList(argments.get(0).substitute(processor.getSubstitution()),result));
-			processor.reexecute();
+		Term msg=argments.get(0);
+		if(msg instanceof Atom&&((Atom)msg).getValue()instanceof BigInteger){
+			throw new HaltException(((BigInteger)((Atom)msg).getValue()));
+		}else if(msg instanceof Variable){
+			throw new InstantiationException((Variable)msg);
+		}else{
+			throw new TypeException(BigInteger.class,msg);
 		}
-		return argments.get(2).unities(result,exec.getCurrentSubst());
 	}
 	@Override
 	public Predicate getPredicate(){

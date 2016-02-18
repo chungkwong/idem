@@ -16,25 +16,18 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
+import java.math.*;
 import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class FindAll extends BuildinPredicate{
-	public static final FindAll INSTANCE=new FindAll();
-	public static final Predicate pred=new Predicate("findall",3);
-	private static final Atom EMPTY_LIST=new Atom(Collections.EMPTY_LIST);
+public class HaltNow extends BuildinPredicate{
+	public static final HaltNow INSTANCE=new HaltNow();
+	public static final Predicate pred=new Predicate("halt",0);
 	@Override
 	public boolean activate(List<Term> argments,Processor exec){
-		Term result=EMPTY_LIST;
-		Predication goal=new CompoundTerm("call",Collections.singletonList(argments.get(1)));
-		Processor processor=new Processor(goal,exec.getDatabase());
-		while(processor.isSuccessed()){
-			result=new CompoundTerm(".",Arrays.asList(argments.get(0).substitute(processor.getSubstitution()),result));
-			processor.reexecute();
-		}
-		return argments.get(2).unities(result,exec.getCurrentSubst());
+		throw new HaltException(BigInteger.ZERO);
 	}
 	@Override
 	public Predicate getPredicate(){

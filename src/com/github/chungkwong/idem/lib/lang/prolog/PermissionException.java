@@ -14,39 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.eval;
+
+package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class EvaluableFunctor{
-	private final String functor;
-	private final int arity;
-	public EvaluableFunctor(String functor,int arity){
-		this.functor=functor;
-		this.arity=arity;
-	}
-	public String getFunctor(){
-		return functor;
-	}
-	public int getArity(){
-		return arity;
+public class PermissionException extends PrologException{
+	Term operation,objectType,culprit;
+	public PermissionException(Term operation,Term objectType,Term culprit){
+		this.operation=operation;
+		this.objectType=objectType;
+		this.culprit=culprit;
 	}
 	@Override
-	public boolean equals(Object obj){
-		return obj instanceof EvaluableFunctor&&((EvaluableFunctor)obj).getArity()==arity
-				&&((EvaluableFunctor)obj).getFunctor().equals(functor);
-	}
-	@Override
-	public int hashCode(){
-		int hash=7;
-		hash=11*hash+Objects.hashCode(this.functor);
-		hash=11*hash+this.arity;
-		return hash;
-	}
-	@Override
-	public String toString(){
-		return functor+"/"+arity;
+	public Term getErrorTerm(){
+		return new CompoundTerm("permission_error",Arrays.asList(operation,objectType,culprit));
 	}
 }

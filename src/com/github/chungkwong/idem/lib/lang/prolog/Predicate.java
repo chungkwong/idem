@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
+import java.math.*;
 import java.util.*;
 public class Predicate{
 	private final Object functor;
@@ -28,6 +29,9 @@ public class Predicate{
 	}
 	public int getArity(){
 		return arity;
+	}
+	public CompoundTerm getIndicator(){
+		return new CompoundTerm("/",Arrays.asList(new Atom(functor),new Atom(BigInteger.valueOf(arity))));
 	}
 	@Override
 	public boolean equals(Object obj){

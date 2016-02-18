@@ -27,19 +27,34 @@ public class Functor extends BuildinPredicate{
 	public static final Predicate pred=new Predicate("functor",3);
 	@Override
 	public boolean activate(List<Term> argments,Processor exec){
-		Term term=argments.get(0);
-		Substitution subst=exec.getStack().peek().getSubst();
+		Term term=argments.get(0),name=argments.get(1),arity=argments.get(2);
+		Substitution subst=exec.getCurrentSubst();
 		if(term instanceof Atom){
-			return argments.get(1).unities(term,subst)&&argments.get(2).unities(new Atom(BigInteger.ZERO),subst);
+			return name.unities(term,subst)&&arity.unities(new Atom(BigInteger.ZERO),subst);
 		}else if(term instanceof CompoundTerm){
-			return argments.get(1).unities(new Atom(((CompoundTerm)term).getFunctor()),subst)&&
-					argments.get(2).unities(new Atom(BigInteger.valueOf(((CompoundTerm)term).getArguments().size())),subst);
-		}else{
-			if(argments.get(2))
-				return term.unities(argments.get(1),subst);
-			else{
-
+			return name.unities(new Atom(((CompoundTerm)term).getFunctor()),subst)&&
+					arity.unities(new Atom(BigInteger.valueOf(((CompoundTerm)term).getArguments().size())),subst);
+		}else if(arity instanceof Atom&&((Atom)arity).getValue()instanceof BigInteger){
+			int n=((BigInteger)((Atom)arity).getValue()).intValueExact();
+			if(n>0){
+				if(name instanceof Atom){
+					List<Term> args=new ArrayList(n);
+					for(int i=0;i<n;i++)
+						args.add(Variable.InternalVariable.newInstance());
+					return term.unities(new CompoundTerm(((Atom)name).getValue(),args),subst);
+				}else if(name instanceof Variable)
+					throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)name);
+				else 
+					throw new TypeException(Atom.class,name);
+			}else if(n==0){
+				return term.unities(name,subst);
+			}else{
+				throw new DomainException("not_less_than_zero",arity);
 			}
+		}else if(arity instanceof Variable){
+			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)arity);
+		}else{
+			throw new TypeException(BigInteger.class,arity);
 		}
 	}
 	@Override

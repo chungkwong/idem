@@ -14,39 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.eval;
-import java.util.*;
+package com.github.chungkwong.idem.lib;
+
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class EvaluableFunctor{
-	private final String functor;
-	private final int arity;
-	public EvaluableFunctor(String functor,int arity){
-		this.functor=functor;
-		this.arity=arity;
+public class Pair<K,V>{
+	private final K first;
+	private final V second;
+	public Pair(K first,V second){
+		this.first=first;
+		this.second=second;
 	}
-	public String getFunctor(){
-		return functor;
+	public K getFirst(){
+		return first;
 	}
-	public int getArity(){
-		return arity;
-	}
-	@Override
-	public boolean equals(Object obj){
-		return obj instanceof EvaluableFunctor&&((EvaluableFunctor)obj).getArity()==arity
-				&&((EvaluableFunctor)obj).getFunctor().equals(functor);
-	}
-	@Override
-	public int hashCode(){
-		int hash=7;
-		hash=11*hash+Objects.hashCode(this.functor);
-		hash=11*hash+this.arity;
-		return hash;
-	}
-	@Override
-	public String toString(){
-		return functor+"/"+arity;
+	public V getSecond(){
+		return second;
 	}
 }

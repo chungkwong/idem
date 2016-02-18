@@ -36,7 +36,7 @@ public class SetOf extends BuildinPredicate{
 		argments.set(1,argments.get(1).toIteratedTerm());
 		argments.set(2,lst);
 		if(FindAll.INSTANCE.activate(argments,exec)){
-			Term s=exec.getStack().peek().getSubst().findRoot(lst);
+			Term s=exec.getCurrentSubst().findRoot(lst);
 			while(!s.equals(EMPTY_LIST)){
 				CompoundTerm wt=(CompoundTerm)((CompoundTerm)s).getArguments().get(0);
 				Term tLst=EMPTY_LIST,next=EMPTY_LIST,iter=s;
@@ -51,7 +51,7 @@ public class SetOf extends BuildinPredicate{
 				}
 				sort(next);
 				s=next;
-				if(instances.unities(tLst,exec.getStack().peek().getSubst()))
+				if(instances.unities(tLst,exec.getCurrentSubst()))
 					return true;
 			}
 			return false;

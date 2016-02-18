@@ -43,7 +43,7 @@ public class UserPredicate implements Procedure{
 		while(exec.getStack().peek().getCl().hasNext()){
 			Clause c=exec.getStack().peek().getCl().peek();
 			c=c.rename();
-			Substitution context=new Substitution(exec.getStack().peek().getSubst());
+			Substitution context=new Substitution(exec.getCurrentSubst());
 			if(c.getHead().unities(exec.getCurrentActivator(),context)){
 				ExecutionState ccs=new ExecutionState(exec.getStack().peek());
 				ccs.setSubst(context);
@@ -64,7 +64,7 @@ public class UserPredicate implements Procedure{
 		return clauses.get(0).getHead().getPredicate();
 	}
 	public List<Clause> getClauses(){
-		return Collections.unmodifiableList(clauses);
+		return clauses;
 	}
 	public String toString(){
 		return clauses.stream().map(Clause::toString).collect(Collectors.joining("\n"));

@@ -54,6 +54,9 @@ public class Substitution{
 				return false;
 		}
 	}
+	public void unassign(Variable var){
+		assignment.remove(var);
+	}
 	public boolean occurCheck(){
 		return assignment.entrySet().stream().anyMatch((entry)->entry.getValue().getVariableSet().contains(entry.getKey()));
 	}

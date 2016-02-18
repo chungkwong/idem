@@ -21,20 +21,12 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class FindAll extends BuildinPredicate{
-	public static final FindAll INSTANCE=new FindAll();
-	public static final Predicate pred=new Predicate("findall",3);
-	private static final Atom EMPTY_LIST=new Atom(Collections.EMPTY_LIST);
+public class CopyTerm extends BuildinPredicate{
+	public static final CopyTerm INSTANCE=new CopyTerm();
+	public static final Predicate pred=new Predicate("copy_term",2);
 	@Override
 	public boolean activate(List<Term> argments,Processor exec){
-		Term result=EMPTY_LIST;
-		Predication goal=new CompoundTerm("call",Collections.singletonList(argments.get(1)));
-		Processor processor=new Processor(goal,exec.getDatabase());
-		while(processor.isSuccessed()){
-			result=new CompoundTerm(".",Arrays.asList(argments.get(0).substitute(processor.getSubstitution()),result));
-			processor.reexecute();
-		}
-		return argments.get(2).unities(result,exec.getCurrentSubst());
+		return argments.get(0).renameAllVariable(new HashMap<>()).unities(argments.get(1),exec.getCurrentSubst());
 	}
 	@Override
 	public Predicate getPredicate(){

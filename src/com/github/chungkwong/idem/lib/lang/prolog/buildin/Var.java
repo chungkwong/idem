@@ -22,7 +22,7 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Var extends BuildinPredicate{
-	public static final Var VAR=new Var();
+	public static final Var INSTANCE=new Var();
 	public static final Predicate pred=new Predicate("var",1);
 	@Override
 	public boolean activate(List<Term> argments,Processor exec){

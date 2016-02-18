@@ -44,6 +44,9 @@ public class Processor{
 			return stack.peek().getSubst();
 		throw new RuntimeException("Illegal status");
 	}
+	public Substitution getCurrentSubst(){
+		return getStack().peek().getSubst();
+	}
 	public boolean isFailed(){
 		return stack.size()<=1;
 	}

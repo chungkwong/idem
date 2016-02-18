@@ -21,42 +21,34 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Retract extends ReexecutableBuildinPredicate{
-	public static final AssertA INSTANCE=new AssertA();
-	public static final Predicate pred=new Predicate("retract",1);
-	@Override
-	public void firstActivate(List<Term> argments,Processor exec,Variable var){
-
-	}
-	@Override
-	public boolean againActivate(List<Term> argments,Processor exec,Variable var){
-		Term clause=argments.get(0);
-		Term head=null,body=null;
-		if(clause instanceof CompoundTerm&&((CompoundTerm)clause).getFunctor().equals(":-")
-				&&((CompoundTerm)clause).getArguments().size()==2){
-			head=((CompoundTerm)clause).getArguments().get(0);
-			body=((CompoundTerm)clause).getArguments().get(1);
-		}else{
-			head=clause;
-			body=new Atom("true");
-		}
-		Procedure proc=exec.getDatabase().getProcedure(((Predication)head).getPredicate());
-		if(proc!=null&&proc instanceof UserPredicate){
-			Iterator<Clause> iter=((UserPredicate)proc).getClauses().iterator();
-			while(iter.hasNext()){
-				Clause cand=iter.next();
-				Substitution subst=new Substitution(exec.getCurrentSubst());
-				if(head.unities(cand.getHeadAsTerm(),subst)&&body.unities(cand.getBodyAsTerm(),subst)){
-					iter.remove();
-					return true;
-				}
-			}
-			return false;
-		}else
-			return false;
-	}
+public class CurrentPredicate extends ReexecutableBuildinPredicate{
+	public static final CurrentPredicate INSTANCE=new CurrentPredicate();
+	public static final Predicate pred=new Predicate("current_predicate",1);
 	@Override
 	public Predicate getPredicate(){
 		return pred;
+	}
+	@Override
+	public void firstActivate(List<Term> argments,Processor exec,Variable var){
+		Term PI=argments.get(0);
+		Term lst=new Atom(Collections.EMPTY_LIST);
+		for(Predicate pred:exec.getDatabase().getProcedures().keySet()){
+			if(PI.unities(pred.getIndicator(),exec.getCurrentSubst()))
+				lst=new CompoundTerm(".",Arrays.asList(pred.getIndicator(),lst));
+		}
+		exec.getCurrentSubst().assign(var,lst);
+	}
+	@Override
+	public boolean againActivate(List<Term> argments,Processor exec,Variable var){
+		Substitution subst=exec.getStack().get(exec.getStack().size()-2).getSubst();
+		Term lst=subst.findRoot(var);
+		if(lst instanceof CompoundTerm){
+			argments.get(0).unities(((CompoundTerm)lst).getArguments().get(0),exec.getCurrentSubst());
+			subst.unassign(var);
+			subst.assign(var,((CompoundTerm)lst).getArguments().get(1));
+			return true;
+		}else{
+			return false;
+		}
 	}
 }

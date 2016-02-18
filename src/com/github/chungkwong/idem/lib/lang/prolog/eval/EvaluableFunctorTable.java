@@ -58,7 +58,10 @@ public class EvaluableFunctorTable{
 	public static void addEvaluableFunctor(Evaluable functor){
 		table.put(functor.getFunctor(),functor);
 	}
-	public static Evaluable getEvaluableFunctor(String name){
+	public static Evaluable getEvaluableFunctor(EvaluableFunctor name){
 		return table.get(name);
+	}
+	public static Evaluable getEvaluableFunctor(String name,int arity){
+		return table.get(new EvaluableFunctor(name,arity));
 	}
 }

@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
+import com.github.chungkwong.idem.lib.lang.prolog.InstantiationException;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
+import java.math.*;
 import java.util.*;
 /**
  *
@@ -26,8 +28,22 @@ public class Arg extends BuildinPredicate{
 	public static final Predicate pred=new Predicate("arg",3);
 	@Override
 	public boolean activate(List<Term> argments,Processor exec){
-		
-		return TermComparator.INSTANCE.compare(argments.get(0),argments.get(1))>0;
+		Term n=argments.get(0),term=argments.get(1),arg=argments.get(2);
+		if(term instanceof CompoundTerm){
+			if(n instanceof Atom&&((Atom)n).getValue()instanceof BigInteger){
+				int i=((BigInteger)((Atom)n).getValue()).intValueExact()-1;
+				return i>=0&&i<((CompoundTerm)term).getArguments().size()
+						&&((CompoundTerm)term).getArguments().get(i).unities(arg,exec.getCurrentSubst());
+			}else if(n instanceof Variable){
+				throw new InstantiationException((Variable)n);
+			}else{
+				throw new TypeException(BigInteger.class,n);
+			}
+		}else if(term instanceof Variable){
+			throw new InstantiationException((Variable)term);
+		}else{
+			throw new TypeException(CompoundTerm.class,term);
+		}
 	}
 	@Override
 	public Predicate getPredicate(){

@@ -16,25 +16,33 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
+import com.github.chungkwong.idem.lib.lang.prolog.InstantiationException;
 import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class FindAll extends BuildinPredicate{
-	public static final FindAll INSTANCE=new FindAll();
-	public static final Predicate pred=new Predicate("findall",3);
-	private static final Atom EMPTY_LIST=new Atom(Collections.EMPTY_LIST);
+public class SetPrologFlag extends BuildinPredicate{
+	public static final SetPrologFlag INSTANCE=new SetPrologFlag();
+	public static final Predicate pred=new Predicate("set_prolog_flag",2);
 	@Override
 	public boolean activate(List<Term> argments,Processor exec){
-		Term result=EMPTY_LIST;
-		Predication goal=new CompoundTerm("call",Collections.singletonList(argments.get(1)));
-		Processor processor=new Processor(goal,exec.getDatabase());
-		while(processor.isSuccessed()){
-			result=new CompoundTerm(".",Arrays.asList(argments.get(0).substitute(processor.getSubstitution()),result));
-			processor.reexecute();
+		Term flag=argments.get(0),val=argments.get(1);
+		if(flag instanceof Variable){
+			throw new InstantiationException((Variable)flag);
+		}else if(flag instanceof Atom){
+			if(val instanceof Variable)
+				throw new InstantiationException((Variable)val);
+			else{
+				Flag toset=exec.getDatabase().getFlag(((Atom)flag).toString());
+				if(toset==null)
+					throw new DomainException("prolog_flag",flag);
+				else
+					toset.setValue(((Atom)val).getValue());
+			}
+		}else{
+			throw new TypeException(Atom.class,flag);
 		}
-		return argments.get(2).unities(result,exec.getCurrentSubst());
 	}
 	@Override
 	public Predicate getPredicate(){
