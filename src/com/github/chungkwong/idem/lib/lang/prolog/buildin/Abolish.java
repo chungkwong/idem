@@ -39,11 +39,11 @@ public class Abolish extends BuildinPredicate{
 					}else if(arity instanceof Variable)
 						throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)arity);
 					else
-						throw new TypeException(BigInteger.class,arity);
+						throw new TypeException("integer",arity);
 				}else if(functor instanceof Variable)
 					throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)functor);
 				else
-					throw new TypeException(Atom.class,arity);
+					throw new TypeException("atom",arity);
 			}else
 				throw new DomainException(null,arg);
 		}else if(arg instanceof Variable){

@@ -17,34 +17,27 @@
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
 import com.github.chungkwong.idem.lib.lang.prolog.InstantiationException;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
+import java.math.*;
 import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SetPrologFlag extends BuildinPredicate{
-	public static final SetPrologFlag INSTANCE=new SetPrologFlag();
-	public static final Predicate pred=new Predicate("set_prolog_flag",2);
+public class AtomLength extends BuildinPredicate{
+	public static final AtomLength INSTANCE=new AtomLength();
+	public static final Predicate pred=new Predicate("atom_length",2);
 	@Override
 	public boolean activate(List<Term> argments,Processor exec){
-		Term flag=argments.get(0),val=argments.get(1);
-		if(flag instanceof Variable){
-			throw new InstantiationException((Variable)flag);
-		}else if(flag instanceof Atom){
-			if(val instanceof Variable)
-				throw new InstantiationException((Variable)val);
-			else{
-				Flag toset=exec.getDatabase().getFlag(((Atom)flag).toString());
-				if(toset==null)
-					throw new DomainException("prolog_flag",flag);
-				else{
-					toset.setValue(val);
-					return true;
-				}
-			}
-		}else{
-			throw new TypeException("atom",flag);
-		}
+		Term atom=argments.get(0),len=argments.get(1);
+		if(atom instanceof Variable)
+			throw new InstantiationException((Variable)atom);
+		else if(atom instanceof Atom&&((Atom)atom).getValue()instanceof String){
+			if(len instanceof CompoundTerm||(len instanceof Atom&&!(((Atom)len).getValue()instanceof BigInteger)))
+				throw new TypeException("integer",len);
+			else
+				return new Atom(BigInteger.valueOf(((Atom)atom).getValue().toString().length())).unities(len,exec.getCurrentSubst());
+		}else
+			throw new TypeException("atom",atom);
 	}
 	@Override
 	public Predicate getPredicate(){

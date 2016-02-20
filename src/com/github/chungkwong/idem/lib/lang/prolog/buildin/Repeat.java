@@ -15,39 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
-import com.github.chungkwong.idem.lib.lang.prolog.InstantiationException;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SetPrologFlag extends BuildinPredicate{
-	public static final SetPrologFlag INSTANCE=new SetPrologFlag();
-	public static final Predicate pred=new Predicate("set_prolog_flag",2);
-	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		Term flag=argments.get(0),val=argments.get(1);
-		if(flag instanceof Variable){
-			throw new InstantiationException((Variable)flag);
-		}else if(flag instanceof Atom){
-			if(val instanceof Variable)
-				throw new InstantiationException((Variable)val);
-			else{
-				Flag toset=exec.getDatabase().getFlag(((Atom)flag).toString());
-				if(toset==null)
-					throw new DomainException("prolog_flag",flag);
-				else{
-					toset.setValue(val);
-					return true;
-				}
-			}
-		}else{
-			throw new TypeException("atom",flag);
-		}
-	}
+public class Repeat extends ReexecutableBuildinPredicate{
+	public static final Repeat INSTANCE=new Repeat();
+	public static final Predicate pred=new Predicate("repeat",0);
 	@Override
 	public Predicate getPredicate(){
 		return pred;
+	}
+	@Override
+	public void firstActivate(List<Term> argments,Processor exec,Variable var){
+
+	}
+	@Override
+	public boolean againActivate(List<Term> argments,Processor exec,Variable var){
+		return true;
 	}
 }

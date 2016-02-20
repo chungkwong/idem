@@ -29,7 +29,7 @@ public class PrologProcessorTest{
 	}
 	private List<Substitution> multiquery(String query,String data,String mode){
 		Database db=new Database();
-		db.getFlag("undefined_predicate").setValue(mode);
+		db.getFlag("undefined_predicate").setValue(new Atom(mode));
 		new PrologParser(new PrologLex(data)).getRemaining().stream().forEach((pred)->db.addPredication(pred));
 		List<Substitution> substs=new ArrayList<>();
 		Processor processor=new Processor(new PrologParser(new PrologLex(query)).next(),db);

@@ -44,8 +44,8 @@ public class Functor extends BuildinPredicate{
 					return term.unities(new CompoundTerm(((Atom)name).getValue(),args),subst);
 				}else if(name instanceof Variable)
 					throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)name);
-				else 
-					throw new TypeException(Atom.class,name);
+				else
+					throw new TypeException("atom",name);
 			}else if(n==0){
 				return term.unities(name,subst);
 			}else{
@@ -54,7 +54,7 @@ public class Functor extends BuildinPredicate{
 		}else if(arity instanceof Variable){
 			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)arity);
 		}else{
-			throw new TypeException(BigInteger.class,arity);
+			throw new TypeException("integer",arity);
 		}
 	}
 	@Override

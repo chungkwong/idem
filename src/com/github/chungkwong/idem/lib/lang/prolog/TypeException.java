@@ -23,9 +23,9 @@ import java.util.*;
  */
 public class TypeException extends PrologException{
 	static String FUNCTOR="type_error";
-	private final Class expected;
+	private final String expected;
 	private final Term argument;
-	public TypeException(Class expected,Term argument) {
+	public TypeException(String expected,Term argument) {
 		this.expected=expected;
 		this.argument=argument;
 	}
@@ -33,7 +33,7 @@ public class TypeException extends PrologException{
 	public String getMessage(){
 		return argument+" cannot be casted to "+expected;
 	}
-	public Class getExpected(){
+	public String getExpected(){
 		return expected;
 	}
 	public Term getArgument(){

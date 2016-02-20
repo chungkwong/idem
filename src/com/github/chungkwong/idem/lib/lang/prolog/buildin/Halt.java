@@ -34,7 +34,7 @@ public class Halt extends BuildinPredicate{
 		}else if(msg instanceof Variable){
 			throw new InstantiationException((Variable)msg);
 		}else{
-			throw new TypeException(BigInteger.class,msg);
+			throw new TypeException("integer",msg);
 		}
 	}
 	@Override

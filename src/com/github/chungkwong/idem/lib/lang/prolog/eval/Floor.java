@@ -34,6 +34,6 @@ public class Floor extends Evaluable{
 			BigDecimal arg=((BigDecimal)args[0]);
 			return new Atom(arg.round(new MathContext(Math.max(arg.precision()-arg.scale(),0),RoundingMode.FLOOR)).toBigInteger());
 		}else
-			throw new TypeException(Number.class,new Atom(args[0]));
+			throw new TypeException("number",new Atom(args[0]));
 	}
 }

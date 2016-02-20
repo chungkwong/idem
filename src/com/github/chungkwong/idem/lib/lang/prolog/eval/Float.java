@@ -33,6 +33,6 @@ public class Float extends Evaluable{
 		else if(args[0] instanceof BigDecimal)
 			return new Atom(args[0]);
 		else
-			throw new TypeException(Number.class,new Atom(args[0]));
+			throw new TypeException("number",new Atom(args[0]));
 	}
 }

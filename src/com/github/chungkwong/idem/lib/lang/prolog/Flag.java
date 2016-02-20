@@ -22,11 +22,11 @@ import java.util.function.Predicate;
  */
 public class Flag{
 	private final String name;
-	private Object value;
+	private Term value;
 	private final Predicate checker;
 	private final boolean changeable;
 	private final String domain;
-	public Flag(String name,Object value,boolean changeable,Predicate checker,String domain){
+	public Flag(String name,Term value,boolean changeable,Predicate<Term> checker,String domain){
 		this.name=name;
 		this.changeable=changeable;
 		this.checker=checker;
@@ -36,20 +36,19 @@ public class Flag{
 	public String getName(){
 		return name;
 	}
-	public Object getValue(){
+	public Term getValue(){
 		return value;
 	}
 	public Predicate getChecker(){
 		return checker;
 	}
-	public void setValue(Object value){
-		if(checker.test(value))
+	public void setValue(Term value){
+		if(changeable&&checker.test(value))
 			this.value=value;
 		else
-			throw new DomainException(domain,new Atom(value));
+			throw new DomainException(domain,value);
 	}
 	public boolean isChangeable(){
 		return changeable;
 	}
-
 }

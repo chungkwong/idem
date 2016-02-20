@@ -33,7 +33,7 @@ public class CurrentPredicate extends ReexecutableBuildinPredicate{
 		Term PI=argments.get(0);
 		Term lst=new Atom(Collections.EMPTY_LIST);
 		for(Predicate pred:exec.getDatabase().getProcedures().keySet()){
-			if(PI.unities(pred.getIndicator(),exec.getCurrentSubst()))
+			if(PI.unities(pred.getIndicator(),new Substitution(exec.getCurrentSubst())))
 				lst=new CompoundTerm(".",Arrays.asList(pred.getIndicator(),lst));
 		}
 		exec.getCurrentSubst().assign(var,lst);

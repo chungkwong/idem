@@ -29,9 +29,9 @@ public class ShiftLeft extends Evaluable{
 	@Override
 	protected Term evaluate(Object[] args){
 		if(!(args[0] instanceof BigInteger))
-			throw new TypeException(BigInteger.class,new Atom(args[0]));
+			throw new TypeException("integer",new Atom(args[0]));
 		if(!(args[1] instanceof BigInteger))
-			throw new TypeException(BigInteger.class,new Atom(args[1]));
+			throw new TypeException("integer",new Atom(args[1]));
 		return new Atom(((BigInteger)args[0]).shiftLeft(((BigInteger)args[1]).intValueExact()));
 	}
 }

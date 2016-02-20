@@ -22,28 +22,18 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SetPrologFlag extends BuildinPredicate{
-	public static final SetPrologFlag INSTANCE=new SetPrologFlag();
-	public static final Predicate pred=new Predicate("set_prolog_flag",2);
+public class FailIf extends BuildinPredicate{
+	public static final FailIf INSTANCE=new FailIf();
+	public static final Predicate pred=new Predicate("fail_if",1);
 	@Override
 	public boolean activate(List<Term> argments,Processor exec){
-		Term flag=argments.get(0),val=argments.get(1);
-		if(flag instanceof Variable){
-			throw new InstantiationException((Variable)flag);
-		}else if(flag instanceof Atom){
-			if(val instanceof Variable)
-				throw new InstantiationException((Variable)val);
-			else{
-				Flag toset=exec.getDatabase().getFlag(((Atom)flag).toString());
-				if(toset==null)
-					throw new DomainException("prolog_flag",flag);
-				else{
-					toset.setValue(val);
-					return true;
-				}
-			}
+		Term term=argments.get(0);
+		if(term instanceof CompoundTerm||(term instanceof Atom&&((Atom)term).getValue()instanceof String)){
+			return !(new Processor((Predication)term,exec.getDatabase()).isSuccessed());
+		}else if(term instanceof Variable){
+			throw new InstantiationException((Variable)term);
 		}else{
-			throw new TypeException("atom",flag);
+			throw new TypeException("callable",term);
 		}
 	}
 	@Override

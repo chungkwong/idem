@@ -37,12 +37,12 @@ public class Arg extends BuildinPredicate{
 			}else if(n instanceof Variable){
 				throw new InstantiationException((Variable)n);
 			}else{
-				throw new TypeException(BigInteger.class,n);
+				throw new TypeException("integer",n);
 			}
 		}else if(term instanceof Variable){
 			throw new InstantiationException((Variable)term);
 		}else{
-			throw new TypeException(CompoundTerm.class,term);
+			throw new TypeException("compound",term);
 		}
 	}
 	@Override

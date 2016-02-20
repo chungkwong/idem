@@ -84,7 +84,7 @@ public class Atom<T> extends Predication{
 	@Override
 	public Predication toBody()throws TypeException{
 		if(val instanceof Number)
-			throw new TypeException(String.class,this);
+			throw new TypeException("atom",this);
 		return this;
 	}
 	@Override

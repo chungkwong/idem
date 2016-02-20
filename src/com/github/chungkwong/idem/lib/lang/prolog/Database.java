@@ -46,6 +46,8 @@ public class Database{
 		addProcedure(ClauseOf.INSTANCE);
 		addProcedure(CopyTerm.INSTANCE);
 		addProcedure(CurrentPredicate.INSTANCE);
+		addProcedure(CurrentPrologFlag.INSTANCE);
+		addProcedure(FailIf.INSTANCE);
 		addProcedure(FindAll.INSTANCE);
 		addProcedure(Functor.INSTANCE);
 		addProcedure(Halt.INSTANCE);
@@ -57,9 +59,12 @@ public class Database{
 		addProcedure(IsCompound.INSTANCE);
 		addProcedure(IsInteger.INSTANCE);
 		addProcedure(IsReal.INSTANCE);
+		addProcedure(Once.INSTANCE);
 		addProcedure(Precedes.INSTANCE);
 		addProcedure(Retract.INSTANCE);
+		addProcedure(Repeat.INSTANCE);
 		addProcedure(SetOf.INSTANCE);
+		addProcedure(SetPrologFlag.INSTANCE);
 		addProcedure(Succeed.INSTANCE);
 		addProcedure(UnifyWithOccurCheck.INSTANCE);
 		addProcedure(Univ.INSTANCE);
@@ -72,11 +77,12 @@ public class Database{
 			addPredication(pred);
 			pred=parser.next();
 		}
-		addFlag(new Flag("bounded","false",false,(o)->true,"character_list"));
-		addFlag(new Flag("intger_rounding_function","toward_zero",false,(o)->true,"character_list"));
-		addFlag(new Flag("char_conversion","on",true,(o)->o.equals("on")||o.equals("off"),"character_list"));
-		addFlag(new Flag("debug","off",true,(o)->o.equals("off")||o.equals("on"),"character_list"));
-		addFlag(new Flag("undefined_predicate","error",true,(o)->o.equals("error")||o.equals("fail")||o.equals("warning"),"character_list"));
+		addFlag(new Flag("bounded",new Atom("false"),false,(o)->true,"character_list"));
+		addFlag(new Flag("intger_rounding_function",new Atom("toward_zero"),false,(o)->true,"character_list"));
+		Atom on=new Atom("on"),off=new Atom("off"),error=new Atom("error"),fail=new Atom("fail"),warning=new Atom("warning");
+		addFlag(new Flag("char_conversion",on,true,(o)->o.equals(on)||o.equals(off),"character_list"));
+		addFlag(new Flag("debug",off,true,(o)->o.equals(off)||o.equals(on),"character_list"));
+		addFlag(new Flag("undefined_predicate",error,true,(o)->o.equals(error)||o.equals(fail)||o.equals(warning),"character_list"));
 	}
 	public Database(){
 
@@ -134,6 +140,9 @@ public class Database{
 	}
 	public Flag getFlag(String name){
 		return flags.get(name);
+	}
+	public Map<String,Flag> getFlags(){
+		return Collections.unmodifiableMap(flags);
 	}
 	@Override
 	public String toString(){

@@ -32,7 +32,7 @@ public class Call extends ControlConstruct{
 		if(goal instanceof Variable){
 			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)goal);
 		}else if(goal instanceof Atom&&((Atom)goal).getValue()instanceof Number){
-			throw new com.github.chungkwong.idem.lib.lang.prolog.TypeException(String.class,goal);
+			throw new com.github.chungkwong.idem.lib.lang.prolog.TypeException("atom",goal);
 		}
 		ExecutionState cutparent=exec.getStack().get(exec.getStack().size()-2);
 		DecoratedSubgoal subgoal=new DecoratedSubgoal(goal.toBody(),cutparent);

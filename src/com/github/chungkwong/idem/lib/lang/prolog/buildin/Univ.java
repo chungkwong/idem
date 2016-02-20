@@ -42,7 +42,7 @@ public class Univ extends BuildinPredicate{
 					if(hd instanceof Atom){
 						return new CompoundTerm(((Atom)hd).getValue(),Lists.tail(list)).unities(term,exec.getCurrentSubst());
 					}else if(hd instanceof CompoundTerm){
-						throw new TypeException(Atom.class,list);
+						throw new TypeException("atom",list);
 					}else if(hd instanceof Variable){
 						throw new InstantiationException((Variable)hd);
 					}else{

@@ -28,7 +28,7 @@ public class Helper{
 		else if(o instanceof BigInteger)
 			return new BigDecimal((BigInteger)o);
 		else
-			throw new TypeException(BigDecimal.class,new Atom(o));
+			throw new TypeException("number",new Atom(o));
 	}
 	public static final int signum(Object o){
 		if(o instanceof BigInteger)
@@ -36,6 +36,6 @@ public class Helper{
 		else if(o instanceof BigDecimal)
 			return ((BigDecimal)o).signum();
 		else
-			throw new TypeException(BigDecimal.class,new Atom(o));
+			throw new TypeException("number",new Atom(o));
 	}
 }

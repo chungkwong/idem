@@ -31,6 +31,6 @@ public class Complement extends Evaluable{
 		if(args[0] instanceof BigInteger)
 			return new Atom(((BigInteger)args[0]).not());
 		else
-			throw new TypeException(BigInteger.class,new Atom(args[0]));
+			throw new TypeException("integer",new Atom(args[0]));
 	}
 }
