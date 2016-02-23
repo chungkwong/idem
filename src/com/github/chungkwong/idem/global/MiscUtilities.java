@@ -18,7 +18,7 @@ package com.github.chungkwong.idem.global;
 import java.util.concurrent.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MiscUtilities{
 	public static ExecutorService THREAD_POOL=Executors.newCachedThreadPool();

@@ -21,8 +21,8 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public abstract class ReexecutableBuildinPredicate implements Procedure{
-	public abstract void firstActivate(List<Term> argments,Processor exec,Variable var);
-	public abstract boolean againActivate(List<Term> argments,Processor exec,Variable var);
+	public abstract void firstActivate(List<Term> arguments,Processor exec,Variable var);
+	public abstract boolean againActivate(List<Term> arguments,Processor exec,Variable var);
 	@Override
 	public void execute(Processor exec){
 		exec.getStack().peek().setBI(ExecutionState.BacktraceInfo.BIP);
@@ -34,9 +34,10 @@ public abstract class ReexecutableBuildinPredicate implements Procedure{
 		ExecutionState ccs=new ExecutionState(exec.getCurrentState());
 		exec.getStack().push(ccs);
 		if(againActivate(exec.getCurrentActivator().getArguments(),exec,getVariable(exec.getStack().size()-1))){
-			exec.getCurrentDecoratedSubgoal().setActivator(new Atom("true"));
+			exec.getCurrentDecoratedSubgoal().setActivator(new Constant("true"));
 		}else{
-			exec.getCurrentDecoratedSubgoal().setActivator(new Atom("fail"));
+			exec.getStack().pop();
+			exec.getCurrentDecoratedSubgoal().setActivator(new Constant("fail"));
 		}
 	}
 	@Override

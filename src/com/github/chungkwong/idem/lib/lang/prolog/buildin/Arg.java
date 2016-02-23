@@ -27,11 +27,11 @@ public class Arg extends BuildinPredicate{
 	public static final Arg INSTANCE=new Arg();
 	public static final Predicate pred=new Predicate("arg",3);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		Term n=argments.get(0),term=argments.get(1),arg=argments.get(2);
+	public boolean activate(List<Term> arguments,Processor exec){
+		Term n=arguments.get(0),term=arguments.get(1),arg=arguments.get(2);
 		if(term instanceof CompoundTerm){
-			if(n instanceof Atom&&((Atom)n).getValue()instanceof BigInteger){
-				int i=((BigInteger)((Atom)n).getValue()).intValueExact()-1;
+			if(n instanceof Constant&&((Constant)n).getValue()instanceof BigInteger){
+				int i=((BigInteger)((Constant)n).getValue()).intValueExact()-1;
 				return i>=0&&i<((CompoundTerm)term).getArguments().size()
 						&&((CompoundTerm)term).getArguments().get(i).unities(arg,exec.getCurrentSubst());
 			}else if(n instanceof Variable){

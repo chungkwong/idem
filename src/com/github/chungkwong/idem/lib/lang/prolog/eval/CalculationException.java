@@ -17,17 +17,16 @@
 
 package com.github.chungkwong.idem.lib.lang.prolog.eval;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
-import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CalculationException extends PrologException{
 	public static enum Type{
-		ZERO_DIVISOR(new CompoundTerm("calculation_error",Collections.singletonList(new Atom("zero_divisor")))),
-		OVER_FLOW(new CompoundTerm("calculation_error",Collections.singletonList(new Atom("overflow")))),
-		UNDER_FLOW(new CompoundTerm("calculation_error",Collections.singletonList(new Atom("underflow")))),
-		UNDEFINED(new CompoundTerm("calculation_error",Collections.singletonList(new Atom("undefined"))));
+		ZERO_DIVISOR(new CompoundTerm("calculation_error",new Constant("zero_divisor"))),
+		OVER_FLOW(new CompoundTerm("calculation_error",new Constant("overflow"))),
+		UNDER_FLOW(new CompoundTerm("calculation_error",new Constant("underflow"))),
+		UNDEFINED(new CompoundTerm("calculation_error",new Constant("undefined")));
 		Term errorTerm;
 		Type(Term errorTerm){
 			this.errorTerm=errorTerm;

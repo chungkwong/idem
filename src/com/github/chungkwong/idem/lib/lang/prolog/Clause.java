@@ -17,36 +17,52 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 /**
- *
- * @author kwong
+ * Clause of user-defined procedures
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Clause{
 	private Predication head,body;
-	/*public Clause(Predication head){
-		this.head=head;
-		this.body=True.TRUE;
-	}*/
+	/**
+	 * Construct a clause
+	 * @param head the head
+	 * @param body the body
+	 */
 	public Clause(Predication head,Predication body){
 		this.head=head;
 		this.body=body;
 	}
+	/**
+	 * @return the head of the clause
+	 */
 	public Predication getHead(){
 		return head;
 	}
+	/**
+	 * @return the head of the clause as a term
+	 */
 	public Term getHeadAsTerm(){
 		if(head.getPredicate().getArity()==0)
-			return new Atom(head.getPredicate());
+			return new Constant(head.getPredicate());
 		else
 			return new CompoundTerm(body.getPredicate().getFunctor(),body.getArguments()).renameAllVariable(new HashMap<>());
 	}
+	/**
+	 * @return the body of the clause
+	 */
 	public Predication getBody(){
 		return body;
 	}
+	/**
+	 * @return the body of the clause as a term
+	 */
 	public Term getBodyAsTerm(){
 		if(body.getPredicate().getArity()==0)
-			return new Atom(body.getPredicate());
+			return new Constant(body.getPredicate());
 		return new CompoundTerm(body.getPredicate().getFunctor(),body.getArguments()).renameAllVariable(new HashMap<>());
 	}
+	/**
+	 * @return return a renamed copy of the clause
+	 */
 	public Clause rename(){
 		HashMap<Variable,Variable> renameTo=new HashMap<>();
 		return new Clause(head.renameAllVariable(renameTo),body.renameAllVariable(renameTo));

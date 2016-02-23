@@ -27,15 +27,15 @@ public class Is extends BuildinPredicate{
 	public static final Is INSTANCE=new Is();
 	public static final Predicate pred=new Predicate("is",2);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		return argments.get(0).unities(evaluate(argments.get(1)),exec.getCurrentSubst());
+	public boolean activate(List<Term> arguments,Processor exec){
+		return arguments.get(0).unities(evaluate(arguments.get(1)),exec.getCurrentSubst());
 	}
 	@Override
 	public Predicate getPredicate(){
 		return pred;
 	}
 	private Term evaluate(Term t){
-		if(t instanceof Atom){
+		if(t instanceof Constant){
 			return t;
 		}else if(t instanceof CompoundTerm){
 			CompoundTerm ct=(CompoundTerm)t;

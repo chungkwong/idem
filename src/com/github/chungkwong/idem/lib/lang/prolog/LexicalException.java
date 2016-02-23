@@ -14,27 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.eval;
-import com.github.chungkwong.idem.lib.lang.prolog.*;
-import java.math.*;
+
+package com.github.chungkwong.idem.lib.lang.prolog;
+
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Round extends Evaluable{
-	public static final Round INSTANCE=new Round();
-	public static final BigDecimal HALF=BigDecimal.ONE.divide(BigDecimal.valueOf(2));
-	private Round(){
-		super(new EvaluableFunctor("round",1));
+public class LexicalException extends RuntimeException{
+	/**
+	 * Creates a new instance of <code>LexicalException</code> without detail message.
+	 */
+	public LexicalException() {
 	}
-	@Override
-	protected Term evaluate(Object[] args){
-		if(args[0] instanceof BigInteger)
-			return new Constant(args[0]);
-		else if(args[0] instanceof BigDecimal){
-			BigDecimal arg=((BigDecimal)args[0]).add(HALF);
-			return new Constant(arg.round(new MathContext(Math.max(arg.precision()-arg.scale(),0),RoundingMode.FLOOR)).toBigInteger());
-		}else
-			throw new TypeException("number",new Constant(args[0]));
+	/**
+	 * Constructs an instance of <code>LexicalException</code> with the specified detail message.
+	 * @param msg the detail message.
+	 */
+	public LexicalException(String msg) {
+		super(msg);
 	}
 }

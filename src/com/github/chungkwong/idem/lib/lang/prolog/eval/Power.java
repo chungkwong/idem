@@ -32,6 +32,6 @@ public class Power extends Evaluable{
 		int sgn=Helper.signum(args[0]);
 		if((sgn<0&&!(args[1]instanceof BigInteger))||(sgn==0&&Helper.signum(args[1])<0))
 			throw new CalculationException(CalculationException.Type.UNDEFINED);
-		return new Atom(BigDecimalMath.pow(Helper.toReal(args[0]),Helper.toReal(args[1]),MathContext.UNLIMITED));
+		return new Constant(BigDecimalMath.pow(Helper.toReal(args[0]),Helper.toReal(args[1]),MathContext.UNLIMITED));
 	}
 }

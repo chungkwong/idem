@@ -16,10 +16,9 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
-import java.util.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Throw extends ControlConstruct{
 	public static Throw THROW=new Throw();
@@ -39,7 +38,7 @@ public class Throw extends ControlConstruct{
 			cutparent=exec.getStack().peek().getDecsglstk().peek().getCutparent();
 		}
 		DecoratedSubgoal currdec=exec.getStack().peek().getDecsglstk().pop();
-		Predication recover=new CompoundTerm("call",Collections.singletonList(currdec.getActivator().getArguments().get(2).substitute(subst)));
+		Predication recover=new CompoundTerm("call",currdec.getActivator().getArguments().get(2).substitute(subst));
 		exec.getStack().peek().getDecsglstk().push(new DecoratedSubgoal(recover,currdec.getCutparent()));
 		exec.getStack().peek().setBI(ExecutionState.BacktraceInfo.NIL);
 	}

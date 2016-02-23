@@ -29,11 +29,11 @@ public class Ceiling extends Evaluable{
 	@Override
 	protected Term evaluate(Object[] args){
 		if(args[0] instanceof BigInteger)
-			return new Atom(args[0]);
+			return new Constant(args[0]);
 		else if(args[0] instanceof BigDecimal){
 			BigDecimal arg=((BigDecimal)args[0]);
-			return new Atom(arg.round(new MathContext(Math.max(arg.precision()-arg.scale(),0),RoundingMode.CEILING)).toBigInteger());
+			return new Constant(arg.round(new MathContext(Math.max(arg.precision()-arg.scale(),0),RoundingMode.CEILING)).toBigInteger());
 		}else
-			throw new TypeException("number",new Atom(args[0]));
+			throw new TypeException("number",new Constant(args[0]));
 	}
 }

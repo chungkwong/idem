@@ -26,9 +26,9 @@ public class Once extends BuildinPredicate{
 	public static final Once INSTANCE=new Once();
 	public static final Predicate pred=new Predicate("once",1);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		Term term=argments.get(0);
-		if(term instanceof CompoundTerm||(term instanceof Atom&&((Atom)term).getValue()instanceof String)){
+	public boolean activate(List<Term> arguments,Processor exec){
+		Term term=arguments.get(0);
+		if(term instanceof CompoundTerm||(term instanceof Constant&&((Constant)term).getValue()instanceof String)){
 			return (new Processor((Predication)term,exec.getDatabase()).isSuccessed());
 		}else if(term instanceof Variable){
 			throw new InstantiationException((Variable)term);

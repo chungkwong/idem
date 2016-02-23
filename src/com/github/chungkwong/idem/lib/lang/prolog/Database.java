@@ -21,12 +21,12 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.*;
 /**
- *
- * @author kwong
+ * Prolog database
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Database{
-	HashMap<Predicate,Procedure> procedures=new HashMap<>();
-	HashMap<String,Flag> flags=new HashMap<>();
+	private final HashMap<Predicate,Procedure> procedures=new HashMap<>();
+	private final HashMap<String,Flag> flags=new HashMap<>();
 	{
 		addProcedure(Call.CALL);
 		addProcedure(Catch.CATCH);
@@ -77,22 +77,32 @@ public class Database{
 			addPredication(pred);
 			pred=parser.next();
 		}
-		addFlag(new Flag("bounded",new Atom("false"),false,(o)->true,"character_list"));
-		addFlag(new Flag("intger_rounding_function",new Atom("toward_zero"),false,(o)->true,"character_list"));
-		Atom on=new Atom("on"),off=new Atom("off"),error=new Atom("error"),fail=new Atom("fail"),warning=new Atom("warning");
+
+		addFlag(new Flag("bounded",new Constant("false"),false,(o)->true,"character_list"));
+		addFlag(new Flag("intger_rounding_function",new Constant("toward_zero"),false,(o)->true,"character_list"));
+		Constant on=new Constant("on"),off=new Constant("off"),error=new Constant("error"),fail=new Constant("fail"),warning=new Constant("warning");
 		addFlag(new Flag("char_conversion",on,true,(o)->o.equals(on)||o.equals(off),"character_list"));
 		addFlag(new Flag("debug",off,true,(o)->o.equals(off)||o.equals(on),"character_list"));
 		addFlag(new Flag("undefined_predicate",error,true,(o)->o.equals(error)||o.equals(fail)||o.equals(warning),"character_list"));
 	}
-	public Database(){
-
+	/**
+	 * Add a procedure to the database
+	 * @param proc to be added
+	 */
+	public void addProcedure(Procedure proc){
+		procedures.put(proc.getPredicate(),proc);
 	}
-	public void addProcedure(Procedure clause){
-		procedures.put(clause.getPredicate(),clause);
-	}
+	/**
+	 * Remove a procedure form the database
+	 * @param pred the predicate of the procedure to be removed
+	 */
 	public void removeProcedure(Predicate pred){
 		procedures.remove(pred);
 	}
+	/**
+	 * Add a clause to a user-defined procedure as the frist one
+	 * @param clause to be added
+	 */
 	public void addClauseToFirst(Clause clause){
 		Predicate predicate=clause.getHead().getPredicate();
 		if(procedures.containsKey(predicate)&&procedures.get(predicate) instanceof UserPredicate)
@@ -101,6 +111,10 @@ public class Database{
 			procedures.put(predicate,new UserPredicate(clause));
 		}
 	}
+	/**
+	 * Add a clause to a user-defined procedure as the last one
+	 * @param clause to be added
+	 */
 	public void addClauseToLast(Clause clause){
 		Predicate predicate=clause.getHead().getPredicate();
 		if(procedures.containsKey(predicate)&&procedures.get(predicate) instanceof UserPredicate)
@@ -109,6 +123,10 @@ public class Database{
 			procedures.put(predicate,new UserPredicate(clause));
 		}
 	}
+	/**
+	 * Remove a clause from a user-defined procedure
+	 * @param clause to be removed
+	 */
 	public void removeClause(Clause clause){
 		Predicate predicate=clause.getHead().getPredicate();
 		if(procedures.containsKey(predicate)){
@@ -120,27 +138,54 @@ public class Database{
 			}
 		}
 	}
+	/**
+	 * Add a prolog text to the database as a user-defined procedure
+	 * @param pred to be added
+	 */
 	public void addPredication(Predication pred){
 		if(pred.getPredicate().getFunctor().equals(":-"))
 			addClauseToLast(new Clause((Predication)pred.getArguments().get(0),(Predication)pred.getArguments().get(1)));
 		else
-			addClauseToLast(new Clause(pred,new Atom("true")));
+			addClauseToLast(new Clause(pred,new Constant("true")));
 	}
+	/**
+	 * @param predicate
+	 * @return a procedure in the database with the given predicate or null
+	 * if it does not exists
+	 */
 	public Procedure getProcedure(Predicate predicate){
 		return procedures.get(predicate);
 	}
+	/**
+	 * @return all the procedures in the database
+	 */
 	public Map<Predicate,Procedure> getProcedures(){
 		return Collections.unmodifiableMap(procedures);
 	}
+	/**
+	 * Add a flag to the database
+	 * @param flag to be added
+	 */
 	public void addFlag(Flag flag){
 		flags.put(flag.getName(),flag);
 	}
+	/**
+	 * Remove a flag to the database
+	 * @param flag to be removed
+	 */
 	public void removeFlag(Flag flag){
 		flags.remove(flag.getName());
 	}
+	/**
+	 * @param name the name of a flag
+	 * @return a flag with the given name or null if it does not exists
+	 */
 	public Flag getFlag(String name){
 		return flags.get(name);
 	}
+	/**
+	 * @return all the flags in the database indexed by their name
+	 */
 	public Map<String,Flag> getFlags(){
 		return Collections.unmodifiableMap(flags);
 	}

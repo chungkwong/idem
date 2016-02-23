@@ -14,26 +14,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.buildin;
-import com.github.chungkwong.idem.lib.lang.prolog.*;
+package com.github.chungkwong.idem.gui;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
+import javax.swing.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Repeat extends ReexecutableBuildinPredicate{
-	public static final Repeat INSTANCE=new Repeat();
-	public static final Predicate pred=new Predicate("repeat",0);
-	@Override
-	public Predicate getPredicate(){
-		return pred;
+public class HintedTextField extends JTextField implements FocusListener{
+	private TreeMap<String,String> hints=new TreeMap<>();
+	public HintedTextField(TreeMap<String,String> hints){
+		this.hints=hints;
+		addFocusListener(this);
+		
+	}
+	public static void main(String[] args){
+		JFrame f=new JFrame("Console");
+		TreeMap<String,String> hints=new TreeMap<>();
+		hints.put("ls","list file");
+		hints.put("ps","list jobs");
+		hints.put("pwd","working directory");
+		f.add(new HintedTextField(hints),BorderLayout.CENTER);
+		f.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.setVisible(true);
 	}
 	@Override
-	public void firstActivate(List<Term> arguments,Processor exec,Variable var){
+	public void focusGained(FocusEvent e){
 
 	}
 	@Override
-	public boolean againActivate(List<Term> arguments,Processor exec,Variable var){
-		return true;
+	public void focusLost(FocusEvent e){
+
 	}
 }

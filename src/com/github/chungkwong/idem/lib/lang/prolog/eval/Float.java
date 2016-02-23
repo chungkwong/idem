@@ -29,10 +29,10 @@ public class Float extends Evaluable{
 	@Override
 	protected Term evaluate(Object[] args){
 		if(args[0] instanceof BigInteger)
-			return new Atom(new BigDecimal(((BigInteger)args[0]).abs()));
+			return new Constant(new BigDecimal(((BigInteger)args[0]).abs()));
 		else if(args[0] instanceof BigDecimal)
-			return new Atom(args[0]);
+			return new Constant(args[0]);
 		else
-			throw new TypeException("number",new Atom(args[0]));
+			throw new TypeException("number",new Constant(args[0]));
 	}
 }

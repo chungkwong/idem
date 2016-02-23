@@ -20,7 +20,7 @@ import java.lang.ref.*;
 import java.util.concurrent.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class BackgroundWeakChunk<T> implements Chunk<T>,Runnable{
 	Callable<T> proc;

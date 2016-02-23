@@ -19,7 +19,7 @@ import java.text.*;
 import java.util.logging.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class StandardLogFormatter extends Formatter{
 	static final DateFormat datefmt=DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT);

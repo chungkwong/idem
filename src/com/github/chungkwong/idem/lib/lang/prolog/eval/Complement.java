@@ -29,8 +29,8 @@ public class Complement extends Evaluable{
 	@Override
 	protected Term evaluate(Object[] args){
 		if(args[0] instanceof BigInteger)
-			return new Atom(((BigInteger)args[0]).not());
+			return new Constant(((BigInteger)args[0]).not());
 		else
-			throw new TypeException("integer",new Atom(args[0]));
+			throw new TypeException("integer",new Constant(args[0]));
 	}
 }

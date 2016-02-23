@@ -25,32 +25,32 @@ public class CurrentPrologFlag extends ReexecutableBuildinPredicate{
 	public static final CurrentPrologFlag INSTANCE=new CurrentPrologFlag();
 	public static final Predicate pred=new Predicate("current_prolog_flag",2);
 	@Override
-	public void firstActivate(List<Term> argments,Processor exec,Variable var){
-		Term flag=argments.get(0),val=argments.get(1);
-		Term lst=new Atom(Collections.EMPTY_LIST);
+	public void firstActivate(List<Term> arguments,Processor exec,Variable var){
+		Term flag=arguments.get(0),val=arguments.get(1);
+		Term lst=Lists.EMPTY_LIST;
 		if(flag instanceof Variable){
 			for(Flag f:exec.getDatabase().getFlags().values()){
 				if(f.getValue().unities(val,new Substitution(exec.getCurrentSubst())))
-					lst=new CompoundTerm(".",Arrays.asList(new CompoundTerm("flag",Arrays.asList(new Atom(f.getName()),f.getValue())),lst));
+					lst=new CompoundTerm(".",new CompoundTerm("flag",new Constant(f.getName()),f.getValue()),lst);
 			}
-		}else if(flag instanceof Atom){
-			Flag f=exec.getDatabase().getFlag(((Atom)flag).toString());
+		}else if(flag instanceof Constant){
+			Flag f=exec.getDatabase().getFlag(((Constant)flag).toString());
 			if(f.getValue().unities(val,new Substitution(exec.getCurrentSubst())))
-				lst=new CompoundTerm(".",Arrays.asList(new CompoundTerm("flag",Arrays.asList(flag,f.getValue())),lst));
+				lst=new CompoundTerm(".",new CompoundTerm("flag",flag,f.getValue()),lst);
 		}else{
 			throw new TypeException("atom",flag);
 		}
 		exec.getCurrentSubst().assign(var,lst);
 	}
 	@Override
-	public boolean againActivate(List<Term> argments,Processor exec,Variable var){
-		Term flag=argments.get(0),val=argments.get(1);
+	public boolean againActivate(List<Term> arguments,Processor exec,Variable var){
+		Term flag=arguments.get(0),val=arguments.get(1);
 		Substitution subst=exec.getStack().get(exec.getStack().size()-2).getSubst();
 		Term lst=subst.findRoot(var);
 		if(lst instanceof CompoundTerm){
 			CompoundTerm entry=(CompoundTerm)((CompoundTerm)lst).getArguments().get(0);
-			argments.get(0).unities(entry.getArguments().get(0),exec.getCurrentSubst());
-			argments.get(1).unities(entry.getArguments().get(1),exec.getCurrentSubst());
+			arguments.get(0).unities(entry.getArguments().get(0),exec.getCurrentSubst());
+			arguments.get(1).unities(entry.getArguments().get(1),exec.getCurrentSubst());
 			subst.unassign(var);
 			subst.assign(var,((CompoundTerm)lst).getArguments().get(1));
 			return true;

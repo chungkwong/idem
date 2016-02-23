@@ -26,8 +26,8 @@ public class IsReal extends BuildinPredicate{
 	public static final IsReal INSTANCE=new IsReal();
 	public static final Predicate pred=new Predicate("real",1);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		return argments.get(0) instanceof Atom&&((Atom)argments.get(0)).getValue() instanceof BigDecimal;
+	public boolean activate(List<Term> arguments,Processor exec){
+		return arguments.get(0) instanceof Constant&&((Constant)arguments.get(0)).getValue() instanceof BigDecimal;
 	}
 	@Override
 	public Predicate getPredicate(){

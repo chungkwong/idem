@@ -33,11 +33,11 @@ public class Sign extends Evaluable{
 		else if(args[0] instanceof BigDecimal)
 			return pack(((BigDecimal)args[0]).signum());
 		else
-			throw new TypeException("number",new Atom(args[0]));
+			throw new TypeException("number",new Constant(args[0]));
 	}
-	private Atom pack(int sign){
+	private Constant pack(int sign){
 		if(sign==0)
 			sign=1;
-		return new Atom(BigInteger.valueOf(sign));
+		return new Constant(BigInteger.valueOf(sign));
 	}
 }

@@ -21,18 +21,31 @@ import java.io.*;
 import java.math.*;
 import java.util.*;
 /**
- *
- * @author kwong
+ * A lexical analyzer for Prolog
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class PrologLex implements SimpleIterator<Object>{
 	PushbackReader in;
-	static final String GRAPHIC_TOKEN_CHARACTER="#$&*+-./:<=>?@^~\\";
+	private static final String GRAPHIC_TOKEN_CHARACTER="#$&*+-./:<=>?@^~\\";
+	/**
+	 * Construct a prologLex from a Reader
+	 * @param in the reader providing Prolog code to be analysised
+	 */
 	public PrologLex(Reader in){
 		this.in=new PushbackReader(in,2);
 	}
+	/**
+	 * Construct a prologLex from a String
+	 * @param code the Prolog code to be analysised
+	 */
 	public PrologLex(String code){
 		this(new StringReader(code));
 	}
+	/**
+	 * Analysis the remaining Prolog code
+	 * @return the remaining tokens
+	 * @throws IOException
+	 */
 	public ArrayList<Object> getRemainingTokens()throws IOException{
 		ArrayList<Object> tokens=new ArrayList<>();
 		Object next=nextToken();
@@ -252,6 +265,11 @@ public class PrologLex implements SimpleIterator<Object>{
 			return intPart;
 		}
 	}
+	/**
+	 * Find out the next token
+	 * @return the next token
+	 * @throws IOException
+	 */
 	public Object nextToken()throws IOException{
 		eatLayoutText();
 		int c=in.read();
@@ -263,7 +281,7 @@ public class PrologLex implements SimpleIterator<Object>{
 			case '\'':
 				return getQuotedString('\'');
 			case '\"':
-				return getQuotedString('\"');
+				return Lists.asCodeList(getQuotedString('\"'));
 			case '.':case '#':case '$': case '&':case '*':case '+':case '-':case '/':case ':':
 			case '<':case '=':case '>':case '?':case '@':case '^':case '~':case '\\':
 				return getGraphicToken(c);
@@ -286,16 +304,17 @@ public class PrologLex implements SimpleIterator<Object>{
 		}
 		return null;
 	}
+	/**
+	 * The entry of the debug tool which show the tokens generated from
+	 * each input line
+	 * @param args unused
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException{
 		Scanner in=new Scanner(System.in);
 		while(in.hasNextLine()){
 			PrologLex lex=new PrologLex(in.nextLine());
 			System.out.println(lex.getRemainingTokens());
 		}
-	}
-}
-class LexicalException extends RuntimeException{
-	public LexicalException(String message){
-		super(message);
 	}
 }

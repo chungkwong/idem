@@ -25,9 +25,9 @@ public class UnifyWithOccurCheck extends BuildinPredicate{
 	public static final Var INSTANCE=new Var();
 	public static final Predicate pred=new Predicate("unify_with_occurs_check",2);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
+	public boolean activate(List<Term> arguments,Processor exec){
 		Substitution subst=new Substitution();
-		return argments.get(0).unities(argments.get(1),subst)&&!subst.occurCheck();
+		return arguments.get(0).unities(arguments.get(1),subst)&&!subst.occurCheck();
 	}
 	@Override
 	public Predicate getPredicate(){

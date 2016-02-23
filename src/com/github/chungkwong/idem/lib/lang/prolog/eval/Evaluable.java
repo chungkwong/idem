@@ -32,11 +32,11 @@ public abstract class Evaluable{
 	protected abstract Term evaluate(Object[] args);
 	public Term evaluate(List<Term> args){
 		assert args.size()==functor.getArity();
-		if(!args.stream().allMatch((t)->t instanceof Atom))
-			throw new TypeException("constant",args.stream().filter((t)->t instanceof Atom).findFirst().get());
-		Object[] argments=new Object[args.size()];
-		for(int i=0;i<argments.length;i++)
-			argments[i]=((Atom)args.get(i)).getValue();
-		return evaluate(argments);
+		if(!args.stream().allMatch((t)->t instanceof Constant))
+			throw new TypeException("constant",args.stream().filter((t)->t instanceof Constant).findFirst().get());
+		Object[] arguments=new Object[args.size()];
+		for(int i=0;i<arguments.length;i++)
+			arguments[i]=((Constant)args.get(i)).getValue();
+		return evaluate(arguments);
 	}
 }

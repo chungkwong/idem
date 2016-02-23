@@ -17,23 +17,29 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 /**
- *
- * @author kwong
+ * Buildin Predicate which is not reexecutable
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public abstract class BuildinPredicate implements Procedure{
-	public abstract boolean activate(List<Term> argments,Processor exec);
+	/**
+	 * Activate a goal
+	 * @param arguments the arguments of the goal
+	 * @param exec the Prolog processor
+	 * @return the goal succeed or not
+	 */
+	public abstract boolean activate(List<Term> arguments,Processor exec);
 	@Override
 	public void execute(Processor exec){
 		exec.getStack().peek().setBI(ExecutionState.BacktraceInfo.BIP);
 		if(activate(exec.getCurrentActivator().getArguments(),exec)){
-			exec.getCurrentDecoratedSubgoal().setActivator(new Atom("true"));
+			exec.getCurrentDecoratedSubgoal().setActivator(new Constant("true"));
 		}else{
-			exec.getCurrentDecoratedSubgoal().setActivator(new Atom("fail"));
+			exec.getCurrentDecoratedSubgoal().setActivator(new Constant("fail"));
 		}
 	}
 	@Override
 	public void reexecute(Processor exec){//FIXME
-		
+
 	}
 	@Override
 	public String toString(){

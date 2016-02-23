@@ -18,7 +18,7 @@ package com.github.chungkwong.idem.lib.lazy;
 import java.util.concurrent.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class LazyChunk<T> implements Chunk<T>{
 	Callable<T> proc;

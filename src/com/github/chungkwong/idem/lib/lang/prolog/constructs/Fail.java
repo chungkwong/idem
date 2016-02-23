@@ -18,7 +18,7 @@ package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Fail extends ControlConstruct{
 	public static final Fail FAIL=new Fail();

@@ -19,7 +19,7 @@ package com.github.chungkwong.idem.lib.lazy;
 import static com.github.chungkwong.idem.global.MiscUtilities.THREAD_POOL;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CallBackChunk<T> implements Chunk<T>{
 	Chunk<T> chunk;

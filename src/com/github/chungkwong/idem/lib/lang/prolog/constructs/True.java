@@ -18,7 +18,7 @@ package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class True extends ControlConstruct{
 	public static True TRUE=new True();

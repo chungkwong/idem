@@ -16,10 +16,27 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
-
+/**
+ * Predication, known subclass including Constant and CompoundTerm
+ * @author Chan Chung Kwong <1m02math@126.com>
+ */
 public abstract class Predication implements Term{
+	/**
+	 * @return the predicate corresponsing to the predication
+	 */
 	public abstract Predicate getPredicate();
+	/**
+	 * @return the arguments of the predication
+	 */
 	public abstract List<Term> getArguments();
+	/**
+	 * @param renameTo user should pass a<code>new HashMap<>()</code>
+	 * @return a renamed predication
+	 */
 	public abstract Predication renameAllVariable(HashMap<Variable,Variable> renameTo);
+	/**
+	 * @param subst substitution to be used
+	 * @return substituted copy of the predication
+	 */
 	public abstract Predication substitute(Substitution subst);
 }

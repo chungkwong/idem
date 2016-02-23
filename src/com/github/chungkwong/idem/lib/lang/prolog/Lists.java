@@ -15,20 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
+import java.math.*;
 import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Lists{
-	public static Term emptyList(){
-		return new Atom(Collections.EMPTY_LIST);
-	}
+	public static final Constant EMPTY_LIST=new Constant("[]");
 	public static Term asList(Term... elements){
 		int index=elements.length;
-		Term list=emptyList();
+		Term list=EMPTY_LIST;
 		while(--index>=0){
-			list=new CompoundTerm(".",Arrays.asList(elements[index],list));
+			list=new CompoundTerm(".",elements[index],list);
 		}
 		return list;
 	}
@@ -41,13 +40,23 @@ public class Lists{
 		return length;
 	}
 	public static boolean isEmptyList(Term term){
-		return term instanceof Atom&&((Atom)term).getValue().equals(Collections.EMPTY_LIST);
+		return term.equals(EMPTY_LIST);
 	}
 	public static boolean isNonEmptyList(Term term){
-		return term instanceof CompoundTerm&&((CompoundTerm)term).getFunctor().equals(".");
+		return term instanceof CompoundTerm&&((CompoundTerm)term).getFunctor().equals(".")
+				&&((CompoundTerm)term).getArguments().size()==2;
 	}
 	public static boolean isList(Term term){
 		return isEmptyList(term)||isNonEmptyList(term);
+	}
+	public static boolean isProperList(Term term){
+		while(isNonEmptyList(term)){
+			term=((CompoundTerm)term).getArguments().get(1);
+		}
+		return isEmptyList(term);
+	}
+	public static Term asCodeList(String str){
+		return asList((Term[])str.codePoints().mapToObj((i)->new Constant(BigInteger.valueOf(i))).toArray());
 	}
 	public static Term head(Term term){
 		return ((CompoundTerm)term).getArguments().get(0);

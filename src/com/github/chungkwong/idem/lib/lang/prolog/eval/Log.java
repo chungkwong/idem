@@ -33,6 +33,6 @@ public class Log extends Evaluable{
 		if(arg.signum()<=0)
 			throw new CalculationException(CalculationException.Type.UNDEFINED);
 		else
-			return new Atom(BigDecimalMath.log(arg,MathContext.UNLIMITED));
+			return new Constant(BigDecimalMath.log(arg,MathContext.UNLIMITED));
 	}
 }

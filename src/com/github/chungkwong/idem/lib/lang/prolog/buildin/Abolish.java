@@ -26,15 +26,15 @@ public class Abolish extends BuildinPredicate{
 	public static final Abolish INSTANCE=new Abolish();
 	public static final Predicate pred=new Predicate("abolish",1);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		Term arg=argments.get(0);
+	public boolean activate(List<Term> arguments,Processor exec){
+		Term arg=arguments.get(0);
 		if(arg instanceof CompoundTerm){
 			CompoundTerm proc=(CompoundTerm)arg;
 			if(proc.getFunctor().equals("/")&&proc.getArguments().size()==2){
 				Term functor=proc.getArguments().get(0),arity=proc.getArguments().get(1);
-				if(functor instanceof Atom){
-					if(arity instanceof Atom&&((Atom)arity).getValue()instanceof BigInteger){
-						exec.getDatabase().removeProcedure(new Predicate(((Atom)functor).getValue(),((BigInteger)((Atom)arity).getValue()).intValueExact()));
+				if(functor instanceof Constant){
+					if(arity instanceof Constant&&((Constant)arity).getValue()instanceof BigInteger){
+						exec.getDatabase().removeProcedure(new Predicate(((Constant)functor).getValue(),((BigInteger)((Constant)arity).getValue()).intValueExact()));
 						return true;
 					}else if(arity instanceof Variable)
 						throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)arity);

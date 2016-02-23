@@ -32,8 +32,8 @@ public class Divide extends Evaluable{
 			if(args[1].equals(BigInteger.ZERO))
 				throw new CalculationException(CalculationException.Type.ZERO_DIVISOR);
 			else
-				return new Atom(((BigInteger)args[0]).divide((BigInteger)args[1]));
+				return new Constant(((BigInteger)args[0]).divide((BigInteger)args[1]));
 		else
-			return new Atom(Helper.toReal(args[0]).divide(Helper.toReal(args[1])));
+			return new Constant(Helper.toReal(args[0]).divide(Helper.toReal(args[1])));
 	}
 }

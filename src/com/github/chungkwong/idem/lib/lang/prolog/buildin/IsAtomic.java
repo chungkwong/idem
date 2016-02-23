@@ -25,8 +25,8 @@ public class IsAtomic extends BuildinPredicate{
 	public static final IsAtomic INSTANCE=new IsAtomic();
 	public static final Predicate pred=new Predicate("atomic",1);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		return argments.get(0) instanceof Atom;
+	public boolean activate(List<Term> arguments,Processor exec){
+		return arguments.get(0) instanceof Constant;
 	}
 	@Override
 	public Predicate getPredicate(){

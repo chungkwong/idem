@@ -26,15 +26,15 @@ public class SetPrologFlag extends BuildinPredicate{
 	public static final SetPrologFlag INSTANCE=new SetPrologFlag();
 	public static final Predicate pred=new Predicate("set_prolog_flag",2);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		Term flag=argments.get(0),val=argments.get(1);
+	public boolean activate(List<Term> arguments,Processor exec){
+		Term flag=arguments.get(0),val=arguments.get(1);
 		if(flag instanceof Variable){
 			throw new InstantiationException((Variable)flag);
-		}else if(flag instanceof Atom){
+		}else if(flag instanceof Constant){
 			if(val instanceof Variable)
 				throw new InstantiationException((Variable)val);
 			else{
-				Flag toset=exec.getDatabase().getFlag(((Atom)flag).toString());
+				Flag toset=exec.getDatabase().getFlag(((Constant)flag).toString());
 				if(toset==null)
 					throw new DomainException("prolog_flag",flag);
 				else{

@@ -29,6 +29,6 @@ public class Atan extends Evaluable{
 	}
 	@Override
 	protected Term evaluate(Object[] args){
-		return new Atom(BigDecimalMath.atan(Helper.toReal(args[0]),MathContext.UNLIMITED));
+		return new Constant(BigDecimalMath.atan(Helper.toReal(args[0]),MathContext.UNLIMITED));
 	}
 }

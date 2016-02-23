@@ -32,7 +32,7 @@ public class AssertZ extends BuildinPredicate{
 			exec.getDatabase().addClauseToLast(new Clause(((CompoundTerm)clause).getArguments().get(0).toHead()
 					,((CompoundTerm)clause).getArguments().get(1).toBody()));
 		}else
-			exec.getDatabase().addClauseToLast(new Clause(clause.toHead(),new Atom("true")));
+			exec.getDatabase().addClauseToLast(new Clause(clause.toHead(),new Constant("true")));
 		return true;
 	}
 	@Override

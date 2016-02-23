@@ -16,10 +16,9 @@
  */
 
 package com.github.chungkwong.idem.lib.lang.prolog;
-import java.util.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ExistenceException extends PrologException{
 	static String FUNCTOR="existence_error";
@@ -35,7 +34,7 @@ public class ExistenceException extends PrologException{
 	}
 	@Override
 	public Term getErrorTerm(){
-		return new CompoundTerm(FUNCTOR,Arrays.asList(new Atom(getType()),getArgument()));
+		return new CompoundTerm(FUNCTOR,new Constant(getType()),getArgument());
 	}
 	public Class getType(){
 		return type;

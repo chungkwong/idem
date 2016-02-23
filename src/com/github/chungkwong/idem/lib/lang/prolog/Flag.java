@@ -31,7 +31,10 @@ public class Flag{
 		this.changeable=changeable;
 		this.checker=checker;
 		this.domain=domain;
-		setValue(value);
+		if(checker.test(value))
+			this.value=value;
+		else
+			throw new DomainException(domain,value);
 	}
 	public String getName(){
 		return name;

@@ -17,15 +17,22 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 /**
- *
- * @author kwong
+ * Variable
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Variable implements Term{
+	/**Wildcard variable*/
 	public static final Variable WILDCARD=new Variable("");
-	String name;
+	private final String name;
+	/**
+	 * @param name the name of the variable
+	 */
 	public Variable(String name){
 		this.name=name;
 	}
+	/**
+	 * @return if this variable is wilcard
+	 */
 	public boolean isWildcard(){
 		return this==WILDCARD;
 	}
@@ -72,7 +79,7 @@ public class Variable implements Term{
 	}
 	@Override
 	public Predication toBody(){
-		return new CompoundTerm("call",Collections.singletonList(this));
+		return new CompoundTerm("call",this);
 	}
 	@Override
 	public Term toIteratedTerm(){
@@ -89,6 +96,9 @@ public class Variable implements Term{
 		}else
 			return false;
 	}
+	/**
+	 * Variable that are different from other variables
+	 */
 	public static class InternalVariable extends Variable{
 		static int used=0;
 		int id;
@@ -96,6 +106,9 @@ public class Variable implements Term{
 			super('_'+Integer.toString(used));
 			id=used++;
 		}
+		/**
+		 * @return a new InternalVariable
+		 */
 		public static InternalVariable newInstance(){
 			return new InternalVariable();
 		}

@@ -29,6 +29,6 @@ public class Exp extends Evaluable{
 	}
 	@Override
 	protected Term evaluate(Object[] args){
-		return new Atom(BigDecimalMath.exp(Helper.toReal(args[0]),MathContext.UNLIMITED));
+		return new Constant(BigDecimalMath.exp(Helper.toReal(args[0]),MathContext.UNLIMITED));
 	}
 }

@@ -22,7 +22,7 @@ import java.util.List;
 import javax.swing.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class PrologConsole implements Shell{
 	Database db=new Database();
@@ -60,7 +60,7 @@ public class PrologConsole implements Shell{
 			}else if(pred.getPredicate().getFunctor().equals("inspect")){//FIXME
 				buf.append(db);
 			}else{
-				db.addClauseToLast(new Clause(pred,new Atom("true")));
+				db.addClauseToLast(new Clause(pred,new Constant("true")));
 				buf.append("Fact added\n");
 			}
 		}

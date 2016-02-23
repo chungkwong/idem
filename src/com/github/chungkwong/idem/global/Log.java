@@ -19,7 +19,7 @@ import java.io.*;
 import java.util.logging.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Log{
 	public static final Logger LOG=Logger.getAnonymousLogger("com.github.chungkwong.idem.resources.MESSAGE");

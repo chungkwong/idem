@@ -25,8 +25,8 @@ public class Var extends BuildinPredicate{
 	public static final Var INSTANCE=new Var();
 	public static final Predicate pred=new Predicate("var",1);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		return argments.get(0) instanceof Variable;
+	public boolean activate(List<Term> arguments,Processor exec){
+		return arguments.get(0) instanceof Variable;
 	}
 	@Override
 	public Predicate getPredicate(){

@@ -29,10 +29,10 @@ public class Negate extends Evaluable{
 	@Override
 	protected Term evaluate(Object[] args){
 		if(args[0] instanceof BigInteger)
-			return new Atom(((BigInteger)args[0]).negate());
+			return new Constant(((BigInteger)args[0]).negate());
 		else if(args[0] instanceof BigDecimal)
-			return new Atom(((BigDecimal)args[0]).negate());
+			return new Constant(((BigDecimal)args[0]).negate());
 		else
-			throw new TypeException("number",new Atom(args[0]));
+			throw new TypeException("number",new Constant(args[0]));
 	}
 }

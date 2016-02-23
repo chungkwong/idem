@@ -18,60 +18,78 @@ package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 import java.util.stream.*;
 /**
- *
- * @author kwong
+ * Compound term
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CompoundTerm extends Predication{
-	Object functor;
-	List<Term> argments=new ArrayList<>();
-	public CompoundTerm(Object functor,List<Term> argments){
+	private final Object functor;
+	private final List<Term> arguments;
+	/**
+	 * Constant a compound term
+	 * @param functor the functor of the compound term
+	 * @param arguments the arguments of the compound term
+	 */
+	public CompoundTerm(Object functor,List<Term> arguments){
 		this.functor=functor;
-		this.argments=argments;
+		this.arguments=arguments;
 	}
+	/**
+	 * Constant a compound term
+	 * @param functor the functor of the compound term
+	 * @param arguments the arguments of the compound term
+	 */
+	public CompoundTerm(Object functor,Term... arguments){
+		this.functor=functor;
+		this.arguments=Arrays.asList(arguments);
+	}
+	/**
+	 * @return the functor of the compound term
+	 */
 	public Object getFunctor(){
 		return functor;
 	}
 	@Override
 	public List<Term> getArguments(){
-		return argments;
+		return arguments;
 	}
+	@Override
 	public String toString(){
-		return argments.stream().map(Term::toString).collect(Collectors.joining(",",functor+"(",")"));
+		return arguments.stream().map(Term::toString).collect(Collectors.joining(",",functor+"(",")"));
 	}
 	@Override
 	public Set<Variable> getVariableSet(){
-		return argments.stream().map(Term::getVariableSet).flatMap(Set::stream).collect(Collectors.toSet());
+		return arguments.stream().map(Term::getVariableSet).flatMap(Set::stream).collect(Collectors.toSet());
 	}
 	@Override
 	public Set<Variable> getExistentialVariableSet(){
-		if(functor.equals("^")&&argments.size()==2){
+		if(functor.equals("^")&&arguments.size()==2){
 			Set<Variable> vars=new HashSet<>();
-			vars.addAll(argments.get(0).getVariableSet());
-			vars.addAll(argments.get(1).getExistentialVariableSet());
+			vars.addAll(arguments.get(0).getVariableSet());
+			vars.addAll(arguments.get(1).getExistentialVariableSet());
 			return vars;
 		}else
 			return Collections.EMPTY_SET;
 	}
 	@Override
 	public Term toIteratedTerm(){
-		if(functor.equals("^")&&argments.size()==2){
-			return argments.get(1).toIteratedTerm();
+		if(functor.equals("^")&&arguments.size()==2){
+			return arguments.get(1).toIteratedTerm();
 		}else
 			return this;
 	}
 	@Override
 	public boolean unities(Term term,Substitution subst){
-		if(term instanceof Atom)
+		if(term instanceof Constant)
 			return false;
 		else if(term instanceof Variable){
 			return ((Variable)term).isWildcard()||subst.assign((Variable)term,this);
 		}else if(term instanceof CompoundTerm){
 			CompoundTerm t=(CompoundTerm)term;
-			if(!t.functor.equals(functor)||t.argments.size()!=argments.size())
+			if(!t.functor.equals(functor)||t.arguments.size()!=arguments.size())
 				return false;
-			int len=argments.size();
+			int len=arguments.size();
 			for(int i=0;i<len;i++)
-				if(!t.argments.get(i).unities(argments.get(i),subst))
+				if(!t.arguments.get(i).unities(arguments.get(i),subst))
 					return false;
 			return true;
 		}else
@@ -79,15 +97,15 @@ public class CompoundTerm extends Predication{
 	}
 	@Override
 	public CompoundTerm renameAllVariable(HashMap<Variable,Variable> renameTo){
-		return new CompoundTerm(functor,argments.stream().map((t)->t.renameAllVariable(renameTo)).collect(Collectors.toList()));
+		return new CompoundTerm(functor,arguments.stream().map((t)->t.renameAllVariable(renameTo)).collect(Collectors.toList()));
 	}
 	@Override
 	public CompoundTerm substitute(Substitution subst){
-		return new CompoundTerm(functor,argments.stream().map((t)->t.substitute(subst)).collect(Collectors.toList()));
+		return new CompoundTerm(functor,arguments.stream().map((t)->t.substitute(subst)).collect(Collectors.toList()));
 	}
 	@Override
 	public Predicate getPredicate(){
-		return new Predicate(functor,argments.size());
+		return new Predicate(functor,arguments.size());
 	}
 	@Override
 	public Predication toHead(){
@@ -96,15 +114,15 @@ public class CompoundTerm extends Predication{
 	@Override
 	public Predication toBody()throws TypeException{
 		if(functor.equals(",")||functor.equals(";")||functor.equals("->"))
-			return new CompoundTerm(functor,Arrays.asList(argments.get(0).toBody(),argments.get(1).toBody()));
+			return new CompoundTerm(functor,arguments.get(0).toBody(),arguments.get(1).toBody());
 		return this;
 	}
 	@Override
 	public boolean isVariantOf(Term t,Map<Variable,Variable> perm){
 		if(t instanceof CompoundTerm&&((CompoundTerm)t).getFunctor().equals(functor)
-				&&((CompoundTerm)t).getArguments().size()==argments.size()){
-			for(int i=0;i<argments.size();i++)
-				if(!argments.get(i).isVariantOf(((CompoundTerm)t).getArguments().get(i),perm))
+				&&((CompoundTerm)t).getArguments().size()==arguments.size()){
+			for(int i=0;i<arguments.size();i++)
+				if(!arguments.get(i).isVariantOf(((CompoundTerm)t).getArguments().get(i),perm))
 					return false;
 			return true;
 		}else

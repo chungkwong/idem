@@ -14,21 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.eval;
-import com.github.chungkwong.idem.lib.*;
-import com.github.chungkwong.idem.lib.lang.prolog.*;
-import java.math.*;
+package com.github.chungkwong.idem.lib.lang.prolog;
 /**
- *
- * @author Chan Chung Kwong <1m02math@126.com>
+ * This package provide a Prolog Processor that is almost standard conforming
+ * 
  */
-public class Cos extends Evaluable{
-	public static final Cos INSTANCE=new Cos();
-	public Cos(){
-		super(new EvaluableFunctor("cos",1));
-	}
-	@Override
-	protected Term evaluate(Object[] args){
-		return new Constant(BigDecimalMath.cos(Helper.toReal(args[0]),MathContext.UNLIMITED));
-	}
-}

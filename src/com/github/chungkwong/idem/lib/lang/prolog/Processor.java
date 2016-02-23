@@ -19,8 +19,8 @@ import static com.github.chungkwong.idem.global.Log.LOG;
 import java.util.*;
 import java.util.logging.*;
 /**
- *
- * @author kwong
+ * A Prolog processor
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Processor{
 	private final Stack<ExecutionState> stack=new Stack<>();
@@ -79,12 +79,12 @@ public class Processor{
 		if(proc==null){
 			switch(db.getFlag("undefined_predicate").getName()){
 				case "error":
-					throw new ExistenceException(Procedure.class,new Atom(currpred.getFunctor()));
+					throw new ExistenceException(Procedure.class,new Constant(currpred.getFunctor()));
 				case "warning":
 					LOG.log(Level.WARNING,"Functor not found: {0}",currpred);
 				case "fail":
 					ExecutionState cutparent=stack.peek().getDecsglstk().pop().getCutparent();
-					stack.peek().getDecsglstk().push(new DecoratedSubgoal(new Atom("fail"),cutparent));
+					stack.peek().getDecsglstk().push(new DecoratedSubgoal(new Constant("fail"),cutparent));
 					break;
 			}
 		}else{
@@ -115,7 +115,7 @@ public class Processor{
 	}
 	public void raise(PrologException ex){
 		ExecutionState cutparent=stack.peek().getDecsglstk().pop().getCutparent();
-		Predication throwPred=new CompoundTerm("throw",Collections.singletonList(ex.getErrorTerm()));
+		Predication throwPred=new CompoundTerm("throw",ex.getErrorTerm());
 		stack.peek().getDecsglstk().push(new DecoratedSubgoal(throwPred,cutparent));
 	}
 }

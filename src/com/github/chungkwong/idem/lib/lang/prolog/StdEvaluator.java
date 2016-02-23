@@ -21,7 +21,7 @@
 //import java.util.logging.*;
 ///**
 // *
-// * @author kwong
+// * @author Chan Chung Kwong <1m02math@126.com>
 // */
 //public class StdEvaluator{
 //	UndefinedPredicate undefpred=UndefinedPredicate.FAIL;

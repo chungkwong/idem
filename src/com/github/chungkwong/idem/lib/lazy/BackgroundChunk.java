@@ -19,7 +19,7 @@ import static com.github.chungkwong.idem.global.MiscUtilities.THREAD_POOL;
 import java.util.concurrent.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class BackgroundChunk<T> implements Chunk<T>{
 	Future<T> future;

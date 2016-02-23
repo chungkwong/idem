@@ -29,21 +29,21 @@ public class CurrentPredicate extends ReexecutableBuildinPredicate{
 		return pred;
 	}
 	@Override
-	public void firstActivate(List<Term> argments,Processor exec,Variable var){
-		Term PI=argments.get(0);
-		Term lst=new Atom(Collections.EMPTY_LIST);
+	public void firstActivate(List<Term> arguments,Processor exec,Variable var){
+		Term PI=arguments.get(0);
+		Term lst=Lists.EMPTY_LIST;
 		for(Predicate pred:exec.getDatabase().getProcedures().keySet()){
 			if(PI.unities(pred.getIndicator(),new Substitution(exec.getCurrentSubst())))
-				lst=new CompoundTerm(".",Arrays.asList(pred.getIndicator(),lst));
+				lst=new CompoundTerm(".",pred.getIndicator(),lst);
 		}
 		exec.getCurrentSubst().assign(var,lst);
 	}
 	@Override
-	public boolean againActivate(List<Term> argments,Processor exec,Variable var){
+	public boolean againActivate(List<Term> arguments,Processor exec,Variable var){
 		Substitution subst=exec.getStack().get(exec.getStack().size()-2).getSubst();
 		Term lst=subst.findRoot(var);
 		if(lst instanceof CompoundTerm){
-			argments.get(0).unities(((CompoundTerm)lst).getArguments().get(0),exec.getCurrentSubst());
+			arguments.get(0).unities(((CompoundTerm)lst).getArguments().get(0),exec.getCurrentSubst());
 			subst.unassign(var);
 			subst.assign(var,((CompoundTerm)lst).getArguments().get(1));
 			return true;

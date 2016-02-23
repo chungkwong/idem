@@ -32,7 +32,7 @@ public class AssertA extends BuildinPredicate{
 			exec.getDatabase().addClauseToFirst(new Clause(((CompoundTerm)clause).getArguments().get(0).toHead()
 					,((CompoundTerm)clause).getArguments().get(1).toBody()));
 		}else
-			exec.getDatabase().addClauseToFirst(new Clause(clause.toHead(),new Atom("true")));
+			exec.getDatabase().addClauseToFirst(new Clause(clause.toHead(),new Constant("true")));
 		return true;
 	}
 	@Override

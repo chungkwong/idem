@@ -29,11 +29,11 @@ public class Remainder extends Evaluable{
 	@Override
 	protected Term evaluate(Object[] args){
 		if(!(args[0] instanceof BigInteger))
-			throw new TypeException("integer",new Atom(args[0]));
+			throw new TypeException("integer",new Constant(args[0]));
 		if(!(args[1] instanceof BigInteger))
-			throw new TypeException("integer",new Atom(args[1]));
+			throw new TypeException("integer",new Constant(args[1]));
 		if(args[1].equals(BigInteger.ZERO))
 			throw new CalculationException(CalculationException.Type.ZERO_DIVISOR);
-		return new Atom(((BigInteger)args[0]).remainder((BigInteger)args[1]));
+		return new Constant(((BigInteger)args[0]).remainder((BigInteger)args[1]));
 	}
 }

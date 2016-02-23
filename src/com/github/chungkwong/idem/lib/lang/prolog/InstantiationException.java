@@ -16,10 +16,9 @@
  */
 
 package com.github.chungkwong.idem.lib.lang.prolog;
-import java.util.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class InstantiationException extends PrologException{
 	static String FUNCTOR="instantiation_error";
@@ -36,7 +35,7 @@ public class InstantiationException extends PrologException{
 	}
 	@Override
 	public Term getErrorTerm(){
-		return new CompoundTerm(FUNCTOR,Collections.singletonList(var));
+		return new CompoundTerm(FUNCTOR,var);
 	}
 
 }

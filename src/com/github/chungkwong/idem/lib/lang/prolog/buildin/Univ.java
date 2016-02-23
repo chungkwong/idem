@@ -26,11 +26,10 @@ public class Univ extends BuildinPredicate{
 	public static final Univ INSTANCE=new Univ();
 	public static final Predicate pred=new Predicate("=..",2);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		Term term=argments.get(0),list=argments.get(1);
-		if(term instanceof Atom){
-			return list.unities(new CompoundTerm(".",Arrays.asList(term,new Atom(Collections.EMPTY_LIST)))
-					,exec.getCurrentSubst());
+	public boolean activate(List<Term> arguments,Processor exec){
+		Term term=arguments.get(0),list=arguments.get(1);
+		if(term instanceof Constant){
+			return list.unities(new CompoundTerm(".",term,Lists.EMPTY_LIST),exec.getCurrentSubst());
 		}else if(term instanceof CompoundTerm){
 			return list.unities(term,exec.getCurrentSubst());
 		}else if(term instanceof Variable){
@@ -39,8 +38,8 @@ public class Univ extends BuildinPredicate{
 					return ((CompoundTerm)list).getArguments().get(0).unities(term,exec.getCurrentSubst());
 				}else{
 					Term hd=Lists.head(list);
-					if(hd instanceof Atom){
-						return new CompoundTerm(((Atom)hd).getValue(),Lists.tail(list)).unities(term,exec.getCurrentSubst());
+					if(hd instanceof Constant){
+						return new CompoundTerm(((Constant)hd).getValue(),Lists.tail(list)).unities(term,exec.getCurrentSubst());
 					}else if(hd instanceof CompoundTerm){
 						throw new TypeException("atom",list);
 					}else if(hd instanceof Variable){

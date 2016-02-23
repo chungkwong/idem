@@ -29,30 +29,30 @@ public class ClauseOf extends ReexecutableBuildinPredicate{
 		return pred;
 	}
 	@Override
-	public void firstActivate(List<Term> argments,Processor exec,Variable var){
-		if(!(argments.get(0)instanceof Predication))
-			throw new TypeException("callable",argments.get(0));
-		Procedure proc=exec.getDatabase().getProcedure(((Predication)argments.get(0)).getPredicate());
+	public void firstActivate(List<Term> arguments,Processor exec,Variable var){
+		if(!(arguments.get(0)instanceof Predication))
+			throw new TypeException("callable",arguments.get(0));
+		Procedure proc=exec.getDatabase().getProcedure(((Predication)arguments.get(0)).getPredicate());
 		if(proc!=null&&!(proc instanceof UserPredicate))
-			throw new PermissionException(new Atom("access_clause"),new Atom("static_procedure"),exec.getCurrentActivator());
-		Term lst=new Atom(Collections.EMPTY_LIST);
+			throw new PermissionException(new Constant("access_clause"),new Constant("static_procedure"),exec.getCurrentActivator());
+		Term lst=Lists.EMPTY_LIST;
 		if(proc!=null){
 			for(Clause clause:((UserPredicate)proc).getClauses()){
 				Substitution subst=new Substitution(exec.getCurrentSubst());
-				if(clause.getHeadAsTerm().unities(argments.get(0),subst)&&clause.getBodyAsTerm().unities(argments.get(1),subst))
-					lst=new CompoundTerm(".",Arrays.asList(new CompoundTerm("clause",Arrays.asList(clause.getHeadAsTerm(),clause.getBodyAsTerm())),lst));
+				if(clause.getHeadAsTerm().unities(arguments.get(0),subst)&&clause.getBodyAsTerm().unities(arguments.get(1),subst))
+					lst=new CompoundTerm(".",new CompoundTerm("clause",clause.getHeadAsTerm(),clause.getBodyAsTerm()),lst);
 			}
 		}
 		exec.getCurrentSubst().assign(var,lst);
 	}
 	@Override
-	public boolean againActivate(List<Term> argments,Processor exec,Variable var){
+	public boolean againActivate(List<Term> arguments,Processor exec,Variable var){
 		Substitution subst=exec.getStack().get(exec.getStack().size()-2).getSubst();
 		Term lst=subst.findRoot(var);
 		if(lst instanceof CompoundTerm){
 			CompoundTerm clause=(CompoundTerm)((CompoundTerm)lst).getArguments().get(0);
-			argments.get(0).unities(clause.getArguments().get(0),exec.getCurrentSubst());
-			argments.get(1).unities(clause.getArguments().get(1),exec.getCurrentSubst());
+			arguments.get(0).unities(clause.getArguments().get(0),exec.getCurrentSubst());
+			arguments.get(1).unities(clause.getArguments().get(1),exec.getCurrentSubst());
 			subst.unassign(var);
 			subst.assign(var,((CompoundTerm)lst).getArguments().get(1));
 			return true;

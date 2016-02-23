@@ -24,18 +24,18 @@ import java.util.*;
 public class SetOf extends BuildinPredicate{
 	public static final SetOf INSTANCE=new SetOf();
 	public static final Predicate pred=new Predicate("setof",3);
-	private static final Atom EMPTY_LIST=new Atom(Collections.EMPTY_LIST);
+	private static final Constant EMPTY_LIST=Lists.EMPTY_LIST;
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		Set<Variable> freevars=argments.get(1).getVariableSet();
-		freevars.removeAll(argments.get(1).getExistentialVariableSet());
-		freevars.removeAll(argments.get(0).getVariableSet());
-		Term witness=new CompoundTerm("witness",new ArrayList<>(freevars)),instances=argments.get(2);
+	public boolean activate(List<Term> arguments,Processor exec){
+		Set<Variable> freevars=arguments.get(1).getVariableSet();
+		freevars.removeAll(arguments.get(1).getExistentialVariableSet());
+		freevars.removeAll(arguments.get(0).getVariableSet());
+		Term witness=new CompoundTerm("witness",new ArrayList<>(freevars)),instances=arguments.get(2);
 		Variable lst=Variable.InternalVariable.newInstance();
-		argments.set(0,new CompoundTerm("+",Arrays.asList(witness,argments.get(0))));
-		argments.set(1,argments.get(1).toIteratedTerm());
-		argments.set(2,lst);
-		if(FindAll.INSTANCE.activate(argments,exec)){
+		arguments.set(0,new CompoundTerm("+",witness,arguments.get(0)));
+		arguments.set(1,arguments.get(1).toIteratedTerm());
+		arguments.set(2,lst);
+		if(FindAll.INSTANCE.activate(arguments,exec)){
 			Term s=exec.getCurrentSubst().findRoot(lst);
 			while(!s.equals(EMPTY_LIST)){
 				CompoundTerm wt=(CompoundTerm)((CompoundTerm)s).getArguments().get(0);
@@ -43,9 +43,9 @@ public class SetOf extends BuildinPredicate{
 				while(!iter.equals(EMPTY_LIST)){
 					CompoundTerm wwtt=(CompoundTerm)((CompoundTerm)s).getArguments().get(0);
 					if(wwtt.getArguments().get(0).isVariantOf(wt.getArguments().get(0),new HashMap())){
-						tLst=new CompoundTerm(".",Arrays.asList(wwtt.getArguments().get(1),tLst));
+						tLst=new CompoundTerm(".",wwtt.getArguments().get(1),tLst);
 					}else{
-						next=new CompoundTerm(".",Arrays.asList(((CompoundTerm)s).getArguments().get(1),next));
+						next=new CompoundTerm(".",((CompoundTerm)s).getArguments().get(1),next);
 					}
 					iter=((CompoundTerm)s).getArguments().get(1);
 				}

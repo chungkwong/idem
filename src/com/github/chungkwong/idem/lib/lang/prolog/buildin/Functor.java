@@ -26,22 +26,22 @@ public class Functor extends BuildinPredicate{
 	public static final Functor INSTANCE=new Functor();
 	public static final Predicate pred=new Predicate("functor",3);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		Term term=argments.get(0),name=argments.get(1),arity=argments.get(2);
+	public boolean activate(List<Term> arguments,Processor exec){
+		Term term=arguments.get(0),name=arguments.get(1),arity=arguments.get(2);
 		Substitution subst=exec.getCurrentSubst();
-		if(term instanceof Atom){
-			return name.unities(term,subst)&&arity.unities(new Atom(BigInteger.ZERO),subst);
+		if(term instanceof Constant){
+			return name.unities(term,subst)&&arity.unities(new Constant(BigInteger.ZERO),subst);
 		}else if(term instanceof CompoundTerm){
-			return name.unities(new Atom(((CompoundTerm)term).getFunctor()),subst)&&
-					arity.unities(new Atom(BigInteger.valueOf(((CompoundTerm)term).getArguments().size())),subst);
-		}else if(arity instanceof Atom&&((Atom)arity).getValue()instanceof BigInteger){
-			int n=((BigInteger)((Atom)arity).getValue()).intValueExact();
+			return name.unities(new Constant(((CompoundTerm)term).getFunctor()),subst)&&
+					arity.unities(new Constant(BigInteger.valueOf(((CompoundTerm)term).getArguments().size())),subst);
+		}else if(arity instanceof Constant&&((Constant)arity).getValue()instanceof BigInteger){
+			int n=((BigInteger)((Constant)arity).getValue()).intValueExact();
 			if(n>0){
-				if(name instanceof Atom){
+				if(name instanceof Constant){
 					List<Term> args=new ArrayList(n);
 					for(int i=0;i<n;i++)
 						args.add(Variable.InternalVariable.newInstance());
-					return term.unities(new CompoundTerm(((Atom)name).getValue(),args),subst);
+					return term.unities(new CompoundTerm(((Constant)name).getValue(),args),subst);
 				}else if(name instanceof Variable)
 					throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)name);
 				else

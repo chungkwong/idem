@@ -25,8 +25,8 @@ public class IsCompound extends BuildinPredicate{
 	public static final IsCompound INSTANCE=new IsCompound();
 	public static final Predicate pred=new Predicate("compound",1);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		return argments.get(0) instanceof CompoundTerm;
+	public boolean activate(List<Term> arguments,Processor exec){
+		return arguments.get(0) instanceof CompoundTerm;
 	}
 	@Override
 	public Predicate getPredicate(){

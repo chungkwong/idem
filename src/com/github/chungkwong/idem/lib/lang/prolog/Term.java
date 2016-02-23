@@ -18,7 +18,7 @@ package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public interface Term{
 	Set<Variable> getVariableSet();

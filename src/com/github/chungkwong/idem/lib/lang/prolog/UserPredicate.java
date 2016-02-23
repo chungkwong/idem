@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.stream.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class UserPredicate implements Procedure{
 	private final List<Clause> clauses=new LinkedList<>();

@@ -18,7 +18,7 @@ package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Call extends ControlConstruct{
 	public static Call CALL=new Call();
@@ -31,7 +31,7 @@ public class Call extends ControlConstruct{
 		Term goal=ccs.getDecsglstk().peek().getActivator().getArguments().get(0);
 		if(goal instanceof Variable){
 			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)goal);
-		}else if(goal instanceof Atom&&((Atom)goal).getValue()instanceof Number){
+		}else if(goal instanceof Constant&&((Constant)goal).getValue()instanceof Number){
 			throw new com.github.chungkwong.idem.lib.lang.prolog.TypeException("atom",goal);
 		}
 		ExecutionState cutparent=exec.getStack().get(exec.getStack().size()-2);

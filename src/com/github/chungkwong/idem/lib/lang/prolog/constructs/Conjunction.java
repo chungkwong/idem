@@ -19,7 +19,7 @@ import com.github.chungkwong.idem.lib.lang.prolog.*;
 import java.util.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Conjunction extends ControlConstruct{
 	public static Conjunction CONJUNCTION=new Conjunction();
@@ -31,11 +31,11 @@ public class Conjunction extends ControlConstruct{
 	}
 	@Override
 	public void firstexecute(Processor exec){
-		List<Term> argments=exec.getCurrentActivator().getArguments();
+		List<Term> arguments=exec.getCurrentActivator().getArguments();
 		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
 		ExecutionState cutparent=ccs.getDecsglstk().pop().getCutparent();
-		ccs.getDecsglstk().push(new DecoratedSubgoal(argments.get(1).toBody(),cutparent));
-		ccs.getDecsglstk().push(new DecoratedSubgoal(argments.get(0).toBody(),cutparent));
+		ccs.getDecsglstk().push(new DecoratedSubgoal(arguments.get(1).toBody(),cutparent));
+		ccs.getDecsglstk().push(new DecoratedSubgoal(arguments.get(0).toBody(),cutparent));
 		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
 		exec.getStack().push(ccs);
 		exec.selectClause();

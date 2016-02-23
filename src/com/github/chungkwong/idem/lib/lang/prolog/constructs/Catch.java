@@ -16,10 +16,9 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
-import java.util.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Catch extends ControlConstruct{
 	public static Catch CATCH=new Catch();
@@ -29,7 +28,7 @@ public class Catch extends ControlConstruct{
 	public void firstexecute(Processor exec){
 		ExecutionState ccs=new ExecutionState(exec.getStack().peek());
 		ccs.getDecsglstk().peek().setActivator(new CompoundTerm("call",
-				Collections.singletonList(exec.getCurrentActivator().getArguments().get(0))));
+				exec.getCurrentActivator().getArguments().get(0)));
 		ccs.setBI(ExecutionState.BacktraceInfo.NIL);
 		exec.getStack().push(ccs);
 	}

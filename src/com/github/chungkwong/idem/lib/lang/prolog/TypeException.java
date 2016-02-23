@@ -16,10 +16,9 @@
  */
 
 package com.github.chungkwong.idem.lib.lang.prolog;
-import java.util.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class TypeException extends PrologException{
 	static String FUNCTOR="type_error";
@@ -41,6 +40,6 @@ public class TypeException extends PrologException{
 	}
 	@Override
 	public Term getErrorTerm(){
-		return new CompoundTerm(FUNCTOR,Arrays.asList(new Atom(expected),argument));
+		return new CompoundTerm(FUNCTOR,new Constant(expected),argument);
 	}
 }

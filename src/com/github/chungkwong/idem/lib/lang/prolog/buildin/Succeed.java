@@ -25,8 +25,8 @@ public class Succeed extends BuildinPredicate{
 	public static final Succeed INSTANCE=new Succeed();
 	public static final Predicate pred=new Predicate("@>",2);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		return TermComparator.INSTANCE.compare(argments.get(0),argments.get(1))>0;
+	public boolean activate(List<Term> arguments,Processor exec){
+		return TermComparator.INSTANCE.compare(arguments.get(0),arguments.get(1))>0;
 	}
 	@Override
 	public Predicate getPredicate(){

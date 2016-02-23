@@ -16,7 +16,6 @@
  */
 
 package com.github.chungkwong.idem.lib.lang.prolog;
-import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -30,6 +29,6 @@ public class PermissionException extends PrologException{
 	}
 	@Override
 	public Term getErrorTerm(){
-		return new CompoundTerm("permission_error",Arrays.asList(operation,objectType,culprit));
+		return new CompoundTerm("permission_error",operation,objectType,culprit);
 	}
 }

@@ -29,6 +29,6 @@ public class Sin extends Evaluable{
 	}
 	@Override
 	protected Term evaluate(Object[] args){
-		return new Atom(BigDecimalMath.sin(Helper.toReal(args[0]),MathContext.UNLIMITED));
+		return new Constant(BigDecimalMath.sin(Helper.toReal(args[0]),MathContext.UNLIMITED));
 	}
 }

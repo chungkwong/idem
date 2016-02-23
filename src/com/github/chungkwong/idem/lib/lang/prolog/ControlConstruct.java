@@ -16,10 +16,14 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
 /**
- *
- * @author kwong
+ * Control construct for prolog
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public abstract class ControlConstruct implements Procedure{
+	/**
+	 * To be executed when a predicate frist execute
+	 * @param exec the Prolog processor
+	 */
 	public abstract void firstexecute(Processor exec);
 	@Override
 	public void execute(Processor exec){

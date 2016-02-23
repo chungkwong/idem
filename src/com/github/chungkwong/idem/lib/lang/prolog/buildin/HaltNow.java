@@ -26,7 +26,7 @@ public class HaltNow extends BuildinPredicate{
 	public static final HaltNow INSTANCE=new HaltNow();
 	public static final Predicate pred=new Predicate("halt",0);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
+	public boolean activate(List<Term> arguments,Processor exec){
 		throw new HaltException(BigInteger.ZERO);
 	}
 	@Override

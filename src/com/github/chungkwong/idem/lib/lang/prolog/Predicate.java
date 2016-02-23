@@ -31,7 +31,7 @@ public class Predicate{
 		return arity;
 	}
 	public CompoundTerm getIndicator(){
-		return new CompoundTerm("/",Arrays.asList(new Atom(functor),new Atom(BigInteger.valueOf(arity))));
+		return new CompoundTerm("/",Arrays.asList(new Constant(functor),new Constant(BigInteger.valueOf(arity))));
 	}
 	@Override
 	public boolean equals(Object obj){

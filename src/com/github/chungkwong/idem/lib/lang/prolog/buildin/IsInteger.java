@@ -26,8 +26,8 @@ public class IsInteger extends BuildinPredicate{
 	public static final IsInteger INSTANCE=new IsInteger();
 	public static final Predicate pred=new Predicate("integer",1);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		return argments.get(0) instanceof Atom&&((Atom)argments.get(0)).getValue() instanceof BigInteger;
+	public boolean activate(List<Term> arguments,Processor exec){
+		return arguments.get(0) instanceof Constant&&((Constant)arguments.get(0)).getValue() instanceof BigInteger;
 	}
 	@Override
 	public Predicate getPredicate(){

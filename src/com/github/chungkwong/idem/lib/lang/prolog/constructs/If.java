@@ -18,7 +18,7 @@ package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class If  extends ControlConstruct{
 	public static final If IF=new If();
@@ -32,7 +32,7 @@ public class If  extends ControlConstruct{
 		ExecutionState checkpoint=exec.getStack().get(exec.getStack().size()-2);
 		ccs.getDecsglstk().push(new DecoratedSubgoal(
 				(Predication)currdecsgl.getActivator().getArguments().get(1),currdecsgl.getCutparent()));
-		ccs.getDecsglstk().push(new DecoratedSubgoal(new Atom("!"),checkpoint));
+		ccs.getDecsglstk().push(new DecoratedSubgoal(new Constant("!"),checkpoint));
 		ccs.getDecsglstk().push(new DecoratedSubgoal(
 				(Predication)currdecsgl.getActivator().getArguments().get(0),checkpoint));
 		exec.getStack().push(ccs);

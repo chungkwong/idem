@@ -15,15 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
-import java.util.*;
 /**
- *
+ * domain_error in Prolog
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class DomainException extends PrologException{
 	static final String FUNCTOR="domain_error";
 	private final String expected;
 	private final Term argument;
+	/**
+	 * Construct a DomainException
+	 * @param expected expected type
+	 * @param argument the term that cause this error
+	 */
 	public DomainException(String expected,Term argument) {
 		this.expected=expected;
 		this.argument=argument;
@@ -32,14 +36,20 @@ public class DomainException extends PrologException{
 	public String getMessage(){
 		return argument+" cannot be casted to "+expected;
 	}
+	/**
+	 * @return expected type
+	 */
 	public String getExpected(){
 		return expected;
 	}
+	/**
+	 * @return the term that cause this error
+	 */
 	public Term getArgument(){
 		return argument;
 	}
 	@Override
 	public Term getErrorTerm(){
-		return new CompoundTerm(FUNCTOR,Arrays.asList(new Atom(expected),argument));
+		return new CompoundTerm(FUNCTOR,new Constant(expected),argument);
 	}
 }

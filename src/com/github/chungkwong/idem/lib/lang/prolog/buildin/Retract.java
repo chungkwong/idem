@@ -25,12 +25,12 @@ public class Retract extends ReexecutableBuildinPredicate{
 	public static final AssertA INSTANCE=new AssertA();
 	public static final Predicate pred=new Predicate("retract",1);
 	@Override
-	public void firstActivate(List<Term> argments,Processor exec,Variable var){
+	public void firstActivate(List<Term> arguments,Processor exec,Variable var){
 
 	}
 	@Override
-	public boolean againActivate(List<Term> argments,Processor exec,Variable var){
-		Term clause=argments.get(0);
+	public boolean againActivate(List<Term> arguments,Processor exec,Variable var){
+		Term clause=arguments.get(0);
 		Term head=null,body=null;
 		if(clause instanceof CompoundTerm&&((CompoundTerm)clause).getFunctor().equals(":-")
 				&&((CompoundTerm)clause).getArguments().size()==2){
@@ -38,7 +38,7 @@ public class Retract extends ReexecutableBuildinPredicate{
 			body=((CompoundTerm)clause).getArguments().get(1);
 		}else{
 			head=clause;
-			body=new Atom("true");
+			body=new Constant("true");
 		}
 		Procedure proc=exec.getDatabase().getProcedure(((Predication)head).getPredicate());
 		if(proc!=null&&proc instanceof UserPredicate){

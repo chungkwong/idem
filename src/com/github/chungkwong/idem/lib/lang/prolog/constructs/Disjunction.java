@@ -18,7 +18,7 @@ package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Disjunction extends ControlConstruct{
 	public static Disjunction DISJUNCTION=new Disjunction();
@@ -50,7 +50,7 @@ public class Disjunction extends ControlConstruct{
 		ExecutionState checkpoint=exec.getStack().get(exec.getStack().size()-2);
 		pred=((Predication)pred.getArguments().get(0));
 		ccs.getDecsglstk().peek().setActivator((Predication)pred.getArguments().get(1));
-		ccs.getDecsglstk().push(new DecoratedSubgoal(new Atom("!"),checkpoint));
+		ccs.getDecsglstk().push(new DecoratedSubgoal(new Constant("!"),checkpoint));
 		ccs.getDecsglstk().push(new DecoratedSubgoal((Predication)pred.getArguments().get(0),exec.getStack().peek()));
 		exec.getStack().push(ccs);
 	}
@@ -61,7 +61,7 @@ public class Disjunction extends ControlConstruct{
 		ExecutionState checkpoint=exec.getStack().get(exec.getStack().size()-2);
 		ccs.getDecsglstk().push(new DecoratedSubgoal(
 				(Predication)currdecsgl.getActivator().getArguments().get(1),currdecsgl.getCutparent()));
-		ccs.getDecsglstk().push(new DecoratedSubgoal(new Atom("!"),checkpoint));
+		ccs.getDecsglstk().push(new DecoratedSubgoal(new Constant("!"),checkpoint));
 		exec.getStack().push(ccs);
 	}
 	@Override

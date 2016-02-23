@@ -27,15 +27,15 @@ public class AtomLength extends BuildinPredicate{
 	public static final AtomLength INSTANCE=new AtomLength();
 	public static final Predicate pred=new Predicate("atom_length",2);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		Term atom=argments.get(0),len=argments.get(1);
+	public boolean activate(List<Term> arguments,Processor exec){
+		Term atom=arguments.get(0),len=arguments.get(1);
 		if(atom instanceof Variable)
 			throw new InstantiationException((Variable)atom);
-		else if(atom instanceof Atom&&((Atom)atom).getValue()instanceof String){
-			if(len instanceof CompoundTerm||(len instanceof Atom&&!(((Atom)len).getValue()instanceof BigInteger)))
+		else if(atom instanceof Constant&&((Constant)atom).getValue()instanceof String){
+			if(len instanceof CompoundTerm||(len instanceof Constant&&!(((Constant)len).getValue()instanceof BigInteger)))
 				throw new TypeException("integer",len);
 			else
-				return new Atom(BigInteger.valueOf(((Atom)atom).getValue().toString().length())).unities(len,exec.getCurrentSubst());
+				return new Constant(BigInteger.valueOf(((Constant)atom).getValue().toString().length())).unities(len,exec.getCurrentSubst());
 		}else
 			throw new TypeException("atom",atom);
 	}

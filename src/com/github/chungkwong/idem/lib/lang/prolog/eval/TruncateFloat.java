@@ -31,10 +31,10 @@ public class TruncateFloat extends Evaluable{
 		if(args[0] instanceof BigDecimal){
 			BigDecimal arg=((BigDecimal)args[0]);
 			if(!(args[1] instanceof BigInteger))
-				throw new TypeException("integer",new Atom(args[1]));
+				throw new TypeException("integer",new Constant(args[1]));
 			int prec=((BigInteger)args[1]).intValueExact();
-			return new Atom(arg.round(new MathContext(prec,RoundingMode.DOWN)).toBigInteger());
+			return new Constant(arg.round(new MathContext(prec,RoundingMode.DOWN)).toBigInteger());
 		}else
-			throw new TypeException("number",new Atom(args[0]));
+			throw new TypeException("number",new Constant(args[0]));
 	}
 }

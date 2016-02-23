@@ -29,8 +29,8 @@ public class Multiply extends Evaluable{
 	@Override
 	protected Term evaluate(Object[] args){
 		if(args[0] instanceof BigInteger&&args[1] instanceof BigInteger)
-			return new Atom(((BigInteger)args[0]).multiply((BigInteger)args[1]));
+			return new Constant(((BigInteger)args[0]).multiply((BigInteger)args[1]));
 		else
-			return new Atom(Helper.toReal(args[0]).multiply(Helper.toReal(args[1])));
+			return new Constant(Helper.toReal(args[0]).multiply(Helper.toReal(args[1])));
 	}
 }

@@ -18,7 +18,7 @@ package com.github.chungkwong.idem.lib.lang.prolog.constructs;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Cut extends ControlConstruct{
 	public static Cut CUT=new Cut();
@@ -27,7 +27,7 @@ public class Cut extends ControlConstruct{
 	@Override
 	public void firstexecute(Processor exec){
 		ExecutionState ccs=new ExecutionState(exec.getCurrentState());
-		ccs.getDecsglstk().peek().setActivator(new Atom("true"));
+		ccs.getDecsglstk().peek().setActivator(new Constant("true"));
 		exec.getStack().push(ccs);
 	}
 	@Override

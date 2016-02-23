@@ -17,12 +17,17 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 
 /**
- *
- * @author kwong
+ * Decorated subgoal
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class DecoratedSubgoal{
 	private Predication activator;
 	private ExecutionState cutparent;
+	/**
+	 * Construct a DecoratedSubgoal
+	 * @param activator the activator
+	 * @param cutparent the cut parent
+	 */
 	public DecoratedSubgoal(Predication activator,ExecutionState cutparent){
 		this.activator=activator;
 		this.cutparent=cutparent;

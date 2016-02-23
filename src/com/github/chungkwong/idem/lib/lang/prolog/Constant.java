@@ -17,20 +17,27 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 /**
- *
- * @author kwong
+ * Constant including atom,integer and floating point number
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Atom<T> extends Predication{
-	T val;
-	public Atom(T val){
+public class Constant<T> extends Predication{
+	private final T val;
+	/**
+	 * Construct a constant
+	 * @param val the value of the Constant
+	 */
+	public Constant(T val){
 		this.val=val;
 	}
+	/**
+	 * @return the value of the constant
+	 */
 	public T getValue(){
 		return val;
 	}
 	@Override
 	public boolean equals(Object obj){
-		return obj!=null&&obj instanceof Atom&&((Atom)obj).val.equals(val);
+		return obj!=null&&obj instanceof Constant&&((Constant)obj).val.equals(val);
 	}
 	@Override
 	public int hashCode(){
@@ -54,19 +61,19 @@ public class Atom<T> extends Predication{
 	}
 	@Override
 	public boolean unities(Term term,Substitution subst){
-		if(term instanceof Atom)
-			return ((Atom)term).val.equals(val);
+		if(term instanceof Constant)
+			return ((Constant)term).val.equals(val);
 		else if(term instanceof Variable)
 			return ((Variable)term).isWildcard()||subst.assign((Variable)term,this);
 		else
 			return false;
 	}
 	@Override
-	public Atom<T> substitute(Substitution subst){
+	public Constant<T> substitute(Substitution subst){
 		return this;
 	}
 	@Override
-	public Atom<T> renameAllVariable(HashMap<Variable,Variable> renameTo){
+	public Constant<T> renameAllVariable(HashMap<Variable,Variable> renameTo){
 		return this;
 	}
 	@Override

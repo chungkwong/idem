@@ -33,10 +33,10 @@ public class TermComparator implements java.util.Comparator<Term>{
 			case VARIABLE:
 				return o1.toString().compareTo(o2.toString());
 			case REAL:case INTEGER:
-				return ((Comparable)((Atom)o1).getValue()).compareTo(((Atom)o2).getValue());
+				return ((Comparable)((Constant)o1).getValue()).compareTo(((Constant)o2).getValue());
 			case ATOM:
 				{
-					Object v1=((Atom)o1).getValue(),v2=((Atom)o2).getValue();
+					Object v1=((Constant)o1).getValue(),v2=((Constant)o2).getValue();
 					if(v1==null){
 						if(v2==null)
 							return 0;
@@ -74,8 +74,8 @@ public class TermComparator implements java.util.Comparator<Term>{
 	private int getTypePriority(Term t){
 		if(t instanceof Variable)
 			return VARIABLE;
-		if(t instanceof Atom){
-			Object val=((Atom)t).getValue();
+		if(t instanceof Constant){
+			Object val=((Constant)t).getValue();
 			if(val instanceof BigDecimal)
 				return REAL;
 			else if(val instanceof BigInteger)

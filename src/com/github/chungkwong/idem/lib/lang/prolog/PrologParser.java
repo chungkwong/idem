@@ -17,18 +17,27 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import com.github.chungkwong.idem.lib.*;
 import static com.github.chungkwong.idem.lib.lang.prolog.OperatorTable.DEFAULT_OPERATOR_TABLE;
+import java.math.*;
 import java.util.*;
 /**
- *
- * @author kwong
+ * A parser for Prolog
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class PrologParser implements SimpleIterator<Predication>{
 	private static final Operator curly=new Operator("{}",0,Operator.Class.PREFIX,Operator.Associativity.RIGHT);
 	private static final Operator openParen=new Operator("(",1202,Operator.Class.INFIX,Operator.Associativity.RIGHT);
-	PushBackIterator lex;
+	private final PushBackIterator lex;
+	/**
+	 * Construct a PrologParser
+	 * @param lex The provider of tokens
+	 */
 	public PrologParser(PrologLex lex){
 		this.lex=new PushBackIterator<>(new SimpleIteratorWraper<>(lex));
 	}
+	/**
+	 * Parse the remaining code
+	 * @return the remaining prolog text
+	 */
 	public List<Predication> getRemaining(){
 		ArrayList<Predication> lst=new ArrayList<>();
 		Predication pred=next();
@@ -38,14 +47,18 @@ public class PrologParser implements SimpleIterator<Predication>{
 		}
 		return lst;
 	}
+	/**
+	 * @return the next prolog text
+	 */
+	@Override
 	public Predication next(){
 		ParseState state=new ParseState();
 		out:while(lex.hasNext()){
 			Object token=lex.next();
 			if(token instanceof Number){
-				state.pushOperand(new Atom(token));
-			}else if(token instanceof Variable){
-				state.pushOperand((Variable)token);
+				state.pushOperand(new Constant(token));
+			}else if(token instanceof Term){
+				state.pushOperand((Term)token);
 			}else if(token instanceof String){
 				String name=(String)token;
 				switch(name){
@@ -71,6 +84,11 @@ public class PrologParser implements SimpleIterator<Predication>{
 			throw new ParseException();
 		return (Predication)state.operands.pop();
 	}
+	/**
+	 * Entry of a debug tool which print out prolog text generated from
+	 * each line of input
+	 * @param args unused
+	 */
 	public static void main(String[] args){
 		Scanner in=new Scanner(System.in);
 		while(in.hasNextLine()){
@@ -86,7 +104,7 @@ class ParseState{
 	private static final Operator OPEN_PAREN=new Operator("(",1202,Operator.Class.INFIX,Operator.Associativity.RIGHT);
 	private static final Operator OPEN_BRACKET=new Operator("[",1202,Operator.Class.INFIX,Operator.Associativity.RIGHT);
 	private static final Operator OPEN_CURLY=new Operator("{",1202,Operator.Class.INFIX,Operator.Associativity.RIGHT);
-	private static final Atom EMPTY_LIST=new Atom(Collections.EMPTY_LIST);
+	private static final Constant EMPTY_LIST=Lists.EMPTY_LIST;
 	Stack<Term> operands=new Stack<>();
 	Stack<Operator> operators=new Stack<>();
 	ExpectClass expected=ExpectClass.PREFIX;
@@ -125,7 +143,7 @@ class ParseState{
 			}else{
 				Operator prefix=DEFAULT_OPERATOR_TABLE.getPrefixOperators().get(name);
 				if(prefix==null){
-					pushOperand(new Atom(name));
+					pushOperand(new Constant(name));
 				}else{
 					pushOperator(prefix);
 				}
@@ -153,7 +171,7 @@ class ParseState{
 			}
 		}
 		if(next.getCls()==Operator.Class.POSTFIX)
-			operands.push(new CompoundTerm(next,Collections.singletonList(operands.pop())));
+			operands.push(new CompoundTerm(next,operands.pop()));
 		else
 			operators.push(next);
 	}
@@ -192,7 +210,7 @@ class ParseState{
 			top=operators.peek();
 		}
 		operators.pop();
-		operands.push(new CompoundTerm("{}",Collections.singletonList(operands.pop())));
+		operands.push(new CompoundTerm("{}",operands.pop()));
 	}
 	void pushCloseBracket(){
 		Operator top=operators.peek();
@@ -200,7 +218,7 @@ class ParseState{
 		while(top!=OPEN_BRACKET){
 			if(top.getToken().equals(",")){
 				operators.pop();
-				lst=new CompoundTerm(".",Arrays.asList(operands.pop(),lst));
+				lst=new CompoundTerm(".",operands.pop(),lst);
 			}else if(top.getToken().equals("|")){
 				operators.pop();
 				lst=operands.pop();
@@ -209,7 +227,7 @@ class ParseState{
 			top=operators.peek();
 		}
 		operators.pop();
-		operands.push(new CompoundTerm(".",Arrays.asList(operands.pop(),lst)));
+		operands.push(new CompoundTerm(".",operands.pop(),lst));
 	}
 	private static List<Term> convertTermtoList(Term t,boolean multi){
 		if(multi){
@@ -245,9 +263,20 @@ class ParseState{
 		Operator top=operators.pop();
 		if(top.getCls()==Operator.Class.INFIX){
 			Term right=operands.pop();
-			operands.push(new CompoundTerm(top.getToken(),Arrays.asList(operands.pop(),right)));
+			operands.push(new CompoundTerm(top.getToken(),operands.pop(),right));
 		}else{
-			operands.push(new CompoundTerm(top.getToken(),Collections.singletonList(operands.pop())));
+			Term operand=operands.pop();
+			if(top.getToken().equals("-")&&operand instanceof Constant){
+				Object val=((Constant)operand).getValue();
+				if(val instanceof BigInteger){
+					operands.push(new Constant(((BigInteger)val).negate()));
+					return;
+				}else if(val instanceof BigDecimal){
+					operands.push(new Constant(((BigDecimal)val).negate()));
+					return;
+				}
+			}
+			operands.push(new CompoundTerm(top.getToken(),operand));
 		}
 	}
 	void end(){
@@ -258,10 +287,5 @@ class ParseState{
 	@Override
 	public String toString(){
 		return "Operands="+operands+"\nOperators="+operators+"\nExpected="+expected;
-	}
-}
-class ParseException extends RuntimeException{
-	public ParseException(){
-		super("Failed to parse");
 	}
 }

@@ -18,7 +18,7 @@ package com.github.chungkwong.idem.global;
 import java.util.logging.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class NativeLogFormatter extends Formatter{
 	@Override

@@ -18,8 +18,8 @@ package com.github.chungkwong.idem.lib.lang.prolog;
 import com.github.chungkwong.idem.lib.*;
 import java.util.*;
 /**
- *
- * @author kwong
+ * Execution state
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ExecutionState{
 	private Stack<DecoratedSubgoal> decsglstk;

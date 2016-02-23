@@ -19,7 +19,7 @@ import java.lang.ref.*;
 import java.util.concurrent.*;
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class LazyWeakChunk<T> implements Chunk<T>{
 	Callable<T> proc;

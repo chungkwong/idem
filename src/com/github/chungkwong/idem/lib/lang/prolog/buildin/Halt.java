@@ -27,10 +27,10 @@ public class Halt extends BuildinPredicate{
 	public static final Halt INSTANCE=new Halt();
 	public static final Predicate pred=new Predicate("halt",1);
 	@Override
-	public boolean activate(List<Term> argments,Processor exec){
-		Term msg=argments.get(0);
-		if(msg instanceof Atom&&((Atom)msg).getValue()instanceof BigInteger){
-			throw new HaltException(((BigInteger)((Atom)msg).getValue()));
+	public boolean activate(List<Term> arguments,Processor exec){
+		Term msg=arguments.get(0);
+		if(msg instanceof Constant&&((Constant)msg).getValue()instanceof BigInteger){
+			throw new HaltException(((BigInteger)((Constant)msg).getValue()));
 		}else if(msg instanceof Variable){
 			throw new InstantiationException((Variable)msg);
 		}else{

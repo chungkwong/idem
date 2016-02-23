@@ -17,10 +17,11 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 /**
- *
+ * Operator table for Prolog
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class OperatorTable{
+	/** the standard Operator table */
 	public static final OperatorTable DEFAULT_OPERATOR_TABLE=new OperatorTable();
 	private final Map<String,Operator> infixOperators=new HashMap<>();
 	private final Map<String,Operator> prefixOperators=new HashMap<>();
@@ -68,6 +69,10 @@ public class OperatorTable{
 		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("@",100,Operator.Class.INFIX,Operator.Associativity.NO));
 		DEFAULT_OPERATOR_TABLE.addOperator(new Operator(":",50,Operator.Class.INFIX,Operator.Associativity.NO));
 	}
+	/**
+	 * Register a operator
+	 * @param operator to be register
+	 */
 	public void addOperator(Operator operator){
 		switch(operator.getCls()){
 			case INFIX:
@@ -81,15 +86,22 @@ public class OperatorTable{
 				break;
 		}
 	}
+	/**
+	 * @return the infix operators indexed by their specifier
+	 */
 	public Map<String,Operator> getInfixOperators(){
 		return infixOperators;
 	}
+	/**
+	 * @return the prefix operators indexed by their specifier
+	 */
 	public Map<String,Operator> getPrefixOperators(){
 		return prefixOperators;
 	}
+	/**
+	 * @return the postfix operators indexed by their specifier
+	 */
 	public Map<String,Operator> getPostfixOperators(){
 		return postfixOperators;
 	}
-
-
 }

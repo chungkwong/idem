@@ -29,7 +29,7 @@ public class PrologProcessorTest{
 	}
 	private List<Substitution> multiquery(String query,String data,String mode){
 		Database db=new Database();
-		db.getFlag("undefined_predicate").setValue(new Atom(mode));
+		db.getFlag("undefined_predicate").setValue(new Constant(mode));
 		new PrologParser(new PrologLex(data)).getRemaining().stream().forEach((pred)->db.addPredication(pred));
 		List<Substitution> substs=new ArrayList<>();
 		Processor processor=new Processor(new PrologParser(new PrologLex(query)).next(),db);
@@ -64,18 +64,18 @@ public class PrologProcessorTest{
 	}
     @Test
 	public void testUnification(){
-		assertTrue(new Atom(3).unities(new Atom(3),new Substitution()));
-		assertFalse(new Atom(3).unities(new Atom(4),new Substitution()));
+		assertTrue(new Constant(3).unities(new Constant(3),new Substitution()));
+		assertFalse(new Constant(3).unities(new Constant(4),new Substitution()));
 		assertTrue(new Variable("X").unities(new Variable("Y"),new Substitution()));
 		assertTrue(new Variable("X").unities(new Variable("X"),new Substitution()));
-		assertFalse(new Atom(3).unities(new CompoundTerm("f",Arrays.asList(new Variable("X"))),new Substitution()));
-		assertFalse(new CompoundTerm("f",Arrays.asList(new Variable("X"))).unities(new Atom(3),new Substitution()));
-		assertFalse(new CompoundTerm("f",Arrays.asList(new Variable("X"))).unities(new CompoundTerm("g",Arrays.asList(new Variable("X"))),new Substitution()));
-		assertFalse(new CompoundTerm("f",Arrays.asList(new Variable("X"),new Variable("X"),new Variable("X")))
-				.unities(new CompoundTerm("f",Arrays.asList(new Variable("Y"),new CompoundTerm("g",Arrays.asList(new Variable("Y"))),new Atom("a"))),new Substitution()));
-		assertTrue(new CompoundTerm("f",Arrays.asList(new Variable("X"))).unities(new CompoundTerm("f",Arrays.asList(new Variable("X"))),new Substitution()));
-		assertTrue(new CompoundTerm("f",Arrays.asList(new Variable("X"),new Variable("Y")))
-				.unities(new CompoundTerm("f",Arrays.asList(new Variable("Y"),new Atom("a"))),new Substitution()));
+		assertFalse(new Constant(3).unities(new CompoundTerm("f",new Variable("X")),new Substitution()));
+		assertFalse(new CompoundTerm("f",new Variable("X")).unities(new Constant(3),new Substitution()));
+		assertFalse(new CompoundTerm("f",new Variable("X")).unities(new CompoundTerm("g",Arrays.asList(new Variable("X"))),new Substitution()));
+		assertFalse(new CompoundTerm("f",new Variable("X"),new Variable("X"),new Variable("X"))
+				.unities(new CompoundTerm("f",new Variable("Y"),new CompoundTerm("g",new Variable("Y")),new Constant("a")),new Substitution()));
+		assertTrue(new CompoundTerm("f",new Variable("X")).unities(new CompoundTerm("f",new Variable("X")),new Substitution()));
+		assertTrue(new CompoundTerm("f",new Variable("X"),new Variable("Y"))
+				.unities(new CompoundTerm("f",new Variable("Y"),new Constant("a")),new Substitution()));
 	}
     @Test
 	public void testFact(){

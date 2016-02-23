@@ -18,7 +18,7 @@ package com.github.chungkwong.idem.lib.lang.prolog;
 
 /**
  *
- * @author kwong
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class NamedVariable{
 
