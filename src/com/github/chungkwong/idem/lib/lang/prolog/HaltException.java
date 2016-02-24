@@ -18,12 +18,22 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.math.*;
 /**
- *
+ * It is throw if the processor exit before the goal failed or succeed
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class HaltException extends RuntimeException{
-	BigInteger code;
+	private final BigInteger code;
+	/**
+	 * Construct a HaltException
+	 * @param code a exit code
+	 */
 	public HaltException(BigInteger code){
 		this.code=code;
+	}
+	/**
+	 * @return the exit code
+	 */
+	public BigInteger getExitCode(){
+		return code;
 	}
 }

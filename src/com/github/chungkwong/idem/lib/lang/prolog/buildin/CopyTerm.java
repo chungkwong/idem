@@ -26,7 +26,7 @@ public class CopyTerm extends BuildinPredicate{
 	public static final Predicate pred=new Predicate("copy_term",2);
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
-		return arguments.get(0).renameAllVariable(new HashMap<>()).unities(arguments.get(1),exec.getCurrentSubst());
+		return arguments.get(0).renameAllVariable().unities(arguments.get(1),exec.getCurrentSubst());
 	}
 	@Override
 	public Predicate getPredicate(){

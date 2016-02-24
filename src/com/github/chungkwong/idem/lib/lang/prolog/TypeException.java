@@ -17,13 +17,18 @@
 
 package com.github.chungkwong.idem.lib.lang.prolog;
 /**
- *
+ * tyoe_error
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class TypeException extends PrologException{
 	static String FUNCTOR="type_error";
 	private final String expected;
 	private final Term argument;
+	/**
+	 * Construct a type_error
+	 * @param expected expected type
+	 * @param argument the term causing this error
+	 */
 	public TypeException(String expected,Term argument) {
 		this.expected=expected;
 		this.argument=argument;

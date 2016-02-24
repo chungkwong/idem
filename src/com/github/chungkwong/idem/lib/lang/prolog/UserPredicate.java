@@ -19,11 +19,15 @@ import com.github.chungkwong.idem.lib.*;
 import java.util.*;
 import java.util.stream.*;
 /**
- *
+ * User-defined predicate
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class UserPredicate implements Procedure{
 	private final List<Clause> clauses=new LinkedList<>();
+	/**
+	 * Construct a user-defined predicate with a given clause
+	 * @param clause
+	 */
 	public UserPredicate(Clause clause){
 		clauses.add(clause);
 	}
@@ -66,6 +70,7 @@ public class UserPredicate implements Procedure{
 	public List<Clause> getClauses(){
 		return clauses;
 	}
+	@Override
 	public String toString(){
 		return clauses.stream().map(Clause::toString).collect(Collectors.joining("\n"));
 	}

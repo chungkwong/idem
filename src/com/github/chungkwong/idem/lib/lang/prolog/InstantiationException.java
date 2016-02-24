@@ -17,15 +17,22 @@
 
 package com.github.chungkwong.idem.lib.lang.prolog;
 /**
- *
+ * instantiation_error
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class InstantiationException extends PrologException{
 	static String FUNCTOR="instantiation_error";
 	private final Variable var;
+	/**
+	 * Construct a instantiation_error
+	 * @param var the variable which is not instantiated
+	 */
 	public InstantiationException(Variable var) {
 		this.var=var;
 	}
+	/**
+	 * @return the variable causing the instantiation_error
+	 */
 	public Variable getVar(){
 		return var;
 	}
@@ -37,5 +44,4 @@ public class InstantiationException extends PrologException{
 	public Term getErrorTerm(){
 		return new CompoundTerm(FUNCTOR,var);
 	}
-
 }

@@ -18,7 +18,7 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 
 /**
- *
+ * Syntax error
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ParseException extends RuntimeException{

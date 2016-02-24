@@ -17,13 +17,18 @@
 
 package com.github.chungkwong.idem.lib.lang.prolog;
 /**
- *
+ * existence_error
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ExistenceException extends PrologException{
 	static String FUNCTOR="existence_error";
 	private final Class type;
 	private final Term argument;
+	/**
+	 * Construct a ExistenceException
+	 * @param type type expected
+	 * @param argument the object that do not exists
+	 */
 	public ExistenceException(Class type,Term argument){
 		this.type=type;
 		this.argument=argument;

@@ -17,9 +17,18 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.math.*;
 import java.util.*;
+/**
+ * Predicate
+ * @author Chan Chung Kwong <1m02math@126.com>
+ */
 public class Predicate{
 	private final Object functor;
 	private final int arity;
+	/**
+	 * Construct a predicate
+	 * @param functor the functor of the predicate
+	 * @param arity the arity of the predicate
+	 */
 	public Predicate(Object functor,int arity){
 		this.functor=functor;
 		this.arity=arity;
@@ -30,6 +39,9 @@ public class Predicate{
 	public int getArity(){
 		return arity;
 	}
+	/**
+	 * @return the term "functor/arity"
+	 */
 	public CompoundTerm getIndicator(){
 		return new CompoundTerm("/",Arrays.asList(new Constant(functor),new Constant(BigInteger.valueOf(arity))));
 	}

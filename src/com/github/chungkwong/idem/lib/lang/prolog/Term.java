@@ -17,17 +17,62 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 /**
- *
+ * Term
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface Term{
-	Set<Variable> getVariableSet();
-	Set<Variable> getExistentialVariableSet();
-	Term toIteratedTerm();
-	boolean isVariantOf(Term t,Map<Variable,Variable> perm);
-	boolean unities(Term term,Substitution subst);
-	Term renameAllVariable(HashMap<Variable,Variable> renameTo);
-	Term substitute(Substitution subst);
-	Predication toHead();
-	Predication toBody();
+public abstract class Term{
+	/**
+	 * @return variable set of the term
+	 * @see 7.1.1.1 of the standard
+	 */
+	public abstract Set<Variable> getVariableSet();
+	/**
+	 * @return existential variable set of the term
+	 * @see 7.1.1.3 of the standard
+	 */
+	public abstract Set<Variable> getExistentialVariableSet();
+	/**
+	 * @return iterated-goal term of the term
+	 * @see 7.1.6.3 of the standard
+	 */
+	public abstract Term toIteratedTerm();
+	/**
+	 * @param t
+	 * @return if t is variant of the term
+	 * @see 7.1.6.1 of the standard
+	 */
+	public boolean isVariantOf(Term t){
+		return isVariantOf(t,new HashMap<>());
+	}
+	protected abstract boolean isVariantOf(Term t,Map<Variable,Variable> perm);
+	/**
+	 * Unitify the term with term
+	 * @param term
+	 * @param subst
+	 * @return if the term can unify with term
+	 */
+	public abstract boolean unities(Term term,Substitution subst);
+	/**
+	 * @return a renamed copy of the term
+	 */
+	public Term renameAllVariable(){
+		return renameAllVariable(new HashMap<>());
+	}
+	protected abstract Term renameAllVariable(HashMap<Variable,Variable> renameTo);
+	/**
+	 * Do substitution
+	 * @param subst
+	 * @return the resulting term
+	 */
+	public abstract Term substitute(Substitution subst);
+	/**
+	 * @return head of the term
+	 * @see 7.6.1 of the standard
+	 */
+	public abstract Predication toHead();
+	/**
+	 * @return body of the term
+	 * @see 7.6.2 of the standard
+	 */
+	public abstract Predication toBody();
 }

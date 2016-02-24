@@ -20,7 +20,7 @@ import java.util.*;
  * Predication, known subclass including Constant and CompoundTerm
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public abstract class Predication implements Term{
+public abstract class Predication extends Term{
 	/**
 	 * @return the predicate corresponsing to the predication
 	 */

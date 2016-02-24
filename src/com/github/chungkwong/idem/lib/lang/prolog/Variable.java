@@ -20,7 +20,7 @@ import java.util.*;
  * Variable
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Variable implements Term{
+public class Variable extends Term{
 	/**Wildcard variable*/
 	public static final Variable WILDCARD=new Variable("");
 	private final String name;

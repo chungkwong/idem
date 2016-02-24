@@ -17,7 +17,7 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.function.Predicate;
 /**
- *
+ * Prolog flag
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Flag{
@@ -26,6 +26,14 @@ public class Flag{
 	private final Predicate checker;
 	private final boolean changeable;
 	private final String domain;
+	/**
+	 * Construct a flag
+	 * @param name the name
+	 * @param value the default value
+	 * @param changeable if user can change the value
+	 * @param checker decide if a value is acceptable
+	 * @param domain indicate the range of value
+	 */
 	public Flag(String name,Term value,boolean changeable,Predicate<Term> checker,String domain){
 		this.name=name;
 		this.changeable=changeable;
@@ -45,6 +53,10 @@ public class Flag{
 	public Predicate getChecker(){
 		return checker;
 	}
+	/**
+	 * Set the value of the flag
+	 * @param value new value
+	 */
 	public void setValue(Term value){
 		if(changeable&&checker.test(value))
 			this.value=value;

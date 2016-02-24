@@ -18,18 +18,15 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 
 /**
- *
+ * system_error
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class SystemException extends RuntimeException{
-
 	/**
 	 * Creates a new instance of <code>SystemException</code> without detail message.
 	 */
 	public SystemException() {
 	}
-
-
 	/**
 	 * Constructs an instance of <code>SystemException</code> with the specified detail message.
 	 * @param msg the detail message.

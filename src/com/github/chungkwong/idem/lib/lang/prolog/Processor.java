@@ -25,39 +25,57 @@ import java.util.logging.*;
 public class Processor{
 	private final Stack<ExecutionState> stack=new Stack<>();
 	private final Database db;
+	/**
+	 * Construct a Prolog processor and execute a goal
+	 * @param goal the goal to be executed
+	 * @param db the Prolog database
+	 */
 	public Processor(Predication goal,Database db){
 		this.db=db;
 		stack.push(new ExecutionState());
-		stack.push(new ExecutionState(new DecoratedSubgoal(goal,stack.peek()),new Substitution()));
+		stack.push(new ExecutionState(new DecoratedSubgoal(goal,stack.peek())));
+		stack.peek().getDecsglstk();
 		execute();
 	}
+	/**
+	 * @return the PrologDatabase
+	 */
 	public Database getDatabase(){
 		return db;
 	}
+	/**
+	 * @return execution stack
+	 */
 	public Stack<ExecutionState> getStack(){
 		return stack;
 	}
+	/**
+	 * @return substitution if the goal succeed or null if the goal failed
+	 */
 	public Substitution getSubstitution(){
 		if(isFailed())
 			return null;
-		if(isSuccessed())
+		if(isSucceed())
 			return stack.peek().getSubst();
 		throw new RuntimeException("Illegal status");
 	}
-	public Substitution getCurrentSubst(){
-		return getStack().peek().getSubst();
-	}
+	/**
+	 * @return if the goal is already failed
+	 */
 	public boolean isFailed(){
 		return stack.size()<=1;
 	}
-	public boolean isSuccessed(){
+	/**
+	 * @return if the goal is already succeed
+	 */
+	public boolean isSucceed(){
 		return stack.peek().getDecsglstk().isEmpty();
 	}
-	final int MAX_ITERATOR_COUNT=100;
+	private final int MAX_ITERATOR_COUNT=100;//FIXME
 	private void execute(){
 		int i=0;
 		//System.out.println();
-		while(!isFailed()&&!isSuccessed()&&++i<MAX_ITERATOR_COUNT){//FIXME
+		while(!isFailed()&&!isSucceed()&&++i<MAX_ITERATOR_COUNT){
 			//System.out.println(stack);
 			try{
 				selectClause();
@@ -68,11 +86,17 @@ public class Processor{
 		if(i==MAX_ITERATOR_COUNT)
 			throw new RuntimeException("Iteration reach limit");
 	}
+	/**
+	 * Reexecute the goal after a success
+	 */
 	public void reexecute(){
 		stack.pop();
 		backtrack();
 		execute();
 	}
+	/**
+	 * Select a clause for execution
+	 */
 	public void selectClause(){
 		Predicate currpred=getCurrentActivator().getPredicate();
 		Procedure proc=db.getProcedure(currpred);
@@ -91,8 +115,11 @@ public class Processor{
 			proc.execute(this);
 		}
 	}
+	/**
+	 * Do backtracking
+	 */
 	public void backtrack(){
-		if(isFailed()||isSuccessed())
+		if(isFailed()||isSucceed())
 			return;
 		Procedure proc=db.getProcedure(getCurrentActivator().getPredicate());
 		if(stack.peek().getBI()!=ExecutionState.BacktraceInfo.NIL){
@@ -100,6 +127,9 @@ public class Processor{
 		}else
 			proc.execute(this);
 	}
+	/**
+	 * Execute a user-defined procedure with no more clause
+	 */
 	public void noMoreClause(){
 		stack.pop();
 		backtrack();
@@ -113,6 +143,13 @@ public class Processor{
 	public Predication getCurrentActivator(){
 		return stack.peek().getDecsglstk().peek().getActivator();
 	}
+	public Substitution getCurrentSubst(){
+		return getStack().peek().getSubst();
+	}
+	/**
+	 * Raise a prolog error
+	 * @param ex
+	 */
 	public void raise(PrologException ex){
 		ExecutionState cutparent=stack.peek().getDecsglstk().pop().getCutparent();
 		Predication throwPred=new CompoundTerm("throw",ex.getErrorTerm());

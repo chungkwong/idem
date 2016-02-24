@@ -17,11 +17,24 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 /**
- *
+ * Reexecutable buildin predicate
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public abstract class ReexecutableBuildinPredicate implements Procedure{
+	/**
+	 * Executed when the goal first executed
+	 * @param arguments the arguments of the goal
+	 * @param exec the prolog processor
+	 * @param var a variable that can be used to store information
+	 */
 	public abstract void firstActivate(List<Term> arguments,Processor exec,Variable var);
+	/**
+	 * Executed when the goal executed
+	 * @param arguments the arguments of the goal
+	 * @param exec the prolog processor
+	 * @param var a variable that can be used to store information
+	 * @return if the goal succeed
+	 */
 	public abstract boolean againActivate(List<Term> arguments,Processor exec,Variable var);
 	@Override
 	public void execute(Processor exec){

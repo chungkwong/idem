@@ -17,16 +17,16 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import com.github.chungkwong.swingconsole.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.stream.*;
 import javax.swing.*;
 /**
- *
+ * A simple GUI for our Prolog processor
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class PrologConsole implements Shell{
-	Database db=new Database();
-	List<Predication> predications;
+	private final Database db=new Database();
+	private List<Predication> predications;
 	@Override
 	public boolean acceptLine(String line){
 		PrologParser parser=new PrologParser(new PrologLex(line));
@@ -67,11 +67,15 @@ public class PrologConsole implements Shell{
 		return buf.toString();
 	}
 	@Override
-	public java.util.List<String> getHints(String prefix){
-		ArrayList<String> lst=new ArrayList<String>();
-
-		return lst;
+	public List<String> getHints(String prefix){
+		return db.getProcedures().keySet().stream().map((proc)->proc.getFunctor().toString())
+			.filter((proc)->proc.startsWith(prefix)).collect(Collectors.toList());
 	}
+	/**
+	 * Entry to the GUI for our Prolog processor
+	 * @param args unused
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception{
 		JFrame f=new JFrame("Console");
 		f.add(new SwingConsole(new PrologConsole()),BorderLayout.CENTER);

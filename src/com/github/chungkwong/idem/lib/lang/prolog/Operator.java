@@ -17,7 +17,7 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 
 /**
- *
+ * Operator
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Operator{
@@ -27,6 +27,13 @@ public class Operator{
 	private final int priority;
 	private final Class cls;
 	private final Associativity associativity;
+	/**
+	 * Construct a operator
+	 * @param token the specifier of the operator
+	 * @param priority the priority of the operator should between 1 and 1201
+	 * @param cls the class of the operator
+	 * @param associativity the associativity of the operator
+	 */
 	public Operator(String token,int priority,Class cls,Associativity associativity){
 		this.token=token;
 		this.priority=priority;

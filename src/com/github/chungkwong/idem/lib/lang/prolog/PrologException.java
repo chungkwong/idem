@@ -18,9 +18,12 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 
 /**
- *
+ * Prolog error
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public abstract class PrologException extends RuntimeException{
+	/**
+	 * @return a term that provide information about the error
+	 */
 	public abstract Term getErrorTerm();
 }

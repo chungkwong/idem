@@ -17,11 +17,17 @@
 
 package com.github.chungkwong.idem.lib.lang.prolog;
 /**
- *
+ * permission_error
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class PermissionException extends PrologException{
-	Term operation,objectType,culprit;
+	private final Term operation,objectType,culprit;
+	/**
+	 * Construct a permission_error
+	 * @param operation the operation refused
+	 * @param objectType type of the object involve
+	 * @param culprit the argment or one of its components which cause the error
+	 */
 	public PermissionException(Term operation,Term objectType,Term culprit){
 		this.operation=operation;
 		this.objectType=objectType;

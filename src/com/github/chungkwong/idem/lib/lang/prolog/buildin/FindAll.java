@@ -30,7 +30,7 @@ public class FindAll extends BuildinPredicate{
 		Term result=EMPTY_LIST;
 		Predication goal=new CompoundTerm("call",arguments.get(1));
 		Processor processor=new Processor(goal,exec.getDatabase());
-		while(processor.isSuccessed()){
+		while(processor.isSucceed()){
 			result=new CompoundTerm(".",arguments.get(0).substitute(processor.getSubstitution()),result);
 			processor.reexecute();
 		}

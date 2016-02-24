@@ -29,7 +29,7 @@ public class Once extends BuildinPredicate{
 	public boolean activate(List<Term> arguments,Processor exec){
 		Term term=arguments.get(0);
 		if(term instanceof CompoundTerm||(term instanceof Constant&&((Constant)term).getValue()instanceof String)){
-			return (new Processor((Predication)term,exec.getDatabase()).isSuccessed());
+			return (new Processor((Predication)term,exec.getDatabase()).isSucceed());
 		}else if(term instanceof Variable){
 			throw new InstantiationException((Variable)term);
 		}else{

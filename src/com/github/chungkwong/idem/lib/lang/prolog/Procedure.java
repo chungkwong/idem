@@ -15,13 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
-import java.util.*;
 /**
- *
+ * Prolog procedure
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public interface Procedure{
+	/**
+	 * Execute a goal for the first time
+	 * @param exec Prolog processor
+	 */
 	void execute(Processor exec);
-	Predicate getPredicate();
+	/**
+	 * Reexecute a goal
+	 * @param exec Prolog processor
+	 */
 	void reexecute(Processor exec);
+	/**
+	 * @return the predicate corresponsing to the procedure
+	 */
+	Predicate getPredicate();
 }

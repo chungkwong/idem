@@ -42,7 +42,7 @@ public class BagOf extends BuildinPredicate{
 				Term tLst=EMPTY_LIST,next=EMPTY_LIST,iter=s;
 				while(!iter.equals(EMPTY_LIST)){
 					CompoundTerm wwtt=(CompoundTerm)((CompoundTerm)s).getArguments().get(0);
-					if(wwtt.getArguments().get(0).isVariantOf(wt.getArguments().get(0),new HashMap())){
+					if(wwtt.getArguments().get(0).isVariantOf(wt.getArguments().get(0))){
 						tLst=new CompoundTerm(".",wwtt.getArguments().get(1),tLst);
 					}else{
 						next=new CompoundTerm(".",((CompoundTerm)s).getArguments().get(1),next);
