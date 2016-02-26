@@ -65,8 +65,10 @@ public class PrologParserTest{
 		assertParse("1+2*3","[+(1,*(2,3))]");
 		assertParse("1*2+3","[+(*(1,2),3)]");
 		assertParse("2*(3+4)","[*(2,+(3,4))]");
-		assertParse("-1","[-(1)]");
-		assertParse("- -2","[-(-(2))]");
+		assertParse("-1","[-1]");
+		assertParse("-X","[-(X)]");
+		assertParse("- -X","[-(-(X))]");
+		assertParse("- -2","[2]");
 		assertParse("1+5^3*2","[+(1,*(^(5,3),2))]");
 	}
 }

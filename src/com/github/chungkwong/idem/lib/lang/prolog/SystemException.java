@@ -25,7 +25,7 @@ public class SystemException extends RuntimeException{
 	/**
 	 * Creates a new instance of <code>SystemException</code> without detail message.
 	 */
-	public SystemException() {
+	public SystemException(){
 	}
 	/**
 	 * Constructs an instance of <code>SystemException</code> with the specified detail message.
@@ -33,5 +33,8 @@ public class SystemException extends RuntimeException{
 	 */
 	public SystemException(String msg) {
 		super(msg);
+	}
+	public SystemException(String message,Throwable cause){
+		super(message,cause);
 	}
 }

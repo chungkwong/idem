@@ -33,10 +33,12 @@ public abstract class Predication extends Term{
 	 * @param renameTo user should pass a<code>new HashMap<>()</code>
 	 * @return a renamed predication
 	 */
+	@Override
 	public abstract Predication renameAllVariable(HashMap<Variable,Variable> renameTo);
 	/**
 	 * @param subst substitution to be used
 	 * @return substituted copy of the predication
 	 */
+	@Override
 	public abstract Predication substitute(Substitution subst);
 }

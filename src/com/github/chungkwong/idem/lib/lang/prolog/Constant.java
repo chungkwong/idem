@@ -98,4 +98,8 @@ public class Constant<T> extends Predication{
 	public boolean isVariantOf(Term t,Map<Variable,Variable> perm){
 		return equals(t);
 	}
+	@Override
+	public Term substitute(Variable var,Term replacement){
+		return this;
+	}
 }

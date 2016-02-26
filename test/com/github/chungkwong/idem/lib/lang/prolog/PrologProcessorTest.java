@@ -50,7 +50,7 @@ public class PrologProcessorTest{
 		assertSuccessCount(query,data,0);
 	}
 	private void assertGoalSuccess(String query,String data){
-		Assert.assertTrue(multiquery(query,data).size()!=0);
+		Assert.assertTrue(!multiquery(query,data).isEmpty());
 	}
 	private void assertGoalError(String query,String data){
 		Database db=new Database();
@@ -120,8 +120,8 @@ public class PrologProcessorTest{
 	}
 	@Test
 	public void testConjunction(){
-		//assertGoalFail("X=1,var(X).","");
-		//assertGoalSuccess("var(X),X=1.","");
+		assertGoalFail("X=1,var(X).","");
+		assertGoalSuccess("var(X),X=1.","");
 		assertGoalSuccess("X=foo,call(X).","foo.");
 		assertGoalSuccess("X=true,call(X).","");
 	}
@@ -153,7 +153,7 @@ public class PrologProcessorTest{
 	}
 	@Test
 	public void testThrow(){
-		//assertGoalSuccess("catch(foo(5),test(Y),true).","foo(X):-Y is X*2,throw(test(Y)).");
+		assertGoalSuccess("catch(foo(5),test(Y),true).","foo(X):-Y is X*2,throw(test(Y)).");
 		assertGoalSuccess("catch(true,Z,true).","");
 		assertGoalFail("catch(fail,Z,true).","");
 		assertGoalSuccess("catch(bar(3),Z,true).","bar(X):-X=Y,throw(Y).");
@@ -164,6 +164,6 @@ public class PrologProcessorTest{
 	}
 	@Test public void testCorner(){
 		assertTrue(multiquery("p(X,Y).","p(M,W):-m(M),f(W).","fail").isEmpty());
-		assertGoalSuccess("p(c).","p(a).p(b).");
+		assertGoalFail("p(c).","p(a).p(b).");
 	}
 }

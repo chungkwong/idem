@@ -129,8 +129,8 @@ class ParseState{
 				pushOperator(infix);
 			}else{
 				Object peek=lex.peek();
-				if(peek instanceof String&&(DEFAULT_OPERATOR_TABLE.getInfixOperators().containsKey(peek)
-						||DEFAULT_OPERATOR_TABLE.getPostfixOperators().containsKey(peek))){
+				if(peek instanceof String&&(DEFAULT_OPERATOR_TABLE.getInfixOperators().containsKey((String)peek)
+						||DEFAULT_OPERATOR_TABLE.getPostfixOperators().containsKey((String)peek))){
 					pushOperator(postfix);
 				}else{
 					pushOperator(infix);

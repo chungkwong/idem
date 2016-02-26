@@ -17,12 +17,18 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.math.*;
 import java.util.*;
+import java.util.stream.*;
 /**
- *
+ * Some useful methods to manipulate prolog list
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Lists{
+	/**Empty list*/
 	public static final Constant EMPTY_LIST=new Constant("[]");
+	/**
+	 * @param elements
+	 * @return A prolog list with given elements
+	 */
 	public static Term asList(Term... elements){
 		int index=elements.length;
 		Term list=EMPTY_LIST;
@@ -31,6 +37,22 @@ public class Lists{
 		}
 		return list;
 	}
+	/**
+	 * @param elements
+	 * @return A prolog list with given elements
+	 */
+	public static Term asList(List<Term> elements){
+		ListIterator<Term> iter=elements.listIterator(elements.size());
+		Term list=EMPTY_LIST;
+		while(iter.hasPrevious()){
+			list=new CompoundTerm(".",iter.previous(),list);
+		}
+		return list;
+	}
+	/**
+	 * @param term a prolog list
+	 * @return the length of the list
+	 */
 	public static int length(Term term){
 		int length=0;
 		while(term instanceof CompoundTerm){
@@ -39,28 +61,56 @@ public class Lists{
 		}
 		return length;
 	}
+	/**
+	 * @param term
+	 * @return if term is an empty prolog list
+	 */
 	public static boolean isEmptyList(Term term){
 		return term.equals(EMPTY_LIST);
 	}
+	/**
+	 * @param term
+	 * @return if term is an nonempty prolog list
+	 */
 	public static boolean isNonEmptyList(Term term){
 		return term instanceof CompoundTerm&&((CompoundTerm)term).getFunctor().equals(".")
 				&&((CompoundTerm)term).getArguments().size()==2;
 	}
+	/**
+	 * @param term
+	 * @return if term is an prolog list
+	 */
 	public static boolean isList(Term term){
 		return isEmptyList(term)||isNonEmptyList(term);
 	}
+	/**
+	 * @param term
+	 * @return if term is an proper prolog list
+	 */
 	public static boolean isProperList(Term term){
 		while(isNonEmptyList(term)){
 			term=((CompoundTerm)term).getArguments().get(1);
 		}
 		return isEmptyList(term);
 	}
+	/**
+	 * @param str
+	 * @return the collating sequence
+	 */
 	public static Term asCodeList(String str){
-		return asList((Term[])str.codePoints().mapToObj((i)->new Constant(BigInteger.valueOf(i))).toArray());
+		return asList(str.codePoints().mapToObj((i)->new Constant(BigInteger.valueOf(i))).collect(Collectors.toList()));
 	}
+	/**
+	 * @param term a prolog list
+	 * @return the head of the list
+	 */
 	public static Term head(Term term){
 		return ((CompoundTerm)term).getArguments().get(0);
 	}
+	/**
+	 * @param term a prolog list
+	 * @return the tail of the list
+	 */
 	public static List<Term> tail(Term term){
 		List<Term> list=new LinkedList();
 		term=((CompoundTerm)term).getArguments().get(1);

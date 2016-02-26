@@ -38,8 +38,8 @@ public abstract class BuildinPredicate implements Procedure{
 		}
 	}
 	@Override
-	public void reexecute(Processor exec){//FIXME
-
+	public void reexecute(Processor exec){
+		assert false;
 	}
 	@Override
 	public String toString(){

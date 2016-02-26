@@ -66,6 +66,13 @@ public abstract class Term{
 	 */
 	public abstract Term substitute(Substitution subst);
 	/**
+	 * Replace var with replacement
+	 * @param var
+	 * @param replacement
+	 * @return the resulting term
+	 */
+	public abstract Term substitute(Variable var,Term replacement);
+	/**
 	 * @return head of the term
 	 * @see 7.6.1 of the standard
 	 */

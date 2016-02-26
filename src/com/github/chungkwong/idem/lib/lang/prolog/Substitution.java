@@ -17,48 +17,69 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import java.util.*;
 /**
- *
+ * A set of equations
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Substitution{
-	HashMap<Variable,Term> assignment;
+	private final HashMap<Variable,Term> assignment;
+	//private final HashMap<Variable,HashSet<Variable>> affect;
+	/**
+	 * A set with no equation
+	 */
 	public Substitution(){
 		assignment=new HashMap<>();
+		//affect=new HashMap<>();
 	}
+	/**
+	 * A set of equations copy from another set
+	 * @param parent
+	 */
 	public Substitution(Substitution parent){
 		assignment=new HashMap<>(parent.assignment);
+		//affect=new HashMap<>(parent.affect);
 	}
+	/**
+	 * @param obj a variable
+	 * @return val, where obj->val is a equation in the set
+	 */
 	public Term findRoot(Term obj){
 		while(assignment.containsKey(obj)){
 			obj=assignment.get(obj);
 		}
 		return obj;
 	}
+	private boolean addEquation(Variable var,Term val){
+		if(val.getVariableSet().contains(var))
+			return var.equals(val);
+		assignment.put(var,val);
+		assignment.entrySet().stream().forEach((entry)->{
+			entry.setValue(entry.getValue().substitute(var,val));
+		});
+		return true;
+	}
 	public boolean assign(Variable var,Term val){
 		Term root=findRoot(var);
+		val=val.substitute(this);
 		if(root instanceof Variable){
-			if(!var.equals(val))
-				assignment.put((Variable)root,val);
-			return true;
+			return addEquation((Variable)root,val);
 		}else{
-			if(val.unities(root,this)){
-				val=val.substitute(this);
-				if(val.getVariableSet().contains(root)){
-					return false;
-				}else{
-					for(Map.Entry<Variable,Term> entry:assignment.entrySet())
-						entry.setValue(entry.getValue().substitute(this));
-					return true;
-				}
-			}else
-				return false;
+			return root.unities(val,this);
 		}
 	}
+	/**
+	 * Remove a equation from the set. You should ensure that no other
+	 * equations is generated because of it.
+	 * @param var assigned variable
+	 */
 	public void unassign(Variable var){
 		assignment.remove(var);
 	}
+	/**
+	 * @return if the set of equations is subject to occur check
+	 */
 	public boolean occurCheck(){
-		return assignment.entrySet().stream().anyMatch((entry)->entry.getValue().getVariableSet().contains(entry.getKey()));
+		return assignment.entrySet().stream().noneMatch(
+				(entry)->entry.getValue().getVariableSet().contains(entry.getKey()));
 	}
 	@Override
 	public String toString(){
@@ -67,6 +88,17 @@ public class Substitution{
 		assignment.entrySet().stream().forEach((assign)->{
 			buf.append(assign.getKey()).append('=').append(assign.getValue()).append(',');
 		});
+		buf.append('}');
+		return buf.toString();
+	}
+	public String toStringUser(){
+		StringBuilder buf=new StringBuilder();
+		buf.append("{");
+		assignment.entrySet().stream()
+				.filter((assign)->!(assign.getKey()instanceof Variable.InternalVariable))
+				.forEach((assign)->{
+					buf.append(assign.getKey()).append('=').append(findRoot(assign.getValue())).append(',');
+				});
 		buf.append('}');
 		return buf.toString();
 	}

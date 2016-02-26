@@ -21,7 +21,7 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Clause{
-	private Predication head,body;
+	private final Predication head,body;
 	/**
 	 * Construct a clause
 	 * @param head the head
@@ -65,7 +65,7 @@ public class Clause{
 	 */
 	public Clause rename(){
 		HashMap<Variable,Variable> renameTo=new HashMap<>();
-		return new Clause(head.renameAllVariable(renameTo),body.renameAllVariable(renameTo));
+		return new Clause((Predication)head.renameAllVariable(renameTo),body.renameAllVariable(renameTo));
 	}
 	@Override
 	public String toString(){

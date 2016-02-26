@@ -54,13 +54,13 @@ public class PrologLexTest{
 	}
 	@Test
 	public void testDoublequoteToken() throws Exception{
-		expectSingle(("\"\""),"");
-		expectSingle(("\"hello\""),"hello");
-		expectSingle(("\"guess\\\nwhat\""),"guesswhat");
-		expectSingle(("\"guess\\\rwhat\""),"guesswhat");
-		expectSingle(("\"guess\\\r\nwhat\""),"guesswhat");
-		expectSingle(("\"guess\nwhat\""),"guess\nwhat");
-		expectSingle(("\"\"\"\""),"\"");
+		expectSingle(("\"\""),Lists.asCodeList(""));
+		expectSingle(("\"hello\""),Lists.asCodeList("hello"));
+		expectSingle(("\"guess\\\nwhat\""),Lists.asCodeList("guesswhat"));
+		expectSingle(("\"guess\\\rwhat\""),Lists.asCodeList("guesswhat"));
+		expectSingle(("\"guess\\\r\nwhat\""),Lists.asCodeList("guesswhat"));
+		expectSingle(("\"guess\nwhat\""),Lists.asCodeList("guess\nwhat"));
+		expectSingle(("\"\"\"\""),Lists.asCodeList("\""));
 	}
 	@Test
 	public void testSinglequoteToken() throws Exception{

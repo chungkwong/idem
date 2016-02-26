@@ -32,7 +32,7 @@ public class Throw extends ControlConstruct{
 		while(true){
 			exec.getStack().pop();
 			if(exec.getStack().size()<=1)
-				throw new SystemException("Uncaught prolog error");
+				throw new SystemException("Uncaught prolog error:"+throwPred);
 			if((subst=matchCatch(throwPred,cutparent,exec))!=null)
 				break;
 			cutparent=exec.getStack().peek().getDecsglstk().peek().getCutparent();

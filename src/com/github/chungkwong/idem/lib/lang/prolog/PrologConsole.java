@@ -42,23 +42,25 @@ public class PrologConsole implements Shell{
 		StringBuilder buf=new StringBuilder();
 		for(Predication pred:predications){
 			if(pred.getPredicate().getFunctor().equals("?-")){
-				Processor exec=new Processor((Predication)pred.getArguments().get(0),db);
-				Substitution subst=exec.getSubstitution();
-				if(subst==null)
-					buf.append("Gaol failed\n");
-				else{
-					while(subst!=null){
-						buf.append(subst).append('\n');
-						exec.reexecute();
-						subst=exec.getSubstitution();
+				try{
+					Processor exec=new Processor((Predication)pred.getArguments().get(0),db);
+					Substitution subst=exec.getSubstitution();
+					if(subst==null)
+						buf.append("Gaol failed\n");
+					else{
+						while(subst!=null){
+							buf.append(subst.toStringUser()).append('\n');
+							exec.reexecute();
+							subst=exec.getSubstitution();
+						}
 					}
+				}catch(Exception ex){
+					buf.append(ex).append('\n');
 				}
 			}else if(pred.getPredicate().getFunctor().equals(":-")){
 				db.addClauseToLast(new Clause((Predication)pred.getArguments().get(0),
 						(Predication)pred.getArguments().get(1)));
 				buf.append("Rule added\n");
-			}else if(pred.getPredicate().getFunctor().equals("inspect")){//FIXME
-				buf.append(db);
 			}else{
 				db.addClauseToLast(new Clause(pred,new Constant("true")));
 				buf.append("Fact added\n");

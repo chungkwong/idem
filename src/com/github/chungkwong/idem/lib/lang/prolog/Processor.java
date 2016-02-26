@@ -101,15 +101,17 @@ public class Processor{
 		Predicate currpred=getCurrentActivator().getPredicate();
 		Procedure proc=db.getProcedure(currpred);
 		if(proc==null){
-			switch(db.getFlag("undefined_predicate").getName()){
+			switch(db.getFlag("undefined_predicate").getValue().toString()){
 				case "error":
-					throw new ExistenceException(Procedure.class,new Constant(currpred.getFunctor()));
+					throw new ExistenceException(ExistenceException.PROCEDURE,new Constant(currpred.getFunctor()));
 				case "warning":
 					LOG.log(Level.WARNING,"Functor not found: {0}",currpred);
 				case "fail":
 					ExecutionState cutparent=stack.peek().getDecsglstk().pop().getCutparent();
 					stack.peek().getDecsglstk().push(new DecoratedSubgoal(new Constant("fail"),cutparent));
 					break;
+				default:
+					assert false;
 			}
 		}else{
 			proc.execute(this);

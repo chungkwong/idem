@@ -92,8 +92,10 @@ public class CompoundTerm extends Predication{
 				if(!t.arguments.get(i).unities(arguments.get(i),subst))
 					return false;
 			return true;
-		}else
+		}else{
+			assert false;
 			return false;
+		}
 	}
 	@Override
 	public CompoundTerm renameAllVariable(HashMap<Variable,Variable> renameTo){
@@ -127,5 +129,22 @@ public class CompoundTerm extends Predication{
 			return true;
 		}else
 			return false;
+	}
+	@Override
+	public Term substitute(Variable var,Term replacement){
+		return new CompoundTerm(functor,arguments.stream()
+				.map((t)->t.substitute(var,replacement)).collect(Collectors.toList()));
+	}
+	@Override
+	public boolean equals(Object o){
+		return o instanceof CompoundTerm&&((CompoundTerm)o).functor.equals(functor)&&
+				((CompoundTerm)o).arguments.equals(arguments);
+	}
+	@Override
+	public int hashCode(){
+		int hash=5;
+		hash=47*hash+Objects.hashCode(this.functor);
+		hash=47*hash+Objects.hashCode(this.arguments);
+		return hash;
 	}
 }

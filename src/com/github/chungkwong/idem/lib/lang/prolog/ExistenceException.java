@@ -21,15 +21,21 @@ package com.github.chungkwong.idem.lib.lang.prolog;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class ExistenceException extends PrologException{
-	static String FUNCTOR="existence_error";
-	private final Class type;
+	static final String FUNCTOR="existence_error";
+	public static final String OPERATOR="operator";
+	public static final String PAST_END_OF_STREAM="past_end_of_stream";
+	public static final String PROCEDURE="procedure";
+	public static final String STATIC_PROCEDURE="static_procedure";
+	public static final String SOURCE_SINK="source_sink";
+	public static final String STREAM="stream";
+	private final String type;
 	private final Term argument;
 	/**
 	 * Construct a ExistenceException
 	 * @param type type expected
 	 * @param argument the object that do not exists
 	 */
-	public ExistenceException(Class type,Term argument){
+	public ExistenceException(String type,Term argument){
 		this.type=type;
 		this.argument=argument;
 	}
@@ -41,7 +47,7 @@ public class ExistenceException extends PrologException{
 	public Term getErrorTerm(){
 		return new CompoundTerm(FUNCTOR,new Constant(getType()),getArgument());
 	}
-	public Class getType(){
+	public String getType(){
 		return type;
 	}
 	public Term getArgument(){

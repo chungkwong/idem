@@ -59,7 +59,7 @@ public class Variable extends Term{
 	}
 	@Override
 	public boolean unities(Term term,Substitution subst){
-		return this==WILDCARD||term==WILDCARD||subst.assign(this,term);
+		return this==WILDCARD||term==WILDCARD||equals(term)||subst.assign(this,term);
 	}
 	@Override
 	public Term substitute(Substitution subst){
@@ -87,7 +87,7 @@ public class Variable extends Term{
 	}
 	@Override
 	public boolean isVariantOf(Term t,Map<Variable,Variable> perm){
-		if(t instanceof Variable&&perm.containsKey(t)){
+		if(t instanceof Variable&&perm.containsKey((Variable)t)){
 			if(!perm.containsKey(this)){
 				perm.put(this,(Variable)t);
 				return true;
@@ -95,6 +95,13 @@ public class Variable extends Term{
 				return perm.get(this).equals(t);
 		}else
 			return false;
+	}
+	@Override
+	public Term substitute(Variable var,Term replacement){
+		if(equals(var))
+			return replacement;
+		else
+			return this;
 	}
 	/**
 	 * Variable that are different from other variables
@@ -115,6 +122,12 @@ public class Variable extends Term{
 		@Override
 		public boolean equals(Object obj){
 			return obj instanceof InternalVariable&&((InternalVariable)obj).id==id;
+		}
+		@Override
+		public int hashCode(){
+			int hash=7;
+			hash=11*hash+this.id;
+			return hash;
 		}
 	}
 }

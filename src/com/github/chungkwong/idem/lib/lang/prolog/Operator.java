@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
-
+import java.util.*;
 /**
  * Operator
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -52,7 +52,25 @@ public class Operator{
 	public Associativity getAssociativity(){
 		return associativity;
 	}
+	@Override
 	public String toString(){
 		return token;
+	}
+	@Override
+	public boolean equals(Object obj){
+		if(!(obj instanceof Operator))
+			return false;
+		Operator o=(Operator)obj;
+		return o.priority==priority&&o.token.equals(token)&&o.cls.equals(cls)
+				&&o.associativity.equals(associativity);
+	}
+	@Override
+	public int hashCode(){
+		int hash=7;
+		hash=47*hash+Objects.hashCode(this.token);
+		hash=47*hash+this.priority;
+		hash=47*hash+Objects.hashCode(this.cls);
+		hash=47*hash+Objects.hashCode(this.associativity);
+		return hash;
 	}
 }
