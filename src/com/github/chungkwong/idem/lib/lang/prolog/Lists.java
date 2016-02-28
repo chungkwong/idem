@@ -112,12 +112,30 @@ public class Lists{
 	 * @return the tail of the list
 	 */
 	public static List<Term> tail(Term term){
+		return toJavaList(((CompoundTerm)term).getArguments().get(1));
+	}
+	/**
+	 * @param term A prolog list
+	 * @return The corresponsing java List
+	 */
+	public static List<Term> toJavaList(Term term){
 		List<Term> list=new LinkedList();
-		term=((CompoundTerm)term).getArguments().get(1);
 		while(term instanceof CompoundTerm){
 			list.add(((CompoundTerm)term).getArguments().get(0));
 			term=((CompoundTerm)term).getArguments().get(1);
 		}
 		return list;
+	}
+	/**
+	 * @param prologArgs a prolog list
+	 * @return The corresponsing java List with all constants replaced with its value
+	 */
+	public static List<Object> extractJavaArguments(Term prologArgs){
+		if(isList(prologArgs)){
+			return toJavaList(prologArgs).stream().filter((arg)->arg instanceof Constant)
+					.map((arg)->((Constant)arg).getValue()).collect(Collectors.toList());
+		}else{
+			throw new TypeException("list",prologArgs);
+		}
 	}
 }
