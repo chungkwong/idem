@@ -16,6 +16,11 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
 
+import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalError;
+import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalFail;
+import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalSuccess;
+import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.multiquery;
+import java.math.*;
 import java.util.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -25,10 +30,11 @@ import org.junit.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PrologMiscTest extends PrologProcessorTest{
+public class PrologMiscTest{
     @Test
 	public void testUnification(){
 		assertTrue(new Constant(3).unities(new Constant(3),new Substitution()));
+		assertTrue(new Constant(BigInteger.valueOf(3)).unities(new Constant(BigInteger.valueOf(3)),new Substitution()));
 		assertFalse(new Constant(3).unities(new Constant(4),new Substitution()));
 		assertTrue(new Variable("X").unities(new Variable("Y"),new Substitution()));
 		assertTrue(new Variable("X").unities(new Variable("X"),new Substitution()));

@@ -15,13 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
+import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalError;
+import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalFail;
+import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalSuccess;
+import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.multiquery;
 import static org.junit.Assert.assertTrue;
 import org.junit.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PrologPredicateTest extends PrologProcessorTest{
+public class PrologPredicateTest{
 	@Test
 	public void testJavaInteraction(){
 		assertGoalSuccess("is_null(X).","");

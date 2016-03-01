@@ -16,13 +16,17 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
 
+import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalError;
+import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalFail;
+import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalSuccess;
+import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertSuccessCount;
 import org.junit.*;
 
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PrologConstructTest extends PrologProcessorTest{
+public class PrologConstructTest{
 @Test
 	public void testTrue(){
 		assertGoalSuccess("true.","");

@@ -22,10 +22,7 @@ import org.junit.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class PrologProcessorTest{
-
-	public PrologProcessorTest(){
-	}
-	protected List<Substitution> multiquery(String query,String data,String mode){
+	public static List<Substitution> multiquery(String query,String data,String mode){
 		Database db=new Database();
 		db.getFlag("undefined_predicate").setValue(new Constant(mode));
 		new PrologParser(new PrologLex(data)).getRemaining().stream().forEach((pred)->db.addPredication(pred));
@@ -38,19 +35,19 @@ public class PrologProcessorTest{
 		//System.out.println(substs);
 		return substs;
 	}
-	protected List<Substitution> multiquery(String query,String data){
+	public static List<Substitution> multiquery(String query,String data){
 		return multiquery(query,data,"error");
 	}
-	protected void assertSuccessCount(String query,String data,int count){
+	public static void assertSuccessCount(String query,String data,int count){
 		Assert.assertEquals(multiquery(query,data).size(),count);
 	}
-	protected void assertGoalFail(String query,String data){
+	public static void assertGoalFail(String query,String data){
 		assertSuccessCount(query,data,0);
 	}
-	protected void assertGoalSuccess(String query,String data){
+	public static void assertGoalSuccess(String query,String data){
 		Assert.assertTrue(!multiquery(query,data).isEmpty());
 	}
-	protected void assertGoalError(String query,String data){
+	public static void assertGoalError(String query,String data){
 		Database db=new Database();
 		new PrologParser(new PrologLex(data)).getRemaining().stream().forEach((pred)->db.addPredication(pred));
 		try{
@@ -59,5 +56,9 @@ public class PrologProcessorTest{
 		}catch(Exception ex){
 
 		}
+	}
+	@Test
+	public void test(){
+		
 	}
 }

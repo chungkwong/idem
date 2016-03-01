@@ -84,8 +84,8 @@ public class PrologLex implements SimpleIterator<Object>{
 							}
 						}
 					}else{
-						in.unread('/');
 						unreadIfNotEOF(c);
+						in.unread('/');
 						return;
 					}
 					break;
