@@ -31,12 +31,15 @@ public class JavaInvoke extends BuildinPredicate{
 		Term ret=arguments.get(0),object=arguments.get(1),method=arguments.get(2);
 		expectConstant(object);
 		expectConstant(method);
-		List<Object> args=Lists.extractJavaArguments(arguments.get(3));
-		Object obj=((Constant)arguments).getValue();
+		Object obj=((Constant)object).getValue();
 		String methodName=((Constant)method).getValue().toString();
+		return invoke(ret,obj.getClass(),obj,methodName,arguments.get(3),exec);
+	}
+	protected boolean invoke(Term ret,Class cls,Object obj,String method,Term arguments,Processor exec){
+		List<Object> args=Lists.extractJavaArguments(arguments);
 		Object retValue;
 		try{
-			retValue=obj.getClass().getMethod(methodName,args.stream().map((arg)->arg.getClass()).toArray(Class[]::new))
+			retValue=cls.getMethod(method,args.stream().map((arg)->arg.getClass()).toArray(Class[]::new))
 					.invoke(obj,args.toArray());
 		}catch(NoSuchMethodException|SecurityException|IllegalAccessException
 				|IllegalArgumentException|InvocationTargetException ex){
@@ -44,7 +47,7 @@ public class JavaInvoke extends BuildinPredicate{
 		}
 		return ret.unities(new Constant(retValue),exec.getCurrentSubst());
 	}
-	private static void expectConstant(Term t){
+	protected static void expectConstant(Term t){
 		if(t instanceof Variable)
 			throw new InstantiationException((Variable)t);
 		else if(t instanceof CompoundTerm)

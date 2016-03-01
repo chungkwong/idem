@@ -37,15 +37,16 @@ public class Constant<T> extends Predication{
 	}
 	@Override
 	public boolean equals(Object obj){
-		return obj!=null&&obj instanceof Constant&&((Constant)obj).val.equals(val);
+		return obj!=null&&obj instanceof Constant&&
+				(val==null?((Constant)obj).val==null:val.equals(((Constant)obj).val));
 	}
 	@Override
 	public int hashCode(){
-		return val.hashCode();
+		return val==null?0:val.hashCode();
 	}
 	@Override
 	public String toString(){
-		return val.toString();
+		return val==null?"null":val.toString();
 	}
 	@Override
 	public Set<Variable> getVariableSet(){
@@ -62,7 +63,7 @@ public class Constant<T> extends Predication{
 	@Override
 	public boolean unities(Term term,Substitution subst){
 		if(term instanceof Constant)
-			return ((Constant)term).val.equals(val);
+			return equals(term);
 		else if(term instanceof Variable)
 			return ((Variable)term).isWildcard()||subst.assign((Variable)term,this);
 		else

@@ -56,6 +56,7 @@ public class PrologConsole implements Shell{
 					}
 				}catch(Exception ex){
 					buf.append(ex).append('\n');
+					ex.printStackTrace();
 				}
 			}else if(pred.getPredicate().getFunctor().equals(":-")){
 				db.addClauseToLast(new Clause((Predication)pred.getArguments().get(0),

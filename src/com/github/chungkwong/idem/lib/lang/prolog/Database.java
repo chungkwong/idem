@@ -58,7 +58,14 @@ public class Database{
 		addProcedure(IsAtomic.INSTANCE);
 		addProcedure(IsCompound.INSTANCE);
 		addProcedure(IsInteger.INSTANCE);
+		addProcedure(IsNull.INSTANCE);
 		addProcedure(IsReal.INSTANCE);
+		addProcedure(JavaCast.INSTANCE);
+		addProcedure(JavaField.INSTANCE);
+		addProcedure(JavaFieldStatic.INSTANCE);
+		addProcedure(JavaInvoke.INSTANCE);
+		addProcedure(JavaInvokeStatic.INSTANCE);
+		addProcedure(JavaNew.INSTANCE);
 		addProcedure(Once.INSTANCE);
 		addProcedure(Precedes.INSTANCE);
 		addProcedure(Retract.INSTANCE);

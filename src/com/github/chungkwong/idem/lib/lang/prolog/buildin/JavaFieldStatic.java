@@ -15,38 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
-import com.github.chungkwong.idem.lib.lang.prolog.InstantiationException;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 import java.util.*;
 /**
- * java_field(value,object,field)
+ * java_field_static(value,class,field)
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class JavaField extends BuildinPredicate{
-	public static final JavaField INSTANCE=new JavaField();
-	public static final Predicate PREDICATE=new Predicate("java_field",3);
+public class JavaFieldStatic extends JavaField{
+	public static final JavaFieldStatic INSTANCE=new JavaFieldStatic();
+	public static final Predicate PREDICATE=new Predicate("java_field_static",3);
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
 		Term ret=arguments.get(0),object=arguments.get(1),field=arguments.get(2);
 		expectConstant(object);
 		expectConstant(field);
-		Object obj=((Constant)object).getValue();
-		return extractField(ret,obj.getClass(),obj,((Constant)field).getValue().toString(),exec);
-	}
-	protected boolean extractField(Term ret,Class cls,Object obj,String field,Processor exec){
-		Object retValue;
+		Class cls;
 		try{
-			retValue=cls.getField(field).get(obj);
-		}catch(NoSuchFieldException|SecurityException|IllegalArgumentException|IllegalAccessException ex){
+			cls=Class.forName(((Constant)object).getValue().toString());
+		}catch(ClassNotFoundException ex){
 			throw new JavaException(ex,exec.getCurrentActivator());
 		}
-		return ret.unities(new Constant(retValue),exec.getCurrentSubst());
-	}
-	protected static void expectConstant(Term t){
-		if(t instanceof Variable)
-			throw new InstantiationException((Variable)t);
-		else if(t instanceof CompoundTerm)
-			throw new TypeException("constant",t);
+		return extractField(ret,cls,null,((Constant)field).getValue().toString(),exec);
 	}
 	@Override
 	public Predicate getPredicate(){
