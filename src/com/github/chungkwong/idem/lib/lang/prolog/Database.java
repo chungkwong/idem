@@ -47,9 +47,11 @@ public class Database{
 		addProcedure(CopyTerm.INSTANCE);
 		addProcedure(CurrentPredicate.INSTANCE);
 		addProcedure(CurrentPrologFlag.INSTANCE);
+		addProcedure(Equal.INSTANCE);
 		addProcedure(FailIf.INSTANCE);
 		addProcedure(FindAll.INSTANCE);
 		addProcedure(Functor.INSTANCE);
+		addProcedure(Greater.INSTANCE);
 		addProcedure(Halt.INSTANCE);
 		addProcedure(HaltNow.INSTANCE);
 		addProcedure(Identical.INSTANCE);
@@ -66,6 +68,7 @@ public class Database{
 		addProcedure(JavaInvoke.INSTANCE);
 		addProcedure(JavaInvokeStatic.INSTANCE);
 		addProcedure(JavaNew.INSTANCE);
+		addProcedure(Less.INSTANCE);
 		addProcedure(Once.INSTANCE);
 		addProcedure(Precedes.INSTANCE);
 		addProcedure(Retract.INSTANCE);

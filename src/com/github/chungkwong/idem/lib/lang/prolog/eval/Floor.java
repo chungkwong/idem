@@ -32,7 +32,7 @@ public class Floor extends Evaluable{
 			return new Constant(args[0]);
 		else if(args[0] instanceof BigDecimal){
 			BigDecimal arg=((BigDecimal)args[0]);
-			return new Constant(arg.round(new MathContext(Math.max(arg.precision()-arg.scale(),0),RoundingMode.FLOOR)).toBigInteger());
+			return new Constant(arg.setScale(0,RoundingMode.FLOOR).toBigInteger());
 		}else
 			throw new TypeException("number",new Constant(args[0]));
 	}

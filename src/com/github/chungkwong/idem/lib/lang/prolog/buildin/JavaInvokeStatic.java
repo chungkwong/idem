@@ -26,17 +26,14 @@ public class JavaInvokeStatic extends JavaInvoke{
 	public static final Predicate PREDICATE=new Predicate("java_invoke_static",4);
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
-		Term ret=arguments.get(0),object=arguments.get(1),method=arguments.get(2);
-		expectConstant(object);
-		expectConstant(method);
 		Class cls;
 		try{
-			cls=Class.forName(((Constant)object).getValue().toString());
+			cls=Class.forName(Helper.getConstantValue(arguments.get(1)).toString());
 		}catch(ClassNotFoundException ex){
 			throw new JavaException(ex,exec.getCurrentActivator());
 		}
-		String methodName=((Constant)method).getValue().toString();
-		return invoke(ret,cls,null,methodName,arguments.get(3),exec);
+		String methodName=Helper.getConstantValue(arguments.get(2)).toString();
+		return invoke(arguments.get(0),cls,null,methodName,arguments.get(3),exec);
 	}
 	@Override
 	public Predicate getPredicate(){

@@ -18,8 +18,6 @@ package com.github.chungkwong.idem.lib.lang.prolog;
 import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalError;
 import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalFail;
 import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalSuccess;
-import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.multiquery;
-import static org.junit.Assert.assertTrue;
 import org.junit.*;
 /**
  *
@@ -38,12 +36,29 @@ public class PrologPredicateTest{
 		assertGoalSuccess("java_cast(X,'hello','java.lang.Object').","");
 	}
 	@Test
-	public void testRule(){
-		assertGoalError("p(X,Y).","p(M,W):-m(M),f(W).");
-	}
-	@Test
-	public void testCorner(){
-		assertTrue(multiquery("p(X,Y).","p(M,W):-m(M),f(W).","fail").isEmpty());
-		assertGoalFail("p(c).","p(a).p(b).");
+	public void testComparison(){
+		assertGoalSuccess("'=\\\\='(0,1).","");
+		assertGoalSuccess("'<'(0,1).","");
+		assertGoalSuccess("'=<'(0,1).","");
+		assertGoalSuccess("'=:='(1.0,1).","");
+		assertGoalSuccess("'>='(1.0,1).","");
+		assertGoalSuccess("'=<'(1.0,1).","");
+		assertGoalSuccess("'=:='(3*2,7-1).","");
+		assertGoalSuccess("'=<'(3*2,7-1).","");
+		assertGoalSuccess("'>='(3*2,7-1).","");
+		assertGoalFail("'=:='(0,1).","");
+		assertGoalFail("'>'(0,1).","");
+		assertGoalFail("'>='(0,1).","");
+		assertGoalFail("'=\\\\='(1.0,1).","");
+		assertGoalFail("'>'(1.0,1).","");
+		assertGoalFail("'<'(1.0,1).","");
+		assertGoalFail("'=\\\\='(3*2,7-1).","");
+		assertGoalFail("'<'(3*2,7-1).","");
+		assertGoalFail("'>'(3*2,7-1).","");
+		assertGoalError("X=:=5 .","");
+		assertGoalError("X<5 .","");
+		assertGoalError("X>5 .","");
+		assertGoalError("X>=5 .","");
+		assertGoalError("X=<5 .","");
 	}
 }

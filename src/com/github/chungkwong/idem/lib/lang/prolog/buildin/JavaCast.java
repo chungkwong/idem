@@ -26,16 +26,14 @@ public class JavaCast extends BuildinPredicate{
 	public static final Predicate PREDICATE=new Predicate("java_cast",3);
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
-		Term ret=arguments.get(0),old=arguments.get(1),type=arguments.get(2);
-		expectConstant(old);
-		expectConstant(type);
 		Object casted;
 		try{
-			casted=Class.forName((String)((Constant)type).getValue()).cast(((Constant)old).getValue());
+			casted=Class.forName(Helper.getConstantValue(arguments.get(2)).toString())
+					.cast(Helper.getConstantValue(arguments.get(1)));
 		}catch(ClassNotFoundException ex){
 			throw new JavaException(ex,exec.getCurrentActivator());
 		}
-		return ret.unities(new Constant(casted),exec.getCurrentSubst());
+		return arguments.get(0).unities(new Constant(casted),exec.getCurrentSubst());
 	}
 	protected static void expectConstant(Term t){
 		if(t instanceof Variable)

@@ -26,16 +26,13 @@ public class JavaFieldStatic extends JavaField{
 	public static final Predicate PREDICATE=new Predicate("java_field_static",3);
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
-		Term ret=arguments.get(0),object=arguments.get(1),field=arguments.get(2);
-		expectConstant(object);
-		expectConstant(field);
 		Class cls;
 		try{
-			cls=Class.forName(((Constant)object).getValue().toString());
+			cls=Class.forName(Helper.getConstantValue(arguments.get(1)).toString());
 		}catch(ClassNotFoundException ex){
 			throw new JavaException(ex,exec.getCurrentActivator());
 		}
-		return extractField(ret,cls,null,((Constant)field).getValue().toString(),exec);
+		return extractField(arguments.get(0),cls,null,Helper.getConstantValue(arguments.get(2)).toString(),exec);
 	}
 	@Override
 	public Predicate getPredicate(){

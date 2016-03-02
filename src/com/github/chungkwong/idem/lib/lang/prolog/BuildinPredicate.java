@@ -33,6 +33,7 @@ public abstract class BuildinPredicate implements Procedure{
 		exec.getStack().peek().setBI(ExecutionState.BacktraceInfo.BIP);
 		if(activate(exec.getCurrentActivator().getArguments(),exec)){
 			exec.getCurrentDecoratedSubgoal().setActivator(new Constant("true"));
+			exec.getCurrentState().substitute(exec.getCurrentSubst());
 		}else{
 			exec.getCurrentDecoratedSubgoal().setActivator(new Constant("fail"));
 		}

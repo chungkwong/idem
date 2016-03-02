@@ -14,28 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.eval;
+package com.github.chungkwong.idem.lib.lang.prolog.buildin;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 import java.math.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Helper{
-	public static final BigDecimal toReal(Object o){
-		if(o instanceof BigDecimal)
-			return (BigDecimal)o;
-		else if(o instanceof BigInteger)
-			return new BigDecimal((BigInteger)o);
+public class Greater extends BuildinPredicate{
+	public static final Greater INSTANCE=new Greater();
+	public static final Predicate pred=new Predicate(">",2);
+	@Override
+	public boolean activate(List<Term> arguments,Processor exec){
+		Object o0=Helper.getConstantValue(Helper.evaluate(arguments.get(0)));
+		Object o1=Helper.getConstantValue(Helper.evaluate(arguments.get(1)));
+		if(o0 instanceof BigInteger&&o1 instanceof BigInteger)
+			return ((BigInteger)o0).compareTo((BigInteger)o1)>0;
 		else
-			throw new TypeException("number",new Constant(o));
+			return Helper.toReal(o0).compareTo(Helper.toReal(o1))>0;
 	}
-	public static final int signum(Object o){
-		if(o instanceof BigInteger)
-			return ((BigInteger)o).signum();
-		else if(o instanceof BigDecimal)
-			return ((BigDecimal)o).signum();
-		else
-			throw new TypeException("number",new Constant(o));
+	@Override
+	public Predicate getPredicate(){
+		return pred;
 	}
 }

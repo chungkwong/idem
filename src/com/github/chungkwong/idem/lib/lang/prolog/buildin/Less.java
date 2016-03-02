@@ -14,25 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.eval;
-import com.github.chungkwong.idem.lib.*;
+package com.github.chungkwong.idem.lib.lang.prolog.buildin;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 import java.math.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Sqrt extends Evaluable{
-	public static final Sqrt INSTANCE=new Sqrt();
-	public Sqrt(){
-		super(new EvaluableFunctor("sqrt",1));
+public class Less extends BuildinPredicate{
+	public static final Less INSTANCE=new Less();
+	public static final Predicate pred=new Predicate("<",2);
+	@Override
+	public boolean activate(List<Term> arguments,Processor exec){
+		Object o0=Helper.getConstantValue(Helper.evaluate(arguments.get(0)));
+		Object o1=Helper.getConstantValue(Helper.evaluate(arguments.get(1)));
+		if(o0 instanceof BigInteger&&o1 instanceof BigInteger)
+			return ((BigInteger)o0).compareTo((BigInteger)o1)<0;
+		else
+			return Helper.toReal(o0).compareTo(Helper.toReal(o1))<0;
 	}
 	@Override
-	protected Term evaluate(Object[] args){
-		BigDecimal arg=Helper.toReal(args[0]);
-		if(arg.signum()<0)
-			throw new CalculationException(CalculationException.Type.UNDEFINED);
-		else
-			return new Constant(BigDecimalMath.sqrt(arg,MathContext.UNLIMITED));
+	public Predicate getPredicate(){
+		return pred;
 	}
 }

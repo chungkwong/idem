@@ -128,7 +128,7 @@ class ParseState{
 			}else if(postfix==null){
 				pushOperator(infix);
 			}else{
-				Object peek=lex.peek();
+				Object peek=lex.hasNext()?lex.peek():"";
 				if(peek instanceof String&&(DEFAULT_OPERATOR_TABLE.getInfixOperators().containsKey((String)peek)
 						||DEFAULT_OPERATOR_TABLE.getPostfixOperators().containsKey((String)peek))){
 					pushOperator(postfix);
@@ -137,8 +137,7 @@ class ParseState{
 				}
 			}
 		}else{
-			Object peek=lex.peek();
-			if(peek.equals("(")){
+			if(lex.hasNext()&&lex.peek().equals("(")){
 				pushOperator(new Operator(name,0,Operator.Class.PREFIX,Operator.Associativity.RIGHT));
 			}else{
 				Operator prefix=DEFAULT_OPERATOR_TABLE.getPrefixOperators().get(name);

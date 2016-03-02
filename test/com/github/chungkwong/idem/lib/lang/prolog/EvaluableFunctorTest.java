@@ -63,10 +63,10 @@ public class EvaluableFunctorTest{
 	}
 	@Test
 	public void testDivide(){
-		assertGoalSuccess("X is 7/35,X=0.2 .","");
-		assertGoalSuccess("X is 7.0/35,X=0.2 .","");
-		assertGoalSuccess("X is 140/(3+11),X=10 .","");
-		assertGoalSuccess("X is 20.164/(3.2+11),X=14.2 .","");
+		assertGoalSuccess("X is 7/35,X=:=0.2 .","");
+		assertGoalSuccess("X is 7.0/35,X=:=0.2 .","");
+		assertGoalSuccess("X is 140/(3+11),X=:=10 .","");
+		assertGoalSuccess("X is 20.164/(3.2+11),X=:=14.2 .","");
 		assertGoalError("X is '/'(77,N).","");
 		assertGoalError("X is '/'(foo,77).","");
 		assertGoalError("X is '/'(3,0).","");
@@ -80,10 +80,11 @@ public class EvaluableFunctorTest{
 		assertGoalError("X is mod(7.5,2).","");
 		assertGoalError("X is mod(7,0).","");
 	}
-	@Test void testFloor(){
+	@Test
+	public void testFloor(){
 		assertGoalSuccess("X is floor(7.4),X=7 .","");
 		assertGoalSuccess("X is floor(0.6),X= 0 .","");
-		assertGoalSuccess("X is floor(-0.4),X= -1 .","");
+		assertGoalSuccess("X is floor(-0.04),X= -1 .","");
 		assertGoalSuccess("X is floor(-1),X= -1 .","");
 		assertGoalSuccess("X is floor(0),X= 0 .","");
 	}
@@ -94,25 +95,53 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is round(-0.6),X= -1 .","");
 		assertGoalSuccess("X is round(7.4),X=7 .","");
 		assertGoalSuccess("X is round(0.6),X=1 .","");
-		assertGoalSuccess("X is round(-0.4),X=0 .","");
+		assertGoalSuccess("X is round(-0.04),X=0 .","");
 		assertGoalSuccess("X is round(-1),X= -1 .","");
 		assertGoalSuccess("X is round(0),X= 0 .","");
 		assertGoalError("X is round(N).","");
 	}
-	@Test void testCeiling(){
+	@Test
+	public void testCeiling(){
 		assertGoalSuccess("X is ceiling(7.4),X=8 .","");
 		assertGoalSuccess("X is ceiling(0.6),X=1 .","");
-		assertGoalSuccess("X is ceiling(-0.4),X=0 .","");
+		assertGoalSuccess("X is ceiling(-0.04),X=0 .","");
 		assertGoalSuccess("X is ceiling(-1),X= -1 .","");
 		assertGoalSuccess("X is ceiling(0),X= 0 .","");
 	}
-	@Test void testTruncate(){
+	@Test
+	public void testTruncate(){
 		assertGoalSuccess("X is truncate(7.4),X=7 .","");
 		assertGoalSuccess("X is truncate(0.6),X=0 .","");
-		assertGoalSuccess("X is truncate(-0.4),X=0 .","");
+		assertGoalSuccess("X is truncate(-0.04),X=0 .","");
 		assertGoalSuccess("X is truncate(-1),X= -1 .","");
 		assertGoalSuccess("X is truncate(0),X= 0 .","");
 		assertGoalSuccess("X is truncate(-0.5),X=0 .","");
 		assertGoalError("X is truncate(foo).","");
+	}
+	@Test
+	public void testFloat(){
+		assertGoalSuccess("X is float(7.3),X=:=7.3 .","");
+		assertGoalSuccess("X is float(7),X=:=7.0 .","");
+		assertGoalSuccess("X is float(5/3),X=:=1.0 .","");
+		assertGoalError("X is float(foo).","");
+		assertGoalError("X is float(N).","");
+	}
+	@Test
+	public void testAbs(){
+		assertGoalSuccess("X is abs(7),X=7 .","");
+		assertGoalSuccess("X is abs(3-11),X=8 .","");
+		assertGoalSuccess("X is abs(3.2-11.0),X=7.8 .","");
+		assertGoalError("X is abs(foo).","");
+		assertGoalError("X is abs(N).","");
+	}
+	@Test
+	public void testSqrt(){
+		assertGoalSuccess("X is sqrt(0),X=:=0 .","");
+		assertGoalSuccess("X is sqrt(4.0),X=:=2.0 .","");
+		assertGoalSuccess("X is sqrt(0.0),X=:=0.0 .","");
+		assertGoalSuccess("X is sqrt(1.0),X=:=1.0 .","");
+		assertGoalError("X is abs(foo).","");
+		assertGoalError("X is abs(N).","");
+		assertGoalError("X is abs(N-1.","");
 	}
 }

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
-import com.github.chungkwong.idem.lib.lang.prolog.InstantiationException;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 import java.util.*;
 /**
@@ -27,11 +26,8 @@ public class JavaField extends BuildinPredicate{
 	public static final Predicate PREDICATE=new Predicate("java_field",3);
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
-		Term ret=arguments.get(0),object=arguments.get(1),field=arguments.get(2);
-		expectConstant(object);
-		expectConstant(field);
-		Object obj=((Constant)object).getValue();
-		return extractField(ret,obj.getClass(),obj,((Constant)field).getValue().toString(),exec);
+		Object obj=Helper.getConstantValue(arguments.get(1));
+		return extractField(arguments.get(0),obj.getClass(),obj,Helper.getConstantValue(arguments.get(2)).toString(),exec);
 	}
 	protected boolean extractField(Term ret,Class cls,Object obj,String field,Processor exec){
 		Object retValue;
@@ -41,12 +37,6 @@ public class JavaField extends BuildinPredicate{
 			throw new JavaException(ex,exec.getCurrentActivator());
 		}
 		return ret.unities(new Constant(retValue),exec.getCurrentSubst());
-	}
-	protected static void expectConstant(Term t){
-		if(t instanceof Variable)
-			throw new InstantiationException((Variable)t);
-		else if(t instanceof CompoundTerm)
-			throw new TypeException("constant",t);
 	}
 	@Override
 	public Predicate getPredicate(){

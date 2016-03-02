@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
-import com.github.chungkwong.idem.lib.lang.prolog.InstantiationException;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 import java.lang.reflect.*;
 import java.util.*;
@@ -28,12 +27,9 @@ public class JavaInvoke extends BuildinPredicate{
 	public static final Predicate PREDICATE=new Predicate("java_invoke",4);
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
-		Term ret=arguments.get(0),object=arguments.get(1),method=arguments.get(2);
-		expectConstant(object);
-		expectConstant(method);
-		Object obj=((Constant)object).getValue();
-		String methodName=((Constant)method).getValue().toString();
-		return invoke(ret,obj.getClass(),obj,methodName,arguments.get(3),exec);
+		Object obj=Helper.getConstantValue(arguments.get(1));
+		String methodName=Helper.getConstantValue(arguments.get(2)).toString();
+		return invoke(arguments.get(0),obj.getClass(),obj,methodName,arguments.get(3),exec);
 	}
 	protected boolean invoke(Term ret,Class cls,Object obj,String method,Term arguments,Processor exec){
 		List<Object> args=Lists.extractJavaArguments(arguments);
@@ -46,12 +42,6 @@ public class JavaInvoke extends BuildinPredicate{
 			throw new JavaException(ex,exec.getCurrentActivator());
 		}
 		return ret.unities(new Constant(retValue),exec.getCurrentSubst());
-	}
-	protected static void expectConstant(Term t){
-		if(t instanceof Variable)
-			throw new InstantiationException((Variable)t);
-		else if(t instanceof CompoundTerm)
-			throw new TypeException("constant",t);
 	}
 	@Override
 	public Predicate getPredicate(){
