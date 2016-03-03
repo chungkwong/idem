@@ -25,69 +25,79 @@ import java.util.stream.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Database{
-	private final HashMap<Predicate,Procedure> procedures=new HashMap<>();
-	private final HashMap<String,Flag> flags=new HashMap<>();
-	{
-		addProcedure(Call.CALL);
-		addProcedure(Catch.CATCH);
-		addProcedure(Conjunction.CONJUNCTION);
-		addProcedure(Cut.CUT);
-		addProcedure(Disjunction.DISJUNCTION);
-		addProcedure(Fail.FAIL);
-		addProcedure(If.IF);
-		addProcedure(Throw.THROW);
-		addProcedure(True.TRUE);
+	private final HashMap<Predicate,Procedure> procedures;
+	private final HashMap<String,Flag> flags;
+	private static final Database base=new Database(new HashMap<>());
+	static{
+		base.addProcedure(Call.CALL);
+		base.addProcedure(Catch.CATCH);
+		base.addProcedure(Conjunction.CONJUNCTION);
+		base.addProcedure(Cut.CUT);
+		base.addProcedure(Disjunction.DISJUNCTION);
+		base.addProcedure(Fail.FAIL);
+		base.addProcedure(If.IF);
+		base.addProcedure(Throw.THROW);
+		base.addProcedure(True.TRUE);
 
-		addProcedure(Abolish.INSTANCE);
-		addProcedure(Arg.INSTANCE);
-		addProcedure(AssertA.INSTANCE);
-		addProcedure(AssertZ.INSTANCE);
-		addProcedure(BagOf.INSTANCE);
-		addProcedure(ClauseOf.INSTANCE);
-		addProcedure(CopyTerm.INSTANCE);
-		addProcedure(CurrentPredicate.INSTANCE);
-		addProcedure(CurrentPrologFlag.INSTANCE);
-		addProcedure(Equal.INSTANCE);
-		addProcedure(FailIf.INSTANCE);
-		addProcedure(FindAll.INSTANCE);
-		addProcedure(Functor.INSTANCE);
-		addProcedure(Greater.INSTANCE);
-		addProcedure(Halt.INSTANCE);
-		addProcedure(HaltNow.INSTANCE);
-		addProcedure(Identical.INSTANCE);
-		addProcedure(Is.INSTANCE);
-		addProcedure(IsAtom.INSTANCE);
-		addProcedure(IsAtomic.INSTANCE);
-		addProcedure(IsCompound.INSTANCE);
-		addProcedure(IsInteger.INSTANCE);
-		addProcedure(IsNull.INSTANCE);
-		addProcedure(IsReal.INSTANCE);
-		addProcedure(JavaCast.INSTANCE);
-		addProcedure(JavaField.INSTANCE);
-		addProcedure(JavaFieldStatic.INSTANCE);
-		addProcedure(JavaInvoke.INSTANCE);
-		addProcedure(JavaInvokeStatic.INSTANCE);
-		addProcedure(JavaNew.INSTANCE);
-		addProcedure(Less.INSTANCE);
-		addProcedure(Once.INSTANCE);
-		addProcedure(Precedes.INSTANCE);
-		addProcedure(Retract.INSTANCE);
-		addProcedure(Repeat.INSTANCE);
-		addProcedure(SetOf.INSTANCE);
-		addProcedure(SetPrologFlag.INSTANCE);
-		addProcedure(Succeed.INSTANCE);
-		addProcedure(UnifyWithOccurCheck.INSTANCE);
-		addProcedure(Univ.INSTANCE);
-		addProcedure(Var.INSTANCE);
+		base.addProcedure(Abolish.INSTANCE);
+		base.addProcedure(Arg.INSTANCE);
+		base.addProcedure(AssertA.INSTANCE);
+		base.addProcedure(AssertZ.INSTANCE);
+		base.addProcedure(BagOf.INSTANCE);
+		base.addProcedure(ClauseOf.INSTANCE);
+		base.addProcedure(CopyTerm.INSTANCE);
+		base.addProcedure(CurrentPredicate.INSTANCE);
+		base.addProcedure(CurrentPrologFlag.INSTANCE);
+		base.addProcedure(Equal.INSTANCE);
+		base.addProcedure(FailIf.INSTANCE);
+		base.addProcedure(FindAll.INSTANCE);
+		base.addProcedure(Functor.INSTANCE);
+		base.addProcedure(Greater.INSTANCE);
+		base.addProcedure(Halt.INSTANCE);
+		base.addProcedure(HaltNow.INSTANCE);
+		base.addProcedure(Identical.INSTANCE);
+		base.addProcedure(Is.INSTANCE);
+		base.addProcedure(IsAtom.INSTANCE);
+		base.addProcedure(IsAtomic.INSTANCE);
+		base.addProcedure(IsCompound.INSTANCE);
+		base.addProcedure(IsInteger.INSTANCE);
+		base.addProcedure(IsNull.INSTANCE);
+		base.addProcedure(IsReal.INSTANCE);
+		base.addProcedure(JavaCast.INSTANCE);
+		base.addProcedure(JavaField.INSTANCE);
+		base.addProcedure(JavaFieldStatic.INSTANCE);
+		base.addProcedure(JavaInvoke.INSTANCE);
+		base.addProcedure(JavaInvokeStatic.INSTANCE);
+		base.addProcedure(JavaNew.INSTANCE);
+		base.addProcedure(Less.INSTANCE);
+		base.addProcedure(Once.INSTANCE);
+		base.addProcedure(Precedes.INSTANCE);
+		base.addProcedure(Retract.INSTANCE);
+		base.addProcedure(Repeat.INSTANCE);
+		base.addProcedure(SetOf.INSTANCE);
+		base.addProcedure(SetPrologFlag.INSTANCE);
+		base.addProcedure(Succeed.INSTANCE);
+		base.addProcedure(UnifyWithOccurCheck.INSTANCE);
+		base.addProcedure(Univ.INSTANCE);
+		base.addProcedure(Var.INSTANCE);
 
 		InputStream resource=Database.class.getResourceAsStream("StandardProcedures");
 		PrologParser parser=new PrologParser(new PrologLex(new InputStreamReader(resource)));
 		Predication pred=parser.next();
 		while(pred!=null){
-			addPredication(pred);
+			base.addPredication(pred);
 			pred=parser.next();
 		}
-
+	}
+	/**
+	 * Construct a prolog database containing the control constructs and buildin predicate
+	 */
+	public Database(){
+		this(base.procedures);
+	}
+	private Database(HashMap<Predicate,Procedure> procedures){
+		this.procedures=new HashMap<>(procedures);
+		this.flags=new HashMap<>();
 		addFlag(new Flag("bounded",new Constant("false"),false,(o)->true,"character_list"));
 		addFlag(new Flag("intger_rounding_function",new Constant("toward_zero"),false,(o)->true,"character_list"));
 		Constant on=new Constant("on"),off=new Constant("off"),error=new Constant("error"),fail=new Constant("fail"),warning=new Constant("warning");

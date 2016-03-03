@@ -63,10 +63,9 @@ public class EvaluableFunctorTest{
 	}
 	@Test
 	public void testDivide(){
-		assertGoalSuccess("X is 7/35,X=:=0.2 .","");
+		assertGoalSuccess("X is 7/35,X=:=0 .","");
 		assertGoalSuccess("X is 7.0/35,X=:=0.2 .","");
 		assertGoalSuccess("X is 140/(3+11),X=:=10 .","");
-		assertGoalSuccess("X is 20.164/(3.2+11),X=:=14.2 .","");
 		assertGoalError("X is '/'(77,N).","");
 		assertGoalError("X is '/'(foo,77).","");
 		assertGoalError("X is '/'(3,0).","");
@@ -143,5 +142,96 @@ public class EvaluableFunctorTest{
 		assertGoalError("X is abs(foo).","");
 		assertGoalError("X is abs(N).","");
 		assertGoalError("X is abs(N-1.","");
+	}
+	@Test
+	public void testPow(){
+		assertGoalSuccess("X is '**'(5,3),X=:=125 .","");
+		assertGoalSuccess("X is '**'(5,3.0),X=:=125 .","");
+		assertGoalSuccess("X is '**'(-5.0,3),X=:= -125 .","");
+		assertGoalSuccess("X is '**'(5,-1),X=:=0.2 .","");
+		assertGoalSuccess("X is '**'(0.0,0),X=:=1.0 .","");
+		assertGoalError("X is '**'(77,N).","");
+		assertGoalError("X is '**'(foo,2).","");
+		assertGoalError("X is '**'(foo,2).","");
+	}
+	@Test
+	public void testSin(){
+		assertGoalSuccess("X is sin(0.0),X=:=0.0 .","");
+		assertGoalSuccess("X is sin(0),X=:=0.0 .","");
+		assertGoalError("X is sin(N).","");
+		assertGoalError("X is sin(foo).","");
+	}
+	@Test
+	public void testCos(){
+		assertGoalSuccess("X is cos(0.0),X=:=1.0 .","");
+		assertGoalSuccess("X is cos(0),X=:=1.0 .","");
+		assertGoalError("X is cos(N).","");
+		assertGoalError("X is cos(foo).","");
+	}
+	@Test
+	public void testAtan(){
+		assertGoalSuccess("X is atan(0.0),X=:=0.0 .","");
+		assertGoalSuccess("X is atan(1),sin(X)=:=cos(X) .","");
+		assertGoalError("X is atan(N).","");
+		assertGoalError("X is atan(foo).","");
+	}
+	@Test
+	public void testExp(){
+		assertGoalSuccess("X is exp(0.0),X=:=1 .","");
+		assertGoalSuccess("X is exp(0),X=:=1 .","");
+		assertGoalSuccess("X is exp(1),X=:=2.718 .","");
+		assertGoalError("X is exp(N).","");
+		assertGoalError("X is exp(foo).","");
+	}
+	@Test
+	public void testLog(){
+		assertGoalSuccess("X is log(1.0),X=:=0.0 .","");
+		//assertGoalSuccess("X is log(2.718),X=:=1.0 .","");
+		assertGoalError("X is log(N).","");
+		assertGoalError("X is log(foo).","");
+		assertGoalError("X is log(0).","");
+		assertGoalError("X is log(0.0).","");
+	}
+	@Test
+	public void testShiftRight(){
+		assertGoalSuccess("X is '>>'(16,2),X=:=4 .","");
+		assertGoalSuccess("X is '>>'(19,2),X=:=4 .","");
+		assertGoalSuccess("X is '<<'(-16,2).","");
+		assertGoalError("X is '>>'(77,N) .","");
+		assertGoalError("X is '>>'(foo,2) .","");
+	}
+	@Test
+	public void testShiftLeft(){
+		assertGoalSuccess("X is '<<'(16,2),X=:=64 .","");
+		assertGoalSuccess("X is '<<'(19,2),X=:=76 .","");
+		assertGoalSuccess("X is '<<'(-19,2).","");
+		assertGoalError("X is '<<'(77,N) .","");
+		assertGoalError("X is '<<'(foo,2) .","");
+	}
+	@Test
+	public void testAnd(){
+		assertGoalSuccess("X is /\\(10,12),X=:=8 .","");
+		assertGoalSuccess("X is '/\\\\'(10,12),X=:=8 .","");
+		assertGoalSuccess("X is '/\\\\'(17*256+125,255),X=:=125 .","");
+		assertGoalSuccess("X is '/\\\\'(-10,12).","");
+		assertGoalError("X is '/\\\\'(77,N) .","");
+		assertGoalError("X is '/\\\\'(foo,2) .","");
+	}
+	@Test
+	public void testOr(){
+		assertGoalSuccess("X is \\/(10,12),X=:=14 .","");
+		assertGoalSuccess("X is '\\\\/'(10,12),X=:=14 .","");
+		assertGoalSuccess("X is '\\\\/'(125,255),X=:=255 .","");
+		assertGoalSuccess("X is '\\\\/'(-10,10) .","");
+		assertGoalError("X is '\\\\/'(77,N) .","");
+		assertGoalError("X is '\\\\/'(foo,2) .","");
+	}
+	@Test
+	public void testComplement(){
+		assertGoalSuccess("X is '\\\\'('\\\\'(10)),X=:=10 .","");
+		assertGoalSuccess("X is \\( \\(10)),X=:=10 .","");
+		assertGoalSuccess("X is \\(10).","");
+		assertGoalError("X is \\(N).","");
+		assertGoalError("X is \\(foo).","");
 	}
 }

@@ -57,8 +57,11 @@ public class Helper{
 				throw new SystemException("Evaluable functor not found");
 			else
 				return evaluable.evaluate(ct.getArguments().stream().map((e)->evaluate(e)).collect(Collectors.toList()));
-		}else{
+		}else if(t instanceof Variable){
 			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)t);
+		}else{
+			assert false;
+			throw new SystemException();
 		}
 	}
 }
