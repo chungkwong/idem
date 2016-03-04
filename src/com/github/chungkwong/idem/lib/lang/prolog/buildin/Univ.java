@@ -29,17 +29,22 @@ public class Univ extends BuildinPredicate{
 	public boolean activate(List<Term> arguments,Processor exec){
 		Term term=arguments.get(0),list=arguments.get(1);
 		if(term instanceof Constant){
-			return list.unities(new CompoundTerm(".",term,Lists.EMPTY_LIST),exec.getCurrentSubst());
+			return list.unities(Lists.asList(term),exec.getCurrentSubst());
 		}else if(term instanceof CompoundTerm){
-			return list.unities(term,exec.getCurrentSubst());
+			Term termAsList=Lists.asList(((CompoundTerm)term).getArguments().toArray(new Term[0]));
+			termAsList=new CompoundTerm(".",new Constant(((CompoundTerm)term).getFunctor()),termAsList);
+			return list.unities(termAsList,exec.getCurrentSubst());
 		}else if(term instanceof Variable){
-			if(Lists.isList(list)){
-				if(Lists.length(list)==1){
+			if(Lists.isProperList(list)){
+				if(Lists.length(list)==1&&((CompoundTerm)list).getArguments().get(0) instanceof Constant){
 					return ((CompoundTerm)list).getArguments().get(0).unities(term,exec.getCurrentSubst());
 				}else{
 					Term hd=Lists.head(list);
 					if(hd instanceof Constant){
-						return new CompoundTerm(((Constant)hd).getValue(),Lists.tail(list)).unities(term,exec.getCurrentSubst());
+						if(((Constant)hd).getValue()instanceof String)
+							return new CompoundTerm(((Constant)hd).getValue(),Lists.tail(list)).unities(term,exec.getCurrentSubst());
+						else
+							throw new TypeException("atom",list);
 					}else if(hd instanceof CompoundTerm){
 						throw new TypeException("atom",list);
 					}else if(hd instanceof Variable){
@@ -52,7 +57,7 @@ public class Univ extends BuildinPredicate{
 			}else if(list instanceof Variable){
 				throw new InstantiationException((Variable)list);
 			}else{
-				return false;
+				throw new TypeException("list",list);
 			}
 		}else{
 			assert false;

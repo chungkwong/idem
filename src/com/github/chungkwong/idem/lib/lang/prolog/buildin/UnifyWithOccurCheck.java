@@ -22,7 +22,7 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class UnifyWithOccurCheck extends BuildinPredicate{
-	public static final Var INSTANCE=new Var();
+	public static final UnifyWithOccurCheck INSTANCE=new UnifyWithOccurCheck();
 	public static final Predicate pred=new Predicate("unify_with_occurs_check",2);
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){

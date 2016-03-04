@@ -1,8 +1,8 @@
 =(X,X).
 '\\='(X,X):- !,fail.
 '\\='(X,Y).
-notvar(X):-var(X),!,fail.
-notvar(X).
+nonvar(X):-var(X),!,fail.
+nonvar(X).
 number(X):-real(X).
 number(X):-integer(X).
 '\\=='(X,Y):-X==Y,!,fail.

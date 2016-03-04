@@ -23,13 +23,21 @@ import java.util.stream.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class UserPredicate implements Procedure{
-	private final List<Clause> clauses=new LinkedList<>();
+	private final List<Clause> clauses;
 	/**
 	 * Construct a user-defined predicate with a given clause
 	 * @param clause
 	 */
 	public UserPredicate(Clause clause){
+		clauses=new LinkedList<>();
 		clauses.add(clause);
+	}
+	/**
+	 * Construct a user-defined predicate base on a prototype
+	 * @param prototype
+	 */
+	public UserPredicate(UserPredicate prototype){
+		clauses=new LinkedList<>(prototype.clauses);
 	}
 	@Override
 	public void execute(Processor exec){

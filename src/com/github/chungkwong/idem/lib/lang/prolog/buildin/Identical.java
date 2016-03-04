@@ -26,7 +26,7 @@ public class Identical extends BuildinPredicate{
 	public static final Predicate pred=new Predicate("==",2);
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
-		return arguments.get(0).equals(arguments.get(1));
+		return arguments.get(0).equals(arguments.get(1))&&!arguments.get(0).equals(Variable.WILDCARD);
 	}
 	@Override
 	public Predicate getPredicate(){

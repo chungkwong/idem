@@ -94,6 +94,11 @@ public class Database{
 	 */
 	public Database(){
 		this(base.procedures);
+		for(Map.Entry<Predicate,Procedure> entry:procedures.entrySet()){
+			if(entry.getValue() instanceof UserPredicate){
+				entry.setValue(new UserPredicate((UserPredicate)entry.getValue()));
+			}
+		}
 	}
 	private Database(HashMap<Predicate,Procedure> procedures){
 		this.procedures=new HashMap<>(procedures);

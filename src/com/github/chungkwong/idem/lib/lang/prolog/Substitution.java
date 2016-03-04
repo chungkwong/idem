@@ -78,7 +78,7 @@ public class Substitution{
 	 * @return if the set of equations is subject to occur check
 	 */
 	public boolean occurCheck(){
-		return assignment.entrySet().stream().noneMatch(
+		return assignment.entrySet().stream().anyMatch(
 				(entry)->entry.getValue().getVariableSet().contains(entry.getKey()));
 	}
 	@Override
