@@ -87,13 +87,15 @@ public class Constant<T> extends Predication{
 	}
 	@Override
 	public Predication toHead(){
-		return this;
+		if(val instanceof String)
+			return this;
+		throw new TypeException("callable",this);
 	}
 	@Override
 	public Predication toBody()throws TypeException{
-		if(val instanceof Number)
-			throw new TypeException("atom",this);
-		return this;
+		if(val instanceof String)
+			return this;
+		throw new TypeException("body",this);
 	}
 	@Override
 	public boolean isVariantOf(Term t,Map<Variable,Variable> perm){

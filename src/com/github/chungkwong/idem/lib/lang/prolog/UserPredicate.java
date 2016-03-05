@@ -79,6 +79,10 @@ public class UserPredicate implements Procedure{
 		return clauses;
 	}
 	@Override
+	public boolean isDynamic(){
+		return true;
+	}
+	@Override
 	public String toString(){
 		return clauses.stream().map(Clause::toString).collect(Collectors.joining("\n"));
 	}

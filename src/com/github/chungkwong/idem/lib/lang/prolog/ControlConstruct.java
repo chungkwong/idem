@@ -31,6 +31,10 @@ public abstract class ControlConstruct implements Procedure{
 		firstexecute(exec);
 	}
 	@Override
+	public final boolean isDynamic(){
+		return false;
+	}
+	@Override
 	public String toString(){
 		return getPredicate().toString();
 	}

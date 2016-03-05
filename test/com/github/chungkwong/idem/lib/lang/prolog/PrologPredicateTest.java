@@ -18,6 +18,7 @@ package com.github.chungkwong.idem.lib.lang.prolog;
 import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalError;
 import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalFail;
 import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalSuccess;
+import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.multiquery;
 import org.junit.*;
 /**
  *
@@ -293,5 +294,61 @@ public class PrologPredicateTest{
 		assertGoalError("'=..'(X,[1.1,foo]).","");
 		assertGoalError("'=..'(X,[a(b),1]).","");
 		assertGoalError("'=..'(X,4).","");
+	}
+	@Test
+	public void testCopyTerm(){
+		assertGoalSuccess("copy_term(X,Y).","");
+		assertGoalSuccess("copy_term(X,3).","");
+		assertGoalSuccess("copy_term(_,a).","");
+		assertGoalSuccess("copy_term(a+X,X+b).","");
+		assertGoalSuccess("copy_term(_,_).","");
+		assertGoalSuccess("copy_term(X+X+Y,A+B+B).","");
+		assertGoalFail("copy_term(a,b).","");
+		assertGoalFail("copy_term(a+X,X+b),copy_term(a+X,X+b).","");
+	}
+	@Test
+	public void testAsserta(){
+		assertGoalSuccess("asserta(legs(octopus,8)).","legs(X,6):-insect(X).");
+		assertGoalSuccess("asserta((legs(X,4):-animal(X))).","legs(X,6):-insect(X).");
+		assertGoalError("asserta(_).","");
+		assertGoalError("asserta(4).","");
+		assertGoalError("asserta((foo:-4)).","");
+		assertGoalError("asserta((atom(_):-true)).","");
+	}
+	@Test
+	public void testAssertz(){
+		assertGoalSuccess("assertz(legs(octopus,8)).","legs(X,6):-insect(X).");
+		assertGoalSuccess("assertz((legs(X,4):-animal(X))).","legs(X,6):-insect(X).");
+		assertGoalError("assertz(_).","");
+		assertGoalError("assertz(4).","");
+		assertGoalError("assertz((foo:-4)).","");
+		assertGoalError("assertz((atom(_):-true)).","");
+	}
+	@Test
+	public void testRetract(){
+
+	}
+	@Test
+	public void testFailIf(){
+		assertGoalSuccess("fail_if((!,fail)).","");
+		assertGoalSuccess("fail_if(4=5).","");
+		Assert.assertTrue(multiquery("(X=1;X=2),fail_if((!,fail)).","").size()==2);
+		assertGoalFail("fail_if(true).","");
+		assertGoalFail("fail_if(!).","");
+		assertGoalError("fail_if(3).","");
+		assertGoalError("fail_if(X).","");
+	}
+	@Test
+	public void testOnce(){
+		assertGoalSuccess("once(!).","");
+		Assert.assertTrue(multiquery("once(!),(X=1;X=2).","").size()==2);
+		assertGoalSuccess("once(repeat).","");
+		assertGoalFail("once(fail).","");
+		assertGoalError("once(3).","");
+		assertGoalError("once(X).","");
+	}
+	@Test
+	public void testRepeat(){
+		assertGoalFail("repeat,!,fail.","");
 	}
 }

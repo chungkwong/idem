@@ -130,9 +130,13 @@ public class Database{
 	 */
 	public void addClauseToFirst(Clause clause){
 		Predicate predicate=clause.getHead().getPredicate();
-		if(procedures.containsKey(predicate)&&procedures.get(predicate) instanceof UserPredicate)
-			((UserPredicate)procedures.get(predicate)).getClauses().add(0,clause);
-		else{
+		if(procedures.containsKey(predicate)){
+			if(procedures.get(predicate).isDynamic())
+				((UserPredicate)procedures.get(predicate)).getClauses().add(0,clause);
+			else
+				throw new PermissionException(new Constant("modify_clause")
+						,new Constant("static_procedure"),AssertA.pred.getIndicator());
+		}else{
 			procedures.put(predicate,new UserPredicate(clause));
 		}
 	}
@@ -142,9 +146,13 @@ public class Database{
 	 */
 	public void addClauseToLast(Clause clause){
 		Predicate predicate=clause.getHead().getPredicate();
-		if(procedures.containsKey(predicate)&&procedures.get(predicate) instanceof UserPredicate)
-			((UserPredicate)procedures.get(predicate)).getClauses().add(clause);
-		else{
+		if(procedures.containsKey(predicate)){
+			if(procedures.get(predicate).isDynamic())
+				((UserPredicate)procedures.get(predicate)).getClauses().add(clause);
+			else
+				throw new PermissionException(new Constant("modify_clause")
+						,new Constant("static_procedure"),AssertZ.pred.getIndicator());
+		}else{
 			procedures.put(predicate,new UserPredicate(clause));
 		}
 	}

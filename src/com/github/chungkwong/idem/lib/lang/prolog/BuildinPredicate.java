@@ -39,6 +39,10 @@ public abstract class BuildinPredicate implements Procedure{
 		}
 	}
 	@Override
+	public final boolean isDynamic(){
+		return false;
+	}
+	@Override
 	public void reexecute(Processor exec){
 		assert false;
 	}

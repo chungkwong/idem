@@ -69,7 +69,7 @@ public class Processor{
 	 * @return if the goal is already succeed
 	 */
 	public boolean isSucceed(){
-		return stack.peek().getDecsglstk().isEmpty();
+		return stack.size()>=2&&stack.peek().getDecsglstk().isEmpty();
 	}
 	private final int MAX_ITERATOR_COUNT=100;//FIXME
 	private void execute(){

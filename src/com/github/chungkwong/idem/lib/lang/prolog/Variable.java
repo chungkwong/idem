@@ -75,7 +75,7 @@ public class Variable extends Term{
 	}
 	@Override
 	public Predication toHead(){
-		throw new UnsupportedOperationException("Variable cannot be converted to head.");
+		throw new InstantiationException(this);
 	}
 	@Override
 	public Predication toBody(){
