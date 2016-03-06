@@ -32,7 +32,7 @@ public class Abolish extends BuildinPredicate{
 			CompoundTerm proc=(CompoundTerm)arg;
 			if(proc.getFunctor().equals("/")&&proc.getArguments().size()==2){
 				Term functor=proc.getArguments().get(0),arity=proc.getArguments().get(1);
-				if(functor instanceof Constant){
+				if(functor instanceof Constant&&((Constant)functor).getValue()instanceof String){
 					if(arity instanceof Constant&&((Constant)arity).getValue()instanceof BigInteger){
 						exec.getDatabase().removeProcedure(new Predicate(((Constant)functor).getValue(),((BigInteger)((Constant)arity).getValue()).intValueExact()));
 						return true;

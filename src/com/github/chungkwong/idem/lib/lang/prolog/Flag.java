@@ -61,7 +61,7 @@ public class Flag{
 		if(changeable&&checker.test(value))
 			this.value=value;
 		else
-			throw new DomainException(domain,value);
+			throw new DomainException(domain,new CompoundTerm("+",new Constant(name),value));
 	}
 	public boolean isChangeable(){
 		return changeable;

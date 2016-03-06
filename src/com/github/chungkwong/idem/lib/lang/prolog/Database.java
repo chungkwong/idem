@@ -122,7 +122,13 @@ public class Database{
 	 * @param pred the predicate of the procedure to be removed
 	 */
 	public void removeProcedure(Predicate pred){
-		procedures.remove(pred);
+		if(procedures.containsKey(pred)){
+			if(procedures.get(pred).isDynamic())
+				procedures.remove(pred);
+			else
+				throw new PermissionException(new Constant("modify")
+						,new Constant("static_procedure"),pred.getIndicator());
+		}
 	}
 	/**
 	 * Add a clause to a user-defined procedure as the frist one

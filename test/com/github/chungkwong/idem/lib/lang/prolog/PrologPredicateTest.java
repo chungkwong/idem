@@ -19,6 +19,7 @@ import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.ass
 import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalFail;
 import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalSuccess;
 import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.multiquery;
+import java.math.*;
 import org.junit.*;
 /**
  *
@@ -326,7 +327,26 @@ public class PrologPredicateTest{
 	}
 	@Test
 	public void testRetract(){
-
+		assertGoalSuccess("retract(legs(X,6):-T).","legs(X,6):-insect(X).legs(octopus,8).insect(ant).");
+		assertGoalSuccess("retract(legs(octopus,8)),legs(ant,6).","legs(X,6):-insect(X).legs(octopus,8).insect(ant).");
+		assertGoalFail("retract(legs(octopus,8)),legs(octopus,8).","legs(X,6):-insect(X).legs(octopus,8).insect(ant).");
+		assertGoalFail("retract(legs(spider,6)).","legs(X,6):-insect(X).legs(octopus,8).insect(ant).");
+		assertGoalFail("retract(foo).","");
+		Assert.assertTrue(multiquery("retract(legs(X,Y):-T).","legs(X,6):-insect(X).legs(octopus,8).insect(ant).").size()==2);
+		assertGoalError("retract(X:-hello).","");
+		assertGoalError("retract(4:-X).","");
+		assertGoalError("retract(atom(X):=X=='[]').","");
+	}
+	@Test
+	public void testAbolish(){
+		assertGoalSuccess("abolish(foo/2)","");
+		assertGoalSuccess("abolish(foo/2),foo(_).","foo(X).");
+		assertGoalError("abolish(foo/2),foo(a,a).","foo(X,Y):-X=Y.foo(X,Y):-X==Y");
+		assertGoalError("abolish(X).","");
+		assertGoalError("abolish(foo/_).","");
+		assertGoalError("abolish(foo/a).","");
+		assertGoalError("abolish(4/2).","");
+		assertGoalError("abolish(abolish/1).","");
 	}
 	@Test
 	public void testFailIf(){
@@ -351,4 +371,38 @@ public class PrologPredicateTest{
 	public void testRepeat(){
 		assertGoalFail("repeat,!,fail.","");
 	}
+	@Test
+	public void testSetPrologFlag(){
+		assertGoalSuccess("set_prolog_flag(undefined_predicate,fail).","");
+		assertGoalFail("set_prolog_flag(undefined_predicate,fail),g(a).","");
+		assertGoalError("set_prolog_flag(X,off).","");
+		assertGoalError("set_prolog_flag(X,off).","");
+		assertGoalError("set_prolog_flag(5,decimal).","");
+		assertGoalError("set_prolog_flag(date,'july 1988').","");
+		assertGoalError("set_prolog_flag(debug,trace).","");
+	}
+	@Test
+	public void testCurrentPrologFlag(){
+		assertGoalSuccess("current_prolog_flag(debug,off).","");
+		Assert.assertTrue(multiquery("current_prolog_flag(F,V).","").size()==5);
+		assertGoalError("current_prolog_flag(5,_).","");
+	}
+	@Test
+	public void testHalt(){
+		boolean halted=false;
+		try{
+			new Processor(new Constant("halt"),new Database());
+		}catch(HaltException ex){
+			halted=true;
+		}
+		Assert.assertTrue(halted);
+		BigInteger ret=null;
+		try{
+			new Processor(new CompoundTerm("halt",new Constant(BigInteger.ONE)),new Database());
+		}catch(HaltException ex){
+			ret=ex.getExitCode();
+		}
+		Assert.assertEquals(BigInteger.ONE,ret);
+	}
+
 }

@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
+import com.github.chungkwong.idem.lib.lang.prolog.InstantiationException;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 import java.util.*;
 /**
@@ -22,7 +23,7 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Retract extends ReexecutableBuildinPredicate{
-	public static final AssertA INSTANCE=new AssertA();
+	public static final Retract INSTANCE=new Retract();
 	public static final Predicate pred=new Predicate("retract",1);
 	@Override
 	public void firstActivate(List<Term> arguments,Processor exec,Variable var){
@@ -40,16 +41,26 @@ public class Retract extends ReexecutableBuildinPredicate{
 			head=clause;
 			body=new Constant("true");
 		}
-		Procedure proc=exec.getDatabase().getProcedure(((Predication)head).getPredicate());
-		if(proc!=null&&proc.isDynamic()){
-			Iterator<Clause> iter=((UserPredicate)proc).getClauses().iterator();
-			while(iter.hasNext()){
-				Clause cand=iter.next();
-				Substitution subst=new Substitution(exec.getCurrentSubst());
-				if(head.unities(cand.getHeadAsTerm(),subst)&&body.unities(cand.getBodyAsTerm(),subst)){
-					iter.remove();
-					return true;
+		if(head instanceof Variable)
+			throw new InstantiationException((Variable)head);
+		else if(head instanceof Constant&&!(((Constant)head).getValue()instanceof String))
+			throw new TypeException("callable",head);
+		Predicate predicate=((Predication)head).getPredicate();
+		Procedure proc=exec.getDatabase().getProcedure(predicate);
+		if(proc!=null){
+			if(proc.isDynamic()){
+				Iterator<Clause> iter=((UserPredicate)proc).getClauses().iterator();
+				while(iter.hasNext()){
+					Clause cand=iter.next();
+					Substitution subst=new Substitution(exec.getCurrentSubst());
+					if(head.unities(cand.getHeadAsTerm(),subst)&&body.unities(cand.getBodyAsTerm(),subst)){
+						iter.remove();
+						return true;
+					}
 				}
+			}else{
+				throw new PermissionException(new Constant("modify_clause")
+						,new Constant("static_procedure"),head);
 			}
 			return false;
 		}else

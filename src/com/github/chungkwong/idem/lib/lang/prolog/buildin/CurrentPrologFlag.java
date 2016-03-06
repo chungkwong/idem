@@ -33,7 +33,7 @@ public class CurrentPrologFlag extends ReexecutableBuildinPredicate{
 				if(f.getValue().unities(val,new Substitution(exec.getCurrentSubst())))
 					lst=new CompoundTerm(".",new CompoundTerm("flag",new Constant(f.getName()),f.getValue()),lst);
 			}
-		}else if(flag instanceof Constant){
+		}else if(flag instanceof Constant&&((Constant)flag).getValue()instanceof String){
 			Flag f=exec.getDatabase().getFlag(((Constant)flag).toString());
 			if(f.getValue().unities(val,new Substitution(exec.getCurrentSubst())))
 				lst=new CompoundTerm(".",new CompoundTerm("flag",flag,f.getValue()),lst);
