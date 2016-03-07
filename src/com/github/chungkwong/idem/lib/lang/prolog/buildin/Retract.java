@@ -52,8 +52,10 @@ public class Retract extends ReexecutableBuildinPredicate{
 				Iterator<Clause> iter=((UserPredicate)proc).getClauses().iterator();
 				while(iter.hasNext()){
 					Clause cand=iter.next();
+					Term fromDatabase=new CompoundTerm(".",cand.getHead(),cand.getBody());
+					Term fromUser=new CompoundTerm(".",head,body);
 					Substitution subst=new Substitution(exec.getCurrentSubst());
-					if(head.unities(cand.getHeadAsTerm(),subst)&&body.unities(cand.getBodyAsTerm(),subst)){
+					if(fromDatabase.renameAllVariable().unities(fromUser,subst)){
 						iter.remove();
 						return true;
 					}

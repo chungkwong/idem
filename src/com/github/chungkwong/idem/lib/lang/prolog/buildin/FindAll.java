@@ -24,17 +24,15 @@ import java.util.*;
 public class FindAll extends BuildinPredicate{
 	public static final FindAll INSTANCE=new FindAll();
 	public static final Predicate pred=new Predicate("findall",3);
-	private static final Constant EMPTY_LIST=Lists.EMPTY_LIST;
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
-		Term result=EMPTY_LIST;
-		Predication goal=new CompoundTerm("call",arguments.get(1));
-		Processor processor=new Processor(goal,exec.getDatabase());
+		Term result=Lists.EMPTY_LIST;
+		Processor processor=new Processor(new CompoundTerm("call",arguments.get(1)),exec.getDatabase());
 		while(processor.isSucceed()){
 			result=new CompoundTerm(".",arguments.get(0).substitute(processor.getSubstitution()),result);
 			processor.reexecute();
 		}
-		return arguments.get(2).unities(result,exec.getCurrentSubst());
+		return arguments.get(2).unities(Lists.reverse(result),exec.getCurrentSubst());
 	}
 	@Override
 	public Predicate getPredicate(){

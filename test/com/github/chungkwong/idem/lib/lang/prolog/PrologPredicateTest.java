@@ -404,5 +404,23 @@ public class PrologPredicateTest{
 		}
 		Assert.assertEquals(BigInteger.ONE,ret);
 	}
+	@Test
+	public void testFindAll(){
+		assertGoalSuccess("findall(X,(X=1;X=2),S),S=[1,2].","");
+		assertGoalSuccess("findall(X,(X=1;X=1),S),S=[1,1].","");
+		assertGoalSuccess("findall(X+Y,(X=1),S),S=[1+_].","");
+		assertGoalSuccess("findall(X,fail,S),S=[].","");
+		assertGoalError("findall(X,Goal,S).","");
+		assertGoalError("findall(X,4,S).","");
+	}
+	@Test
+	public void testSetOf(){
+		assertGoalSuccess("findall(X,(X=1;X=2),S),S=[1,2].","");
+		assertGoalSuccess("findall(X,(X=1;X=1),S),S=[1,1].","");
+		assertGoalSuccess("findall(X+Y,(X=1),S),S=[1+_].","");
+		assertGoalSuccess("findall(X,fail,S),S=[].","");
+		assertGoalError("findall(X,Goal,S).","");
+		assertGoalError("findall(X,4,S).","");
+	}
 
 }

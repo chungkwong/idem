@@ -21,44 +21,55 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class BagOf extends BuildinPredicate{
+public class BagOf extends ReexecutableBuildinPredicate{
 	public static final BagOf INSTANCE=new BagOf();
 	public static final Predicate pred=new Predicate("bagof",3);
 	private static final Constant EMPTY_LIST=Lists.EMPTY_LIST;
 	@Override
-	public boolean activate(List<Term> arguments,Processor exec){
-		Set<Variable> freevars=arguments.get(1).getVariableSet();
-		freevars.removeAll(arguments.get(1).getExistentialVariableSet());
-		freevars.removeAll(arguments.get(0).getVariableSet());
-		Term witness=new CompoundTerm("witness",new ArrayList<>(freevars)),instances=arguments.get(2);
+	public Predicate getPredicate(){
+		return pred;
+	}
+	@Override
+	public void firstActivate(List<Term> arguments,Processor exec,Variable var){
+		Set<Variable> freevars=getFreeVariableSet(arguments.get(1),arguments.get(0));
+		Term witness=new CompoundTerm("witness",new ArrayList<>(freevars));
 		Variable lst=Variable.InternalVariable.newInstance();
 		arguments.set(0,new CompoundTerm("+",witness,arguments.get(0)));
 		arguments.set(1,arguments.get(1).toIteratedTerm());
 		arguments.set(2,lst);
 		if(FindAll.INSTANCE.activate(arguments,exec)){
-			Term s=exec.getCurrentSubst().findRoot(lst);
-			while(!s.equals(EMPTY_LIST)){
-				CompoundTerm wt=(CompoundTerm)((CompoundTerm)s).getArguments().get(0);
-				Term tLst=EMPTY_LIST,next=EMPTY_LIST,iter=s;
-				while(!iter.equals(EMPTY_LIST)){
-					CompoundTerm wwtt=(CompoundTerm)((CompoundTerm)s).getArguments().get(0);
-					if(wwtt.getArguments().get(0).isVariantOf(wt.getArguments().get(0))){
-						tLst=new CompoundTerm(".",wwtt.getArguments().get(1),tLst);
-					}else{
-						next=new CompoundTerm(".",((CompoundTerm)s).getArguments().get(1),next);
-					}
-					iter=((CompoundTerm)s).getArguments().get(1);
-				}
-				s=next;
-				if(instances.unities(tLst,exec.getCurrentSubst()))
-					return true;
-			}
-			return false;
+			exec.getCurrentSubst().assign(var,exec.getCurrentSubst().findRoot(lst));
 		}else
-			return false;
+			exec.getCurrentSubst().assign(var,EMPTY_LIST);
 	}
 	@Override
-	public Predicate getPredicate(){
-		return pred;
+	public boolean againActivate(List<Term> arguments,Processor exec,Variable var){
+		Substitution subst=exec.getStack().get(exec.getStack().size()-2).getSubst();
+		Term s=subst.findRoot(var);
+		while(!s.equals(EMPTY_LIST)){
+			CompoundTerm wt=(CompoundTerm)Lists.head(s);
+			Term tLst=EMPTY_LIST,next=EMPTY_LIST,iter=s;
+			while(!iter.equals(EMPTY_LIST)){
+				CompoundTerm wwtt=(CompoundTerm)Lists.head(iter);
+				if(wwtt.getArguments().get(0).isVariantOf(wt.getArguments().get(0))){
+					tLst=new CompoundTerm(".",wwtt.getArguments().get(1),tLst);
+				}else{
+					next=new CompoundTerm(".",wwtt,next);
+				}
+				iter=Lists.tail(iter);
+			}
+			s=Lists.reverse(next);
+			if(arguments.get(2).unities(Lists.reverse(tLst),exec.getCurrentSubst())){
+				subst.assign(var,s);
+				return true;
+			}
+		}
+		return false;
+	}
+	private Set<Variable> getFreeVariableSet(Term term,Term respect){
+		Set<Variable> freevars=term.getVariableSet();
+		freevars.removeAll(term.getExistentialVariableSet());
+		freevars.removeAll(respect.getVariableSet());
+		return freevars;
 	}
 }

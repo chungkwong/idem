@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
+import com.github.chungkwong.idem.lib.lang.prolog.buildin.*;
 import java.math.*;
 import java.util.*;
 import java.util.stream.*;
@@ -111,8 +112,52 @@ public class Lists{
 	 * @param term a prolog list
 	 * @return the tail of the list
 	 */
-	public static List<Term> tail(Term term){
+	public static Term tail(Term term){
+		return ((CompoundTerm)term).getArguments().get(1);
+	}
+	/**
+	 * @param term a prolog list
+	 * @return the tail of the list
+	 */
+	public static List<Term> toJavaTail(Term term){
 		return toJavaList(((CompoundTerm)term).getArguments().get(1));
+	}
+	/**
+	 * @param term a prolog list
+	 * @return a list containing the same elements of term with order reversed
+	 */
+	public static Term reverse(Term term){
+		Term list=EMPTY_LIST;
+		while(isNonEmptyList(term)){
+			list=new CompoundTerm(".",((CompoundTerm)term).getArguments().get(0),list);
+			term=((CompoundTerm)term).getArguments().get(1);
+		}
+		if(isEmptyList(term))
+			return list;
+		else
+			throw new RuntimeException("Not a list");
+	}
+
+	/**
+	 * Sort a list
+	 * @param t to be sorted and modified
+	 */
+	public static void sort(Term t){
+		boolean changed=true;
+		while(changed){
+			changed=false;
+			Term iter=t;
+			while(iter instanceof CompoundTerm&&((CompoundTerm)iter).getArguments().get(1) instanceof CompoundTerm){
+				Term prec=((CompoundTerm)iter).getArguments().get(0);
+				Term succ=((CompoundTerm)((CompoundTerm)iter).getArguments().get(1)).getArguments().get(0);
+				if(TermComparator.INSTANCE.compare(prec,succ)>0){
+					((CompoundTerm)((CompoundTerm)iter).getArguments().get(1)).getArguments().set(0,prec);
+					((CompoundTerm)iter).getArguments().set(0,succ);
+					changed=true;
+				}
+				iter=((CompoundTerm)iter).getArguments().get(1);
+			}
+		}
 	}
 	/**
 	 * @param term A prolog list

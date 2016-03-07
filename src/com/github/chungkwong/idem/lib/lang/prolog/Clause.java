@@ -44,7 +44,7 @@ public class Clause{
 		if(head.getPredicate().getArity()==0)
 			return new Constant(head.getPredicate());
 		else
-			return new CompoundTerm(body.getPredicate().getFunctor(),body.getArguments()).renameAllVariable(new HashMap<>());
+			return new CompoundTerm(head.getPredicate().getFunctor(),head.getArguments()).renameAllVariable(new HashMap<>());
 	}
 	/**
 	 * @return the body of the clause

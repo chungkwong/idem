@@ -42,7 +42,7 @@ public class Univ extends BuildinPredicate{
 					Term hd=Lists.head(list);
 					if(hd instanceof Constant){
 						if(((Constant)hd).getValue()instanceof String)
-							return new CompoundTerm(((Constant)hd).getValue(),Lists.tail(list)).unities(term,exec.getCurrentSubst());
+							return new CompoundTerm(((Constant)hd).getValue(),Lists.toJavaTail(list)).unities(term,exec.getCurrentSubst());
 						else
 							throw new TypeException("atom",list);
 					}else if(hd instanceof CompoundTerm){
