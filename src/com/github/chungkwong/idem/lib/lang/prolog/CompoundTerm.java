@@ -120,11 +120,11 @@ public class CompoundTerm extends Predication{
 		return this;
 	}
 	@Override
-	public boolean isVariantOf(Term t,Map<Variable,Variable> perm){
+	protected boolean isVariantOf(Term t,Map<Variable,Variable> this2other,Set<Variable> other2this){
 		if(t instanceof CompoundTerm&&((CompoundTerm)t).getFunctor().equals(functor)
 				&&((CompoundTerm)t).getArguments().size()==arguments.size()){
 			for(int i=0;i<arguments.size();i++)
-				if(!arguments.get(i).isVariantOf(((CompoundTerm)t).getArguments().get(i),perm))
+				if(!arguments.get(i).isVariantOf(((CompoundTerm)t).getArguments().get(i),this2other,other2this))
 					return false;
 			return true;
 		}else

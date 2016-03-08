@@ -86,13 +86,17 @@ public class Variable extends Term{
 		return this;
 	}
 	@Override
-	public boolean isVariantOf(Term t,Map<Variable,Variable> perm){
-		if(t instanceof Variable&&perm.containsKey((Variable)t)){
-			if(!perm.containsKey(this)){
-				perm.put(this,(Variable)t);
+	protected boolean isVariantOf(Term t,Map<Variable,Variable> this2other,Set<Variable> other2this){
+		if(t instanceof Variable){
+			if(this2other.containsKey((Variable)t)){
+				return this2other.get(this).equals(t);
+			}else if(other2this.contains((Variable)t)){
+				return false;
+			}else{
+				this2other.put(this,(Variable)t);
+				other2this.add((Variable)t);
 				return true;
-			}else
-				return perm.get(this).equals(t);
+			}
 		}else
 			return false;
 	}

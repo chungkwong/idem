@@ -414,13 +414,32 @@ public class PrologPredicateTest{
 		assertGoalError("findall(X,4,S).","");
 	}
 	@Test
+	public void testBagOf(){
+		assertGoalSuccess("bagof(X,(X=1;X=2),S),S=[1,2].","");
+		assertGoalSuccess("bagof(X,(X=1;X=2),X),X=[1,2].","");
+		assertGoalSuccess("bagof(f(X,Y),(X=a;Y=b),L),L=[_,_].","");
+		assertGoalSuccess("bagof(X,Y^((X=1,Y=1);(X=2,Y=2)),L),L=[1,2].","");
+		assertGoalSuccess("bagof(X,Y^((X=1;Y=1);(X=2,Y=2)),L),L=[1,_,2].","");
+		assertGoalSuccess("bagof(X,a(X,Y),L),L=[1,2].","a(1,(f(_))).a(2,(f(_))).");
+		Assert.assertTrue(multiquery("bagof(1,(X=1;X=2),L),L=[1].","").size()==2);
+		assertGoalFail("bagof(X,fail,S).","");
+		assertGoalError("bagof(X,1,S).","");
+		assertGoalError("bagof(X,Y^Z,S).","");
+	}
+	@Test
 	public void testSetOf(){
-		assertGoalSuccess("findall(X,(X=1;X=2),S),S=[1,2].","");
-		assertGoalSuccess("findall(X,(X=1;X=1),S),S=[1,1].","");
-		assertGoalSuccess("findall(X+Y,(X=1),S),S=[1+_].","");
-		assertGoalSuccess("findall(X,fail,S),S=[].","");
-		assertGoalError("findall(X,Goal,S).","");
-		assertGoalError("findall(X,4,S).","");
+		assertGoalSuccess("setof(X,(X=1;X=2),S),S=[1,2].","");
+		assertGoalSuccess("setof(X,(X=2;X=1),S),S=[1,2].","");
+		assertGoalSuccess("setof(X,(X=2;X=2),S),S=[2].","");
+		assertGoalSuccess("setof(X,(X=1;X=2),X),X=[1,2].","");
+		assertGoalSuccess("setof(f(X,Y),(X=a;Y=b),L),L=[_,_].","");
+		assertGoalSuccess("setof(X,Y^((X=1,Y=1);(X=2,Y=2)),L),L=[1,2].","");
+		assertGoalSuccess("setof(X,Y^((X=1;Y=1);(X=2,Y=2)),L),L=[_,1,2].","");
+		assertGoalSuccess("setof(X,a(X,Y),L),L=[1,2].","a(1,(f(_))).a(2,(f(_))).");
+		Assert.assertTrue(multiquery("setof(1,(X=1;X=2),L),L=[1].","").size()==2);
+		assertGoalFail("setof(X,fail,S).","");
+		assertGoalError("setof(X,1,S).","");
+		assertGoalError("setof(X,Y^Z,S).","");
 	}
 
 }

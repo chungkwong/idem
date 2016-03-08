@@ -137,7 +137,6 @@ public class Lists{
 		else
 			throw new RuntimeException("Not a list");
 	}
-
 	/**
 	 * Sort a list
 	 * @param t to be sorted and modified
@@ -157,6 +156,22 @@ public class Lists{
 				}
 				iter=((CompoundTerm)iter).getArguments().get(1);
 			}
+		}
+	}
+	/**
+	 * Remove equal elements near by
+	 * @param t a sorted list
+	 */
+	public static void uniq(Term t){
+		Term iter=t;
+		while(iter instanceof CompoundTerm&&((CompoundTerm)iter).getArguments().get(1) instanceof CompoundTerm){
+			CompoundTerm next=(CompoundTerm)((CompoundTerm)iter).getArguments().get(1);
+			Term prec=((CompoundTerm)iter).getArguments().get(0);
+			Term succ=next.getArguments().get(0);
+			if(prec.equals(succ))
+				((CompoundTerm)iter).getArguments().set(1,next.getArguments().get(1));
+			else
+				iter=((CompoundTerm)iter).getArguments().get(1);
 		}
 	}
 	/**

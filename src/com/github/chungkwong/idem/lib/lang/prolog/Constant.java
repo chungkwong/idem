@@ -98,7 +98,7 @@ public class Constant<T> extends Predication{
 		throw new TypeException("body",this);
 	}
 	@Override
-	public boolean isVariantOf(Term t,Map<Variable,Variable> perm){
+	protected boolean isVariantOf(Term t,Map<Variable,Variable> this2other,Set<Variable> other2this){
 		return equals(t);
 	}
 	@Override

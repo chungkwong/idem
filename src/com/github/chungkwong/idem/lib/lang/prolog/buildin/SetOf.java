@@ -22,8 +22,8 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class SetOf extends ReexecutableBuildinPredicate{
-	public static final BagOf INSTANCE=new BagOf();
-	public static final Predicate pred=new Predicate("bagof",3);
+	public static final SetOf INSTANCE=new SetOf();
+	public static final Predicate pred=new Predicate("setof",3);
 	private static final Constant EMPTY_LIST=Lists.EMPTY_LIST;
 	@Override
 	public Predicate getPredicate(){
@@ -34,13 +34,10 @@ public class SetOf extends ReexecutableBuildinPredicate{
 		Set<Variable> freevars=getFreeVariableSet(arguments.get(1),arguments.get(0));
 		Term witness=new CompoundTerm("witness",new ArrayList<>(freevars));
 		Variable lst=Variable.InternalVariable.newInstance();
-		arguments.set(0,new CompoundTerm("+",witness,arguments.get(0)));
-		arguments.set(1,arguments.get(1).toIteratedTerm());
-		arguments.set(2,lst);
-		if(FindAll.INSTANCE.activate(arguments,exec)){
-			exec.getCurrentSubst().assign(var,exec.getCurrentSubst().findRoot(lst));
-		}else
-			exec.getCurrentSubst().assign(var,EMPTY_LIST);
+		Predication findall=new CompoundTerm("findall",new CompoundTerm("+",witness,arguments.get(0)),
+				arguments.get(1).toIteratedTerm(),lst);
+		Term result=FindAll.INSTANCE.activate(findall.getArguments(),exec)?exec.getCurrentSubst().findRoot(lst):EMPTY_LIST;
+		exec.getCurrentSubst().assign(var,result);
 	}
 	@Override
 	public boolean againActivate(List<Term> arguments,Processor exec,Variable var){
@@ -58,9 +55,11 @@ public class SetOf extends ReexecutableBuildinPredicate{
 				}
 				iter=Lists.tail(iter);
 			}
-			Lists.sort(next);
 			s=next;
-			if(arguments.get(2).unities(Lists.reverse(tLst),exec.getCurrentSubst())){
+			Lists.sort(tLst);
+			Lists.uniq(tLst);
+			if(arguments.get(2).unities(tLst,exec.getCurrentSubst())){
+				subst.unassign(var);
 				subst.assign(var,s);
 				return true;
 			}

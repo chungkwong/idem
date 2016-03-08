@@ -42,9 +42,9 @@ public abstract class Term{
 	 * @see 7.1.6.1 of the standard
 	 */
 	public boolean isVariantOf(Term t){
-		return isVariantOf(t,new HashMap<>());
+		return isVariantOf(t,new HashMap<>(),new HashSet<>());
 	}
-	protected abstract boolean isVariantOf(Term t,Map<Variable,Variable> perm);
+	protected abstract boolean isVariantOf(Term t,Map<Variable,Variable> this2other,Set<Variable> other2this);
 	/**
 	 * Unitify the term with term
 	 * @param term
