@@ -23,13 +23,17 @@ import java.util.stream.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Helper{
-	public static Object getConstantValue(Term t){
+	public static final Object getConstantValue(Term t){
 		if(t instanceof Constant)
 			return((Constant)t).getValue();
 		else if(t instanceof Variable)
 			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)t);
 		else
 			throw new TypeException("constant",t);
+	}
+	public static final boolean isNumber(Term t){
+		return t instanceof Constant&&(((Constant)t).getValue() instanceof BigInteger||((Constant)t).getValue() instanceof BigDecimal);
+
 	}
 	public static final BigDecimal toReal(Object o){
 		if(o instanceof BigDecimal)

@@ -441,5 +441,54 @@ public class PrologPredicateTest{
 		assertGoalError("setof(X,1,S).","");
 		assertGoalError("setof(X,Y^Z,S).","");
 	}
-
+	@Test
+	public void testAtomLength(){
+		assertGoalSuccess("atom_length('enchanted evening',17).","");
+		assertGoalSuccess("atom_length('enchanted \\\nevening',17).","");
+		assertGoalSuccess("atom_length('',A),A=:=0.","");
+		assertGoalFail("atom_length(scarlet,5).","");
+		assertGoalError("atom_length(Atom,4).","");
+		assertGoalError("atom_length(1.25,4).","");
+		assertGoalError("atom_length(atom,'4').","");
+	}
+	@Test
+	public void testCharCode(){
+		assertGoalSuccess("char_code('a',Code),Code=a.","");
+		assertGoalSuccess("char_code(Str,99).","");
+		assertGoalSuccess("char_code(Str,163).","");
+		assertGoalSuccess("char_code('b',98).","");
+		assertGoalFail("char_code('b',84).","");
+		assertGoalError("char_code('ab',84).","");
+		assertGoalError("char_code('a',a).","");
+		assertGoalError("char_code(C,I).","");
+	}
+	@Test
+	public void testNumberChars(){
+		assertGoalSuccess("number_chars(33,L),L=['3','3'].","");
+		assertGoalSuccess("number_chars(33.0,L).","");
+		assertGoalSuccess("number_chars(33,['3','3']).","");
+		assertGoalSuccess("number_chars(3.3,['3','.','3','E','+','0']).","");
+		//assertGoalSuccess("number_chars(A,['-','2','5']),A=(-25).","");
+		assertGoalSuccess("number_chars(A,['0','x','f']),A=:=15.","");
+		assertGoalFail("number_chars(34,['3','3']).","");
+		assertGoalError("number_chars(A,B).","");
+		assertGoalError("number_chars(a,['3']).","");
+		assertGoalError("number_chars(a,A).","");
+		assertGoalError("number_chars(A,['a']).","");
+		assertGoalError("number_chars(A,a).","");
+	}
+	@Test
+	public void testNumberCodes(){
+		assertGoalSuccess("number_codes(33,L),L=[51,51].","");
+		assertGoalSuccess("number_codes(34,[51,52]).","");
+		//assertGoalSuccess("number_codes(-37.5,[45,51,50,46,53]).","");
+		//assertGoalSuccess("number_codes(A,[45,51,50,46,53]),A=:=(-37.5).","");
+		assertGoalFail("number_codes(34,[50,50]).","");
+		assertGoalError("number_codes(A,B).","");
+		assertGoalError("number_codes(a,['51']).","");
+		assertGoalError("number_codes(a,A).","");
+		assertGoalError("number_codes(A,['a']).","");
+		assertGoalError("number_codes(A,a).","");
+		assertGoalError("number_codes(5,a).","");
+	}
 }

@@ -18,24 +18,34 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 
 /**
- * Syntax error
+ *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ParseException extends PrologException{
+public class RepresentationException extends PrologException{
+	static String FUNCTOR="representation_error";
+	private final String expected;
+	private final Term argument;
 	/**
-	 * Creates a new instance of <code>ParseException</code> without detail message.
+	 * Construct a type_error
+	 * @param expected expected type
+	 * @param argument the term causing this error
 	 */
-	public ParseException(){
+	public RepresentationException(String expected,Term argument) {
+		this.expected=expected;
+		this.argument=argument;
 	}
-	/**
-	 * Constructs an instance of <code>ParseException</code> with the specified detail message.
-	 * @param msg the detail message.
-	 */
-	public ParseException(String msg) {
-		super(msg);
+	@Override
+	public String getMessage(){
+		return argument+" cannot represent "+expected;
+	}
+	public String getExpected(){
+		return expected;
+	}
+	public Term getArgument(){
+		return argument;
 	}
 	@Override
 	public Term getErrorTerm(){
-		return new Constant("syntax_error");
+		return new CompoundTerm(FUNCTOR,new Constant(expected),argument);
 	}
 }

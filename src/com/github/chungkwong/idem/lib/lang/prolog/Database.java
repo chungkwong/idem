@@ -43,8 +43,10 @@ public class Database{
 		base.addProcedure(Arg.INSTANCE);
 		base.addProcedure(AssertA.INSTANCE);
 		base.addProcedure(AssertZ.INSTANCE);
+		base.addProcedure(AtomLength.INSTANCE);
 		base.addProcedure(BagOf.INSTANCE);
 		base.addProcedure(ClauseOf.INSTANCE);
+		base.addProcedure(CharCode.INSTANCE);
 		base.addProcedure(CopyTerm.INSTANCE);
 		base.addProcedure(CurrentPredicate.INSTANCE);
 		base.addProcedure(CurrentPrologFlag.INSTANCE);
@@ -70,6 +72,8 @@ public class Database{
 		base.addProcedure(JavaInvokeStatic.INSTANCE);
 		base.addProcedure(JavaNew.INSTANCE);
 		base.addProcedure(Less.INSTANCE);
+		base.addProcedure(NumberChars.INSTANCE);
+		base.addProcedure(NumberCodes.INSTANCE);
 		base.addProcedure(Once.INSTANCE);
 		base.addProcedure(Precedes.INSTANCE);
 		base.addProcedure(Retract.INSTANCE);

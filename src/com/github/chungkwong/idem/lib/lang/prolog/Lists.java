@@ -102,6 +102,13 @@ public class Lists{
 		return asList(str.codePoints().mapToObj((i)->new Constant(BigInteger.valueOf(i))).collect(Collectors.toList()));
 	}
 	/**
+	 * @param str
+	 * @return the character sequence
+	 */
+	public static Term asCharacterList(String str){
+		return asList(str.codePoints().mapToObj((i)->new Constant(new String(new int[]{i},0,1))).collect(Collectors.toList()));
+	}
+	/**
 	 * @param term a prolog list
 	 * @return the head of the list
 	 */

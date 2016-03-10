@@ -22,6 +22,11 @@ package com.github.chungkwong.idem.lib.lang.prolog;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public abstract class PrologException extends RuntimeException{
+	public PrologException(){
+	}
+	public PrologException(String message){
+		super(message);
+	}
 	/**
 	 * @return a term that provide information about the error
 	 */
