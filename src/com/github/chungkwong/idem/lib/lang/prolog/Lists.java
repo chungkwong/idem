@@ -95,6 +95,46 @@ public class Lists{
 		return isEmptyList(term);
 	}
 	/**
+	 * @param list a charcater code list
+	 * @return a string
+	 */
+	public static String codeListToString(Term list){
+		List<Term> lst=Lists.toJavaList(list);
+		StringBuilder buf=new StringBuilder();
+		try{
+			for(Term t:lst){
+				int code=((BigInteger)((Constant)t).getValue()).intValue();
+				if(Character.isValidCodePoint(code))
+					buf.append(new String(new int[]{code},0,1));
+				else
+					throw new RuntimeException();
+			}
+		}catch(RuntimeException ex){
+			throw new DomainException("character_code_list",list);
+		}
+		return buf.toString();
+	}
+	/**
+	 * @param list a charcater list
+	 * @return a string
+	 */
+	public static String charListToString(Term list){
+		List<Term> lst=Lists.toJavaList(list);
+		StringBuilder buf=new StringBuilder();
+		try{
+			for(Term t:lst){
+				String ch=(String)((Constant)t).getValue();
+				if(ch.codePointCount(0,ch.length())==1)
+					buf.append(ch);
+				else
+					throw new RuntimeException();
+			}
+		}catch(RuntimeException ex){
+			throw new DomainException("character_list",list);
+		}
+		return buf.toString();
+	}
+	/**
 	 * @param str
 	 * @return the collating sequence
 	 */

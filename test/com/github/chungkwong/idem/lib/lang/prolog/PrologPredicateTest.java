@@ -452,6 +452,34 @@ public class PrologPredicateTest{
 		assertGoalError("atom_length(atom,'4').","");
 	}
 	@Test
+	public void testSubAtom(){
+		assertGoalSuccess("sub_atom('banana',4,2,S),S='an'.","");
+		Assert.assertTrue(multiquery("sub_atom('bananas',_,3,S).","").size()==5);
+		Assert.assertTrue(multiquery("sub_atom('ab',_,_,_).","").size()==6);
+	}
+	@Test
+	public void testAtomChars(){
+		assertGoalSuccess("atom_chars('',L),L=[].","");
+		assertGoalSuccess("atom_chars([],['[',']']).","");
+		assertGoalSuccess("atom_chars('''',['''']).","");
+		assertGoalSuccess("atom_chars('ant',['a','n','t']).","");
+		assertGoalFail("atom_chars(soap,['s','o','p']).","");
+		assertGoalError("atom_chars(3,[]).","");
+		assertGoalError("atom_chars(X,[3]).","");
+		assertGoalError("atom_chars(X,Y).","");
+	}
+	@Test
+	public void testAtomCodes(){
+		assertGoalSuccess("atom_codes('',L),L=[].","");
+		assertGoalSuccess("atom_codes([],[91,93]).","");
+		assertGoalSuccess("atom_codes('''',[39]).","");
+		assertGoalSuccess("atom_codes('ant',[97,110,116]).","");
+		assertGoalFail("atom_codes(soap,[55,56,57]).","");
+		assertGoalError("atom_codes(3,[1]).","");
+		assertGoalError("atom_codes(X,[a]).","");
+		assertGoalError("atom_codes(X,Y).","");
+	}
+	@Test
 	public void testCharCode(){
 		assertGoalSuccess("char_code('a',Code),Code=a.","");
 		assertGoalSuccess("char_code(Str,99).","");

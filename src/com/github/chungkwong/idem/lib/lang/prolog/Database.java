@@ -44,6 +44,8 @@ public class Database{
 		base.addProcedure(AssertA.INSTANCE);
 		base.addProcedure(AssertZ.INSTANCE);
 		base.addProcedure(AtomLength.INSTANCE);
+		base.addProcedure(AtomChars.INSTANCE);
+		base.addProcedure(AtomCodes.INSTANCE);
 		base.addProcedure(BagOf.INSTANCE);
 		base.addProcedure(ClauseOf.INSTANCE);
 		base.addProcedure(CharCode.INSTANCE);
@@ -80,6 +82,7 @@ public class Database{
 		base.addProcedure(Repeat.INSTANCE);
 		base.addProcedure(SetOf.INSTANCE);
 		base.addProcedure(SetPrologFlag.INSTANCE);
+		base.addProcedure(SubAtom.INSTANCE);
 		base.addProcedure(Succeed.INSTANCE);
 		base.addProcedure(UnifyWithOccurCheck.INSTANCE);
 		base.addProcedure(Univ.INSTANCE);

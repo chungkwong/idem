@@ -32,21 +32,9 @@ public class NumberChars extends BuildinPredicate{
 		if(Lists.isProperList(list)){
 			if(!(number instanceof Variable||Helper.isNumber(number)))
 				throw new TypeException("number",number);
-			List<Term> lst=Lists.toJavaList(list);
-			StringBuilder buf=new StringBuilder();
+			String strFromList=Lists.charListToString(list);
 			try{
-				for(Term t:lst){
-					String ch=(String)((Constant)t).getValue();
-					if(ch.codePointCount(0,ch.length())==1)
-						buf.append(ch);
-					else
-						throw new RuntimeException();
-				}
-			}catch(RuntimeException ex){
-				throw new DomainException("character_list",list);
-			}
-			try{
-				List<Object> tokens=new PrologLex(buf.toString()).getRemainingTokens();
+				List<Object> tokens=new PrologLex(strFromList).getRemainingTokens();
 				if(tokens.size()==1&&(tokens.get(0) instanceof BigInteger||tokens.get(0) instanceof BigDecimal))
 					return new Constant(tokens.get(0)).unities(number,exec.getCurrentSubst());
 				else
