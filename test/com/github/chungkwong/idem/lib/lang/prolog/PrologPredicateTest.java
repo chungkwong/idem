@@ -453,9 +453,15 @@ public class PrologPredicateTest{
 	}
 	@Test
 	public void testSubAtom(){
+		assertGoalSuccess("sub_atom('banana',4,2,'an').","");
 		assertGoalSuccess("sub_atom('banana',4,2,S),S='an'.","");
 		Assert.assertTrue(multiquery("sub_atom('bananas',_,3,S).","").size()==5);
+		Assert.assertTrue(multiquery("sub_atom('banana',4,_,_).","").size()==4);
 		Assert.assertTrue(multiquery("sub_atom('ab',_,_,_).","").size()==6);
+		assertGoalError("sub_atom(abc,a,1,'a').","");
+		assertGoalError("sub_atom(abc,2,sin(X),'a').","");
+		assertGoalError("sub_atom(abc,2,1,6).","");
+		assertGoalError("sub_atom(12,_,_,_).","");
 	}
 	@Test
 	public void testAtomChars(){
@@ -471,9 +477,9 @@ public class PrologPredicateTest{
 	@Test
 	public void testAtomCodes(){
 		assertGoalSuccess("atom_codes('',L),L=[].","");
-		assertGoalSuccess("atom_codes([],[91,93]).","");
+		assertGoalSuccess("atom_codes([],[0'[,0']]).","");
 		assertGoalSuccess("atom_codes('''',[39]).","");
-		assertGoalSuccess("atom_codes('ant',[97,110,116]).","");
+		assertGoalSuccess("atom_codes('ant',[0'a,0'n,0't]).","");
 		assertGoalFail("atom_codes(soap,[55,56,57]).","");
 		assertGoalError("atom_codes(3,[1]).","");
 		assertGoalError("atom_codes(X,[a]).","");
@@ -484,7 +490,7 @@ public class PrologPredicateTest{
 		assertGoalSuccess("char_code('a',Code),Code=a.","");
 		assertGoalSuccess("char_code(Str,99).","");
 		assertGoalSuccess("char_code(Str,163).","");
-		assertGoalSuccess("char_code('b',98).","");
+		assertGoalSuccess("char_code('b',0'b).","");
 		assertGoalFail("char_code('b',84).","");
 		assertGoalError("char_code('ab',84).","");
 		assertGoalError("char_code('a',a).","");
@@ -509,8 +515,8 @@ public class PrologPredicateTest{
 	public void testNumberCodes(){
 		assertGoalSuccess("number_codes(33,L),L=[51,51].","");
 		assertGoalSuccess("number_codes(34,[51,52]).","");
-		//assertGoalSuccess("number_codes(-37.5,[45,51,50,46,53]).","");
-		//assertGoalSuccess("number_codes(A,[45,51,50,46,53]),A=:=(-37.5).","");
+		assertGoalSuccess("number_codes(-32.5,[45,51,50,46,53]).","");
+		assertGoalSuccess("number_codes(A,[45,51,50,46,53]),A=:=(-32.5).","");
 		assertGoalFail("number_codes(34,[50,50]).","");
 		assertGoalError("number_codes(A,B).","");
 		assertGoalError("number_codes(a,['51']).","");

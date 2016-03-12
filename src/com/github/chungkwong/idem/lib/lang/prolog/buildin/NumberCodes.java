@@ -16,7 +16,6 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
-import java.io.*;
 import java.math.*;
 import java.util.*;
 /**
@@ -34,12 +33,14 @@ public class NumberCodes extends BuildinPredicate{
 				throw new TypeException("number",number);
 			String atomFromList=Lists.codeListToString(list);
 			try{
-				List<Object> tokens=new PrologLex(atomFromList).getRemainingTokens();
-				if(tokens.size()==1&&(tokens.get(0) instanceof BigInteger||tokens.get(0) instanceof BigDecimal))
-					return new Constant(tokens.get(0)).unities(number,exec.getCurrentSubst());
+				Predication token=new PrologParser(new PrologLex(atomFromList)).next();
+				if(token instanceof Constant&&(((Constant)token).getValue() instanceof BigInteger
+						||((Constant)token).getValue() instanceof BigDecimal))
+					return token.unities(number,exec.getCurrentSubst());
 				else
-					throw new ParseException();
-			}catch(IOException|LexicalException ex){
+					throw new RuntimeException();
+			}catch(RuntimeException ex){
+				ex.printStackTrace();
 				throw new ParseException();
 			}
 		}else if(list instanceof Variable){

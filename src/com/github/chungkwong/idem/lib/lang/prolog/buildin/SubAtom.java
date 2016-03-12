@@ -33,25 +33,21 @@ public class SubAtom extends ReexecutableBuildinPredicate{
 	public void firstActivate(List<Term> arguments,Processor exec,Variable var){
 		Term atom=arguments.get(0),start=arguments.get(1),length=arguments.get(2),subatom=arguments.get(3);
 		Term lst=Lists.EMPTY_LIST;
-		if(Helper.isAtom(atom)){
-			String str=(String)Helper.getConstantValue(atom);
-			String sub=subatom instanceof Variable?null:Helper.getAtomValue(subatom);
-			int lenMin=start instanceof Variable?0:Math.max(getInteger(length)-1,0);
-			int lenMax=start instanceof Variable?str.length():getInteger(length);
-			int begin=Math.max(getInteger(start),0),end=str.length();
-			for(int i=begin;i<end;i++){
-				for(int l=lenMin;l<=lenMax&&i+l<=end;l++){
-					if(sub==null||str.regionMatches(i,sub,0,l)){
-						Term entry=new CompoundTerm("match",new Constant(BigInteger.valueOf(i+1)),
-								new Constant(BigInteger.valueOf(l)),new Constant(str.substring(i,i+l)));
-						lst=new CompoundTerm(".",entry,lst);
-					}
+		String str=Helper.getAtomValue(atom);
+		String sub=subatom instanceof Variable?null:Helper.getAtomValue(subatom);
+		int lenMin=length instanceof Variable?0:Math.max(getInteger(length),0);
+		int lenMax=length instanceof Variable?str.length():getInteger(length);
+		int begin=start instanceof Variable?0:Math.max(getInteger(start)-1,0);
+		int end=start instanceof Variable?str.length():getInteger(start)-1;
+		for(int i=begin;i<=end;i++){
+			for(int l=lenMin;l<=lenMax&&i+l<=str.length();l++){
+				String substr=str.substring(i,i+l);
+				if(sub==null||substr.equals(sub)){
+					Term entry=new CompoundTerm("match",new Constant(BigInteger.valueOf(i+1)),
+							new Constant(BigInteger.valueOf(l)),new Constant(substr));
+					lst=new CompoundTerm(".",entry,lst);
 				}
 			}
-		}else if(atom instanceof Variable){
-			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)atom);
-		}else{
-			throw new TypeException("atom",atom);
 		}
 		exec.getCurrentSubst().assign(var,lst);
 	}

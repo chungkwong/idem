@@ -75,7 +75,7 @@ public class PrologParser implements SimpleIterator<Predication>{
 			}else{
 				assert false;
 			}
-			//System.err.println(state);
+			System.err.println(state);
 		}
 		state.end();
 		if(state.operands.isEmpty())
@@ -210,6 +210,7 @@ class ParseState{
 		}
 		operators.pop();
 		operands.push(new CompoundTerm("{}",operands.pop()));
+		expected=ExpectClass.INFIX_OR_POSTFIX;
 	}
 	void pushCloseBracket(){
 		Operator top=operators.peek();
@@ -227,6 +228,7 @@ class ParseState{
 		}
 		operators.pop();
 		operands.push(new CompoundTerm(".",operands.pop(),lst));
+		expected=ExpectClass.INFIX_OR_POSTFIX;
 	}
 	private static List<Term> convertTermtoList(Term t,boolean multi){
 		if(multi){
@@ -257,6 +259,7 @@ class ParseState{
 			List<Term> arg=convertTermtoList(operands.pop(),multi==1);
 			operands.push(new CompoundTerm(operators.pop().getToken(),arg));
 		}
+		expected=ExpectClass.INFIX_OR_POSTFIX;
 	}
 	void reduceTopOperator(){
 		Operator top=operators.pop();
