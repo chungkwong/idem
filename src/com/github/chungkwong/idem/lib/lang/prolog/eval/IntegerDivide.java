@@ -32,7 +32,7 @@ public class IntegerDivide extends Evaluable{
 			throw new TypeException("integer",new Constant(args[0]));
 		if(!(args[1] instanceof BigInteger))
 			throw new TypeException("integer",new Constant(args[1]));
-		if(args[1].equals(BigInteger.ZERO))
+		if(((BigInteger)args[1]).signum()==0)
 			throw new CalculationException(CalculationException.Type.ZERO_DIVISOR);
 		return new Constant(((BigInteger)args[0]).divide((BigInteger)args[1]));
 	}

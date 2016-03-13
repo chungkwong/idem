@@ -30,7 +30,8 @@ public class FractionPart extends Evaluable{
 	protected Term evaluate(Object[] args){
 		if(args[0] instanceof BigDecimal){
 			BigDecimal arg=((BigDecimal)args[0]);
-			return new Constant(arg.round(new MathContext(Math.max(arg.precision()-arg.scale(),0),RoundingMode.DOWN)).toBigInteger());
+			BigDecimal intPart=arg.setScale(0,RoundingMode.DOWN);
+			return new Constant(arg.subtract(intPart));
 		}else
 			throw new TypeException("number",new Constant(args[0]));
 	}

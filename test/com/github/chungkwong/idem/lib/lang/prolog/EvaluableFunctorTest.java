@@ -193,6 +193,84 @@ public class EvaluableFunctorTest{
 		assertGoalError("X is log(0.0).","");
 	}
 	@Test
+	public void testIntegerDivide(){
+		assertGoalSuccess("X is 0//1,X=:=0 .","");
+		assertGoalSuccess("X is 15//3,X=:=5 .","");
+		assertGoalSuccess("X is 2//3,X=:=0 .","");
+		assertGoalSuccess("X is -6//3,X=:= -2 .","");
+		assertGoalSuccess("X is -7//3,X=:= -2 .","");
+		assertGoalError("X is 0//0.","");
+		assertGoalError("X is 4//0.","");
+	}
+	@Test
+	public void testRemainder(){
+		assertGoalSuccess("X is 0 rem 1,X=:=0 .","");
+		assertGoalSuccess("X is 15 rem 3,X=:=0 .","");
+		assertGoalSuccess("X is 2 rem 3,X=:=2 .","");
+		assertGoalSuccess("X is -6 rem 3,X=:=0 .","");
+		assertGoalSuccess("X is -7 rem 3,X=:= -1 .","");
+		assertGoalError("X is 0 rem 0.","");
+		assertGoalError("X is 4 rem 0.","");
+	}
+	@Test
+	public void testRoundFloat(){
+		assertGoalSuccess("X is float_round(0.0,5),X=:=0 .","");
+		assertGoalSuccess("X is float_round(17.501,1),X=:=20 .","");
+		assertGoalSuccess("X is float_round(17.501,2),X=:=18 .","");
+		assertGoalSuccess("X is float_round(17.501,3),X=:=17.5 .","");
+		assertGoalSuccess("X is float_round(17.501,6),X=:=17.501 .","");
+		assertGoalSuccess("X is float_round(-0.0571,1),X=:= -0.06 .","");
+		assertGoalSuccess("X is float_round(-0.0571,2),X=:= -0.057 .","");
+		assertGoalSuccess("X is float_round(-0.0571,3),X=:= -0.0571 .","");
+		assertGoalSuccess("X is float_round(-0.0571,4),X=:= -0.0571 .","");
+		assertGoalError("X is float_round(17501,5).","");
+		assertGoalError("X is float_round(175.01,5.0).","");
+	}
+	@Test
+	public void testTruncateFloat(){
+		assertGoalSuccess("X is float_truncate(0.0,5),X=:=0 .","");
+		assertGoalSuccess("X is float_truncate(17.501,1),X=:=10 .","");
+		assertGoalSuccess("X is float_truncate(17.501,2),X=:=17 .","");
+		assertGoalSuccess("X is float_truncate(17.501,3),X=:=17.5 .","");
+		assertGoalSuccess("X is float_truncate(17.501,6),X=:=17.501 .","");
+		assertGoalSuccess("X is float_truncate(-0.0571,1),X=:= -0.05 .","");
+		assertGoalSuccess("X is float_truncate(-0.0571,2),X=:= -0.057 .","");
+		assertGoalSuccess("X is float_truncate(-0.0571,3),X=:= -0.0571 .","");
+		assertGoalSuccess("X is float_truncate(-0.0571,4),X=:= -0.0571 .","");
+		assertGoalError("X is float_truncate(17501,5).","");
+		assertGoalError("X is float_truncate(175.01,5.0).","");
+
+	}
+	@Test
+	public void testSign(){
+		assertGoalSuccess("X is sign(1),X=:=1 .","");
+		assertGoalSuccess("X is sign(1.3),X=:=1 .","");
+		assertGoalSuccess("X is sign(0),X=:=1 .","");
+		assertGoalSuccess("X is sign(-0.0),X=:=1 .","");
+		assertGoalSuccess("X is sign(-2.0),X=:= -1 .","");
+		assertGoalSuccess("X is sign(-2),X=:= -1 .","");
+	}
+	@Test
+	public void testIntegerPart(){
+		assertGoalSuccess("X is float_integer_part(14.7),X=:=14 .","");
+		assertGoalSuccess("X is float_integer_part(4.5),X=:=4 .","");
+		assertGoalSuccess("X is float_integer_part(-4.5),X=:= -4 .","");
+		assertGoalSuccess("X is float_integer_part(0.01),X=:=0 .","");
+		assertGoalSuccess("X is float_integer_part(-0.01),X=:=0 .","");
+		assertGoalSuccess("X is float_integer_part(-0.0),X=:=0 .","");
+		assertGoalError("X is float_integer_part(5).","");
+	}
+	@Test
+	public void testFractionPart(){
+		assertGoalSuccess("X is float_fractional_part(14.7),X=:=0.7 .","");
+		assertGoalSuccess("X is float_fractional_part(4.5),X=:=0.5 .","");
+		assertGoalSuccess("X is float_fractional_part(-4.5),X=:= -0.5 .","");
+		assertGoalSuccess("X is float_fractional_part(0.01),X=:=0.01 .","");
+		assertGoalSuccess("X is float_fractional_part(-0.01),X=:= -0.01 .","");
+		assertGoalSuccess("X is float_fractional_part(-0.0),X=:=0.","");
+		assertGoalError("X is float_fractional_part(5).","");
+	}
+	@Test
 	public void testShiftRight(){
 		assertGoalSuccess("X is '>>'(16,2),X=:=4 .","");
 		assertGoalSuccess("X is '>>'(19,2),X=:=4 .","");

@@ -35,12 +35,6 @@ public class JavaCast extends BuildinPredicate{
 		}
 		return arguments.get(0).unities(new Constant(casted),exec.getCurrentSubst());
 	}
-	protected static void expectConstant(Term t){
-		if(t instanceof Variable)
-			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)t);
-		else if(t instanceof CompoundTerm)
-			throw new TypeException("constant",t);
-	}
 	@Override
 	public Predicate getPredicate(){
 		return PREDICATE;

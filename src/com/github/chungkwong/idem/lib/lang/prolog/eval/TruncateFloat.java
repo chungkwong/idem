@@ -33,7 +33,7 @@ public class TruncateFloat extends Evaluable{
 			if(!(args[1] instanceof BigInteger))
 				throw new TypeException("integer",new Constant(args[1]));
 			int prec=((BigInteger)args[1]).intValueExact();
-			return new Constant(arg.round(new MathContext(prec,RoundingMode.DOWN)).toBigInteger());
+			return new Constant(arg.round(new MathContext(prec,RoundingMode.DOWN)));
 		}else
 			throw new TypeException("number",new Constant(args[0]));
 	}

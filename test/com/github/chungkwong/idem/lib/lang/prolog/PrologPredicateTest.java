@@ -403,6 +403,8 @@ public class PrologPredicateTest{
 			ret=ex.getExitCode();
 		}
 		Assert.assertEquals(BigInteger.ONE,ret);
+		assertGoalError("halt(_).","");
+		assertGoalError("halt(a).","");
 	}
 	@Test
 	public void testFindAll(){

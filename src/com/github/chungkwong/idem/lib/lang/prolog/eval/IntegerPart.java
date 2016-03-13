@@ -30,7 +30,7 @@ public class IntegerPart extends Evaluable{
 	protected Term evaluate(Object[] args){
 		if(args[0] instanceof BigDecimal){
 			BigDecimal arg=((BigDecimal)args[0]);
-			return new Constant(arg.round(new MathContext(Math.max(arg.precision()-arg.scale(),0),RoundingMode.DOWN)).toBigInteger());
+			return new Constant(arg.setScale(0,RoundingMode.DOWN).toBigInteger());
 		}else
 			throw new TypeException("number",new Constant(args[0]));
 	}

@@ -75,7 +75,7 @@ public class PrologParser implements SimpleIterator<Predication>{
 			}else{
 				assert false;
 			}
-			System.err.println(state);
+			//System.err.println(state);
 		}
 		state.end();
 		if(state.operands.isEmpty())
