@@ -76,6 +76,7 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is mod(0,3+11),X=0 .","");
 		assertGoalError("X is mod(77,N).","");
 		assertGoalError("X is mod(foo,77).","");
+		assertGoalError("X is mod(77,foo).","");
 		assertGoalError("X is mod(7.5,2).","");
 		assertGoalError("X is mod(7,0).","");
 	}
@@ -86,6 +87,7 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is floor(-0.04),X= -1 .","");
 		assertGoalSuccess("X is floor(-1),X= -1 .","");
 		assertGoalSuccess("X is floor(0),X= 0 .","");
+		assertGoalError("X is floor(a).","");
 	}
 	@Test
 	public void testRound(){
@@ -98,6 +100,7 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is round(-1),X= -1 .","");
 		assertGoalSuccess("X is round(0),X= 0 .","");
 		assertGoalError("X is round(N).","");
+		assertGoalError("X is round(a).","");
 	}
 	@Test
 	public void testCeiling(){
@@ -106,6 +109,7 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is ceiling(-0.04),X=0 .","");
 		assertGoalSuccess("X is ceiling(-1),X= -1 .","");
 		assertGoalSuccess("X is ceiling(0),X= 0 .","");
+		assertGoalError("X is ceiling(a).","");
 	}
 	@Test
 	public void testTruncate(){
@@ -139,9 +143,10 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is sqrt(4.0),X=:=2.0 .","");
 		assertGoalSuccess("X is sqrt(0.0),X=:=0.0 .","");
 		assertGoalSuccess("X is sqrt(1.0),X=:=1.0 .","");
-		assertGoalError("X is abs(foo).","");
-		assertGoalError("X is abs(N).","");
-		assertGoalError("X is abs(N-1.","");
+		assertGoalError("X is sqrt(-1.5).","");
+		assertGoalError("X is sqrt(foo).","");
+		assertGoalError("X is sqrt(N).","");
+		assertGoalError("X is sqrt(N-1).","");
 	}
 	@Test
 	public void testPow(){
@@ -150,6 +155,8 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is '**'(-5.0,3),X=:= -125 .","");
 		assertGoalSuccess("X is '**'(5,-1),X=:=0.2 .","");
 		assertGoalSuccess("X is '**'(0.0,0),X=:=1.0 .","");
+		assertGoalError("X is '**'(-2,0.5).","");
+		assertGoalError("X is '**'(0,-2).","");
 		assertGoalError("X is '**'(77,N).","");
 		assertGoalError("X is '**'(foo,2).","");
 		assertGoalError("X is '**'(foo,2).","");
@@ -277,6 +284,7 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is '<<'(-16,2).","");
 		assertGoalError("X is '>>'(77,N) .","");
 		assertGoalError("X is '>>'(foo,2) .","");
+		assertGoalError("X is '>>'(3,a) .","");
 	}
 	@Test
 	public void testShiftLeft(){
@@ -285,6 +293,7 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is '<<'(-19,2).","");
 		assertGoalError("X is '<<'(77,N) .","");
 		assertGoalError("X is '<<'(foo,2) .","");
+		assertGoalError("X is '<<'(3,a) .","");
 	}
 	@Test
 	public void testAnd(){
@@ -294,6 +303,7 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is '/\\\\'(-10,12).","");
 		assertGoalError("X is '/\\\\'(77,N) .","");
 		assertGoalError("X is '/\\\\'(foo,2) .","");
+		assertGoalError("X is '/\\\\'(2,a) .","");
 	}
 	@Test
 	public void testOr(){
@@ -303,6 +313,7 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is '\\\\/'(-10,10) .","");
 		assertGoalError("X is '\\\\/'(77,N) .","");
 		assertGoalError("X is '\\\\/'(foo,2) .","");
+		assertGoalError("X is '\\\\/'(2,a) .","");
 	}
 	@Test
 	public void testComplement(){

@@ -32,9 +32,10 @@ public class CurrentPredicate extends ReexecutableBuildinPredicate{
 	public void firstActivate(List<Term> arguments,Processor exec,Variable var){
 		Term PI=arguments.get(0);
 		Term lst=Lists.EMPTY_LIST;
-		for(Predicate pred:exec.getDatabase().getProcedures().keySet()){
-			if(PI.unities(pred.getIndicator(),new Substitution(exec.getCurrentSubst())))
-				lst=new CompoundTerm(".",pred.getIndicator(),lst);
+		for(Map.Entry<Predicate,Procedure> entry:exec.getDatabase().getProcedures().entrySet()){
+			Substitution subst=new Substitution(exec.getCurrentSubst());
+			if(entry.getValue()instanceof UserPredicate&&PI.unities(entry.getKey().getIndicator(),subst))
+				lst=new CompoundTerm(".",entry.getKey().getIndicator(),lst);
 		}
 		exec.getCurrentSubst().assign(var,lst);
 	}

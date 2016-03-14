@@ -45,6 +45,9 @@ public class Helper{
 	public static final boolean isAtom(Term t){
 		return t instanceof Constant&&((Constant)t).getValue() instanceof String;
 	}
+	public static final boolean isCallable(Term t){
+		return t instanceof CompoundTerm||isAtom(t);
+	}
 	public static final BigDecimal toReal(Object o){
 		if(o instanceof BigDecimal)
 			return (BigDecimal)o;

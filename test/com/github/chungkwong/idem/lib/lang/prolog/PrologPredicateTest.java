@@ -282,6 +282,7 @@ public class PrologPredicateTest{
 	}
 	@Test
 	public void testUniv(){
+		assertGoalSuccess("'=..'(X,[a]),X=a.","");
 		assertGoalSuccess("'=..'(foo(a,b),[foo,a,b]).","");
 		assertGoalSuccess("'=..'(X,[foo,a,b]),X==foo(a,b).","");
 		assertGoalSuccess("'=..'(foo(a,b),L),L==[foo,a,b].","");
@@ -295,6 +296,7 @@ public class PrologPredicateTest{
 		assertGoalError("'=..'(X,[1.1,foo]).","");
 		assertGoalError("'=..'(X,[a(b),1]).","");
 		assertGoalError("'=..'(X,4).","");
+		assertGoalError("'=..'(X,Y).","");
 	}
 	@Test
 	public void testCopyTerm(){
@@ -306,6 +308,30 @@ public class PrologPredicateTest{
 		assertGoalSuccess("copy_term(X+X+Y,A+B+B).","");
 		assertGoalFail("copy_term(a,b).","");
 		assertGoalFail("copy_term(a+X,X+b),copy_term(a+X,X+b).","");
+	}
+	@Test
+	public void testCurrentPredicate(){
+		String db="cat.dog:-true.elk(X):-moose(X).legs(A,6):-insect(A).insect(ann).insect(bee).";
+		assertGoalSuccess("current_predicate(dog/0).",db);
+		assertGoalSuccess("current_predicate(elk/Arity),Arity=:=1 .",db);
+		assertGoalSuccess("current_predicate(Name/1).",db);
+		assertGoalSuccess("current_predicate(_/_).",db);
+		assertGoalFail("current_predicate(current_predicate/1).",db);
+		assertGoalFail("current_predicate(foo/A).",db);
+		assertGoalFail("current_predicate(4).",db);
+	}
+	@Test
+	public void testClause(){
+		String db="cat.dog:-true.elk(X):-moose(X).legs(A,6):-insect(A).insect(ann).insect(bee).";
+		assertGoalSuccess("clause(cat,true).",db);
+		assertGoalSuccess("clause(dog,true).",db);
+		assertGoalSuccess("clause(legs(I,N),Body),N=:=6.",db);
+		Assert.assertTrue(multiquery("clause(insect(I),T).",db).size()==2);
+		assertGoalFail("clause(x,Body).",db);
+		assertGoalError("clause(_,B),N=6.",db);
+		assertGoalError("clause(3,B),N=6.",db);
+		assertGoalError("clause(atom(_),B),N=6.",db);
+
 	}
 	@Test
 	public void testAsserta(){
@@ -454,6 +480,23 @@ public class PrologPredicateTest{
 		assertGoalError("atom_length(atom,'4').","");
 	}
 	@Test
+	public void testAtomConcat(){
+		assertGoalSuccess("atom_concat('hello','world','helloworld').","");
+		assertGoalSuccess("atom_concat('hello',Y,'helloworld'),Y='world'.","");
+		assertGoalSuccess("atom_concat(X,'world','helloworld'),X='hello'.","");
+		assertGoalSuccess("atom_concat('hello','world',Z),Z='helloworld'.","");
+		Assert.assertTrue(multiquery("atom_concat(_,_,'hello')","").size()==6);
+		assertGoalFail("atom_concat('hello','world','helloword').","");
+		assertGoalFail("atom_concat('hello',Y,'helloworld'),Y='orld'.","");
+		assertGoalFail("atom_concat(X,'world','helloworld'),X='hell'.","");
+		assertGoalFail("atom_concat('hello','world',Z),Z='helloworl'.","");
+		assertGoalError("atom_concat(_,'world',_).","");
+		assertGoalError("atom_concat('hello',_,_).","");
+		assertGoalError("atom_concat(1,'world','helloworld').","");
+		assertGoalError("atom_concat('hello',2,'helloworld').","");
+		assertGoalError("atom_concat('hello','world',3).","");
+	}
+	@Test
 	public void testSubAtom(){
 		assertGoalSuccess("sub_atom('banana',4,2,'an').","");
 		assertGoalSuccess("sub_atom('banana',4,2,S),S='an'.","");
@@ -479,6 +522,7 @@ public class PrologPredicateTest{
 	@Test
 	public void testAtomCodes(){
 		assertGoalSuccess("atom_codes('',L),L=[].","");
+		assertGoalSuccess("atom_codes(X,[0'[,0']]),X=[].","");
 		assertGoalSuccess("atom_codes([],[0'[,0']]).","");
 		assertGoalSuccess("atom_codes('''',[39]).","");
 		assertGoalSuccess("atom_codes('ant',[0'a,0'n,0't]).","");

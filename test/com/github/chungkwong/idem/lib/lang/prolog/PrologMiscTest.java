@@ -55,8 +55,14 @@ public class PrologMiscTest{
 	public void testRule(){
 		assertGoalError("p(X,Y).","p(M,W):-m(M),f(W).");
 	}
-	@Test public void testCorner(){
+	@Test
+	public void testCorner(){
 		assertTrue(multiquery("p(X,Y).","p(M,W):-m(M),f(W).","fail").isEmpty());
 		assertGoalFail("p(c).","p(a).p(b).");
+	}
+	@Test
+	public void testEvaluale(){
+		assertGoalError("X is 3+Y.","");
+		assertGoalError("X is hello(7).","");
 	}
 }

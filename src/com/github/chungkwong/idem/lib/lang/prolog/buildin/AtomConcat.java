@@ -22,38 +22,49 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class AtomConcat extends BuildinPredicate{
-	public static final Arg INSTANCE=new Arg();
-	public static final Predicate pred=new Predicate("arg",3);
+public class AtomConcat extends ReexecutableBuildinPredicate{
+	public static final AtomConcat INSTANCE=new AtomConcat();
+	public static final Predicate pred=new Predicate("atom_concat",3);
 	@Override
-	public boolean activate(List<Term> arguments,Processor exec){
+	public Predicate getPredicate(){
+		return pred;
+	}
+	@Override
+	public void firstActivate(List<Term> arguments,Processor exec,Variable var){
 		Term atom1=arguments.get(0),atom2=arguments.get(1),atom12=arguments.get(2);
+		Term lst=Lists.EMPTY_LIST;
 		if(atom12 instanceof Variable){
 			if(atom1 instanceof Variable||atom2 instanceof Variable)
 				throw new InstantiationException((Variable)atom12);
-			else if(!isAtom(atom1)){
+			else if(!Helper.isAtom(atom1)){
 				throw new TypeException("atom",atom1);
-			}else if(!isAtom(atom2)){
+			}else if(!Helper.isAtom(atom2)){
 				throw new TypeException("atom",atom2);
 			}else{
-				return atom12.unities(new Constant(((Constant)atom1).getValue().toString()+((Constant)atom2).getValue().toString()),exec.getCurrentSubst());
+				String concat=((Constant)atom1).getValue().toString()+((Constant)atom2).getValue().toString();
+				lst=new CompoundTerm(".",new CompoundTerm("concat",atom1,atom2,new Constant(concat)),lst);
 			}
-		}else if(isAtom(atom12)){
-			if(isAtom(atom1)){
-				if(isAtom(atom2))
-					return atom12.toString().equals(atom1.toString()+atom2.toString());
+		}else if(Helper.isAtom(atom12)){
+			if(Helper.isAtom(atom1)){
+				if(Helper.isAtom(atom2))
+					lst=new CompoundTerm(".",new CompoundTerm("concat",atom1,atom2,new Constant(atom1.toString()+atom2.toString())),lst);
 				else if(atom2 instanceof Variable){
-					return atom12.toString().startsWith(atom1.toString())
-							&&atom2.unities(new Constant(atom12.toString().substring(atom1.toString().length())),exec.getCurrentSubst());
+					if(atom12.toString().length()>=atom1.toString().length()){
+						String suffix=atom12.toString().substring(atom1.toString().length());
+						lst=new CompoundTerm(".",new CompoundTerm("concat",atom1,new Constant(suffix),atom12),lst);
+					}
 				}else
 					throw new TypeException("atom",atom2);
 			}else if(atom1 instanceof Variable){
-				if(isAtom(atom2))
-					return atom12.toString().endsWith(atom2.toString())
-							&&atom1.unities(new Constant(atom12.toString().substring(0,atom1.toString().length())),exec.getCurrentSubst());
-				else if(atom2 instanceof Variable){
-					//FIXME
-					return atom1.unities(atom12,exec.getCurrentSubst())&&atom2.unities(new Constant(""),exec.getCurrentSubst());
+				if(Helper.isAtom(atom2)){
+					if(atom12.toString().length()>=atom2.toString().length()){
+						String prefix=atom12.toString().substring(0,atom12.toString().length()-atom2.toString().length());
+						lst=new CompoundTerm(".",new CompoundTerm("concat",new Constant(prefix),atom2,atom12),lst);
+					}
+				}else if(atom2 instanceof Variable){
+					String str=atom12.toString();
+					for(int i=0;i<=str.length();i++)
+						lst=new CompoundTerm(".",new CompoundTerm("concat",new Constant(str.substring(0,i)),new Constant(str.substring(i)),atom12),lst);
 				}else
 					throw new TypeException("atom",atom2);
 			}else{
@@ -62,12 +73,22 @@ public class AtomConcat extends BuildinPredicate{
 		}else{
 			throw new TypeException("atom",atom12);
 		}
+		exec.getCurrentSubst().assign(var,lst);
 	}
 	@Override
-	public Predicate getPredicate(){
-		return pred;
-	}
-	private static boolean isAtom(Term t){
-		return t instanceof Constant&&((Constant)t).getValue()instanceof String;
+	public boolean againActivate(List<Term> arguments,Processor exec,Variable var){
+		Substitution subst=exec.getStack().get(exec.getStack().size()-2).getSubst();
+		Term lst=subst.findRoot(var);
+		if(lst instanceof CompoundTerm){
+			CompoundTerm concat=(CompoundTerm)((CompoundTerm)lst).getArguments().get(0);
+			boolean succeed=arguments.get(0).unities(concat.getArguments().get(0),exec.getCurrentSubst())
+					&&arguments.get(1).unities(concat.getArguments().get(1),exec.getCurrentSubst())
+					&&arguments.get(2).unities(concat.getArguments().get(2),exec.getCurrentSubst());
+			subst.unassign(var);
+			subst.assign(var,((CompoundTerm)lst).getArguments().get(1));
+			return succeed;
+		}else{
+			return false;
+		}
 	}
 }

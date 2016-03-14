@@ -38,27 +38,22 @@ public class Clause{
 		return head;
 	}
 	/**
-	 * @return the head of the clause as a term
-	 */
-	public Term getHeadAsTerm(){
-		if(head.getPredicate().getArity()==0)
-			return new Constant(head.getPredicate());
-		else
-			return new CompoundTerm(head.getPredicate().getFunctor(),head.getArguments()).renameAllVariable(new HashMap<>());
-	}
-	/**
 	 * @return the body of the clause
 	 */
 	public Predication getBody(){
 		return body;
 	}
+	private static Term predicationToTerm(Predication pred){
+		if(pred.getPredicate().getArity()==0)
+			return new Constant(pred.getPredicate().getFunctor());
+		else
+			return pred;
+	}
 	/**
-	 * @return the body of the clause as a term
+	 * @return clause(head,body)
 	 */
-	public Term getBodyAsTerm(){
-		if(body.getPredicate().getArity()==0)
-			return new Constant(body.getPredicate());
-		return new CompoundTerm(body.getPredicate().getFunctor(),body.getArguments()).renameAllVariable(new HashMap<>());
+	public Term asTerm(){
+		return new CompoundTerm("clause",head,body).renameAllVariable();
 	}
 	/**
 	 * @return return a renamed copy of the clause

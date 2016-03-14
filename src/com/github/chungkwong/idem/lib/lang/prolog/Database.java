@@ -43,6 +43,7 @@ public class Database{
 		base.addProcedure(Arg.INSTANCE);
 		base.addProcedure(AssertA.INSTANCE);
 		base.addProcedure(AssertZ.INSTANCE);
+		base.addProcedure(AtomConcat.INSTANCE);
 		base.addProcedure(AtomLength.INSTANCE);
 		base.addProcedure(AtomChars.INSTANCE);
 		base.addProcedure(AtomCodes.INSTANCE);

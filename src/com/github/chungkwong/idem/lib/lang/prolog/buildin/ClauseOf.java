@@ -30,17 +30,19 @@ public class ClauseOf extends ReexecutableBuildinPredicate{
 	}
 	@Override
 	public void firstActivate(List<Term> arguments,Processor exec,Variable var){
-		if(!(arguments.get(0)instanceof Predication))
+		if(!Helper.isCallable(arguments.get(0)))
 			throw new TypeException("callable",arguments.get(0));
 		Procedure proc=exec.getDatabase().getProcedure(((Predication)arguments.get(0)).getPredicate());
-		if(proc!=null&&!(proc instanceof UserPredicate))
+		if(proc!=null&&!proc.isDynamic())
 			throw new PermissionException(new Constant("access_clause"),new Constant("static_procedure"),exec.getCurrentActivator());
 		Term lst=Lists.EMPTY_LIST;
+		Term template=new CompoundTerm("clause",arguments.get(0),arguments.get(1));
 		if(proc!=null){
 			for(Clause clause:((UserPredicate)proc).getClauses()){
 				Substitution subst=new Substitution(exec.getCurrentSubst());
-				if(clause.getHeadAsTerm().unities(arguments.get(0),subst)&&clause.getBodyAsTerm().unities(arguments.get(1),subst))
-					lst=new CompoundTerm(".",new CompoundTerm("clause",clause.getHeadAsTerm(),clause.getBodyAsTerm()),lst);
+				Term ct=clause.asTerm();
+				if(ct.unities(template,subst))
+					lst=new CompoundTerm(".",ct,lst);
 			}
 		}
 		exec.getCurrentSubst().assign(var,lst);

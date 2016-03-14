@@ -48,6 +48,7 @@ public abstract class ReexecutableBuildinPredicate implements Procedure{
 		exec.getStack().push(ccs);
 		if(againActivate(exec.getCurrentActivator().getArguments(),exec,getVariable(exec.getStack().size()-1))){
 			exec.getCurrentDecoratedSubgoal().setActivator(new Constant("true"));
+			exec.getCurrentState().substitute(exec.getCurrentSubst());
 		}else{
 			exec.getStack().pop();
 			exec.getCurrentDecoratedSubgoal().setActivator(new Constant("fail"));
