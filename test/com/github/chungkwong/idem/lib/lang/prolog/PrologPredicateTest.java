@@ -511,7 +511,7 @@ public class PrologPredicateTest{
 	@Test
 	public void testAtomChars(){
 		assertGoalSuccess("atom_chars('',L),L=[].","");
-		assertGoalSuccess("atom_chars([],['[',']']).","");
+		assertGoalSuccess("atom_chars([],_).","");
 		assertGoalSuccess("atom_chars('''',['''']).","");
 		assertGoalSuccess("atom_chars('ant',['a','n','t']).","");
 		assertGoalFail("atom_chars(soap,['s','o','p']).","");

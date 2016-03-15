@@ -60,7 +60,7 @@ public class SubAtom extends ReexecutableBuildinPredicate{
 			arguments.get(1).unities(item.getArguments().get(0),exec.getCurrentSubst());
 			arguments.get(2).unities(item.getArguments().get(1),exec.getCurrentSubst());
 			arguments.get(3).unities(item.getArguments().get(2),exec.getCurrentSubst());
-			subst.unassign(var);
+			subst.removeEquation(var);
 			subst.assign(var,((CompoundTerm)lst).getArguments().get(1));
 			return true;
 		}else{

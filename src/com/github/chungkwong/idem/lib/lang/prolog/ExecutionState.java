@@ -54,7 +54,7 @@ public class ExecutionState{
 			decsglstk.add(subgoal.clone());
 		});
 		this.BI=state.BI;
-		this.subst=new Substitution(state.subst);
+		this.subst=Substitution.createCopy(state.subst);
 		this.cl=state.cl;
 	}
 	@Override

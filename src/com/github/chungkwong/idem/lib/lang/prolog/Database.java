@@ -171,21 +171,6 @@ public class Database{
 		}
 	}
 	/**
-	 * Remove a clause from a user-defined procedure
-	 * @param clause to be removed
-	 */
-	public void removeClause(Clause clause){
-		Predicate predicate=clause.getHead().getPredicate();
-		if(procedures.containsKey(predicate)){
-			Procedure proc=procedures.get(predicate);
-			if(proc instanceof UserPredicate){
-				((UserPredicate)proc).getClauses().remove(clause);
-				if(((UserPredicate)proc).getClauses().isEmpty())
-					procedures.remove(predicate);
-			}
-		}
-	}
-	/**
 	 * Add a prolog text to the database as a user-defined procedure
 	 * @param pred to be added
 	 */

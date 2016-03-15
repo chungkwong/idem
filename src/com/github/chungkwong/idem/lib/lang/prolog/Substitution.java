@@ -21,22 +21,28 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Substitution{
-	private final HashMap<Variable,Term> assignment;
+	protected HashMap<Variable,Term> assignment;
 	//private final HashMap<Variable,HashSet<Variable>> affect;
 	/**
 	 * A set with no equation
 	 */
 	public Substitution(){
 		assignment=new HashMap<>();
-		//affect=new HashMap<>();
 	}
 	/**
 	 * A set of equations copy from another set
 	 * @param parent
 	 */
-	public Substitution(Substitution parent){
-		assignment=new HashMap<>(parent.assignment);
-		//affect=new HashMap<>(parent.affect);
+	protected Substitution(Substitution parent){
+		assignment=parent.assignment;
+	}
+	/**
+	 * Create a copy on write substitution
+	 * @param parent to be copied
+	 * @return a copy
+	 */
+	public static Substitution createCopy(Substitution parent){
+		return new CopyOnWriteSubstitution(parent);
 	}
 	/**
 	 * @param obj a variable
@@ -48,9 +54,7 @@ public class Substitution{
 		}
 		return obj;
 	}
-	private boolean addEquation(Variable var,Term val){
-		if(val.getVariableSet().contains(var))
-			return var.equals(val);
+	protected boolean addEquation(Variable var,Term val){
 		assignment.put(var,val);
 		assignment.entrySet().stream().forEach((entry)->{
 			entry.setValue(entry.getValue().substitute(var,val));
@@ -61,7 +65,10 @@ public class Substitution{
 		Term root=findRoot(var);
 		val=val.substitute(this);
 		if(root instanceof Variable){
-			return addEquation((Variable)root,val);
+			if(val.getVariableSet().contains(var))
+				return var.equals(val);
+			else
+				return addEquation((Variable)root,val);
 		}else{
 			return root.unities(val,this);
 		}
@@ -71,7 +78,7 @@ public class Substitution{
 	 * equations is generated because of it.
 	 * @param var assigned variable
 	 */
-	public void unassign(Variable var){
+	public void removeEquation(Variable var){
 		assignment.remove(var);
 	}
 	/**
@@ -101,5 +108,27 @@ public class Substitution{
 				});
 		buf.append('}');
 		return buf.toString();
+	}
+	static class CopyOnWriteSubstitution extends Substitution{
+		private boolean changed=false;
+		public CopyOnWriteSubstitution(Substitution parent){
+			super(parent);
+		}
+		private void change(){
+			if(!changed){
+				changed=true;
+				assignment=new HashMap<>(assignment);
+			}
+		}
+		@Override
+		protected boolean addEquation(Variable var,Term val){
+			change();
+			return super.addEquation(var,val);
+		}
+		@Override
+		public void removeEquation(Variable var){
+			change();
+			super.removeEquation(var);
+		}
 	}
 }

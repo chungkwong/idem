@@ -57,7 +57,7 @@ public class BagOf extends ReexecutableBuildinPredicate{
 			}
 			s=Lists.reverse(next);
 			if(arguments.get(2).unities(Lists.reverse(tLst),exec.getCurrentSubst())){
-				subst.unassign(var);
+				subst.removeEquation(var);
 				subst.assign(var,s);
 				return true;
 			}

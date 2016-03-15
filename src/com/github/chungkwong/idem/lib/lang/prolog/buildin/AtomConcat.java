@@ -84,7 +84,7 @@ public class AtomConcat extends ReexecutableBuildinPredicate{
 			boolean succeed=arguments.get(0).unities(concat.getArguments().get(0),exec.getCurrentSubst())
 					&&arguments.get(1).unities(concat.getArguments().get(1),exec.getCurrentSubst())
 					&&arguments.get(2).unities(concat.getArguments().get(2),exec.getCurrentSubst());
-			subst.unassign(var);
+			subst.removeEquation(var);
 			subst.assign(var,((CompoundTerm)lst).getArguments().get(1));
 			return succeed;
 		}else{

@@ -30,12 +30,12 @@ public class CurrentPrologFlag extends ReexecutableBuildinPredicate{
 		Term lst=Lists.EMPTY_LIST;
 		if(flag instanceof Variable){
 			for(Flag f:exec.getDatabase().getFlags().values()){
-				if(f.getValue().unities(val,new Substitution(exec.getCurrentSubst())))
+				if(f.getValue().unities(val,Substitution.createCopy(exec.getCurrentSubst())))
 					lst=new CompoundTerm(".",new CompoundTerm("flag",new Constant(f.getName()),f.getValue()),lst);
 			}
 		}else if(flag instanceof Constant&&((Constant)flag).getValue()instanceof String){
 			Flag f=exec.getDatabase().getFlag(((Constant)flag).toString());
-			if(f.getValue().unities(val,new Substitution(exec.getCurrentSubst())))
+			if(f.getValue().unities(val,Substitution.createCopy(exec.getCurrentSubst())))
 				lst=new CompoundTerm(".",new CompoundTerm("flag",flag,f.getValue()),lst);
 		}else{
 			throw new TypeException("atom",flag);
@@ -51,7 +51,7 @@ public class CurrentPrologFlag extends ReexecutableBuildinPredicate{
 			CompoundTerm entry=(CompoundTerm)((CompoundTerm)lst).getArguments().get(0);
 			arguments.get(0).unities(entry.getArguments().get(0),exec.getCurrentSubst());
 			arguments.get(1).unities(entry.getArguments().get(1),exec.getCurrentSubst());
-			subst.unassign(var);
+			subst.removeEquation(var);
 			subst.assign(var,((CompoundTerm)lst).getArguments().get(1));
 			return true;
 		}else{

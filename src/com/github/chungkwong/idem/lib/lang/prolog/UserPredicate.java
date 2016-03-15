@@ -24,6 +24,7 @@ import java.util.stream.*;
  */
 public class UserPredicate implements Procedure{
 	private final List<Clause> clauses;
+	public static final HashSet<Predicate> DYNAMIC_PREDICATES=new HashSet<>();
 	/**
 	 * Construct a user-defined predicate with a given clause
 	 * @param clause
@@ -55,7 +56,7 @@ public class UserPredicate implements Procedure{
 		while(exec.getStack().peek().getCl().hasNext()){
 			Clause c=exec.getStack().peek().getCl().peek();
 			c=c.rename();
-			Substitution context=new Substitution(exec.getCurrentSubst());
+			Substitution context=Substitution.createCopy(exec.getCurrentSubst());
 			if(c.getHead().unities(exec.getCurrentActivator(),context)){
 				ExecutionState ccs=new ExecutionState(exec.getStack().peek());
 				ccs.setSubst(context);
@@ -80,7 +81,7 @@ public class UserPredicate implements Procedure{
 	}
 	@Override
 	public boolean isDynamic(){
-		return true;
+		return DYNAMIC_PREDICATES.contains(getPredicate());
 	}
 	@Override
 	public String toString(){

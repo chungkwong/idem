@@ -39,7 +39,7 @@ public class ClauseOf extends ReexecutableBuildinPredicate{
 		Term template=new CompoundTerm("clause",arguments.get(0),arguments.get(1));
 		if(proc!=null){
 			for(Clause clause:((UserPredicate)proc).getClauses()){
-				Substitution subst=new Substitution(exec.getCurrentSubst());
+				Substitution subst=Substitution.createCopy(exec.getCurrentSubst());
 				Term ct=clause.asTerm();
 				if(ct.unities(template,subst))
 					lst=new CompoundTerm(".",ct,lst);
@@ -55,7 +55,7 @@ public class ClauseOf extends ReexecutableBuildinPredicate{
 			CompoundTerm clause=(CompoundTerm)((CompoundTerm)lst).getArguments().get(0);
 			arguments.get(0).unities(clause.getArguments().get(0),exec.getCurrentSubst());
 			arguments.get(1).unities(clause.getArguments().get(1),exec.getCurrentSubst());
-			subst.unassign(var);
+			subst.removeEquation(var);
 			subst.assign(var,((CompoundTerm)lst).getArguments().get(1));
 			return true;
 		}else{

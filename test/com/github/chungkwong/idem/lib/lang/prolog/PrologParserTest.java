@@ -45,9 +45,12 @@ public class PrologParserTest{
 		assertParse("[a,b|c]","[.(a,.(b,c))]");
 		assertParse("{a}","[{}(a)]");
 		assertParse("{}(5)","[{}(5)]");
+		assertParse("{hello}","[{}(hello)]");
+		assertParse("{{4*5}+1}","[{}(+({}(*(4,5)),1))]");
 		assertParse(".(1,2)","[.(1,2)]");
 		assertParse("([],[])","[,([],[])]");
 		assertParse("(([],[]),[],([]))","[,(,([],[]),,([],[]))]");
+		assertParse("f()","[f()]");
 		assertParse("sin(x)","[sin(x)]");
 		assertParse("sin((x))","[sin(x)]");
 		assertParse("sin((x,y))","[sin(,(x,y))]");

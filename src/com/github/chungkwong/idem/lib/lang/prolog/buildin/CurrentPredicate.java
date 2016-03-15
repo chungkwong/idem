@@ -33,7 +33,7 @@ public class CurrentPredicate extends ReexecutableBuildinPredicate{
 		Term PI=arguments.get(0);
 		Term lst=Lists.EMPTY_LIST;
 		for(Map.Entry<Predicate,Procedure> entry:exec.getDatabase().getProcedures().entrySet()){
-			Substitution subst=new Substitution(exec.getCurrentSubst());
+			Substitution subst=Substitution.createCopy(exec.getCurrentSubst());
 			if(entry.getValue()instanceof UserPredicate&&PI.unities(entry.getKey().getIndicator(),subst))
 				lst=new CompoundTerm(".",entry.getKey().getIndicator(),lst);
 		}
@@ -45,7 +45,7 @@ public class CurrentPredicate extends ReexecutableBuildinPredicate{
 		Term lst=subst.findRoot(var);
 		if(lst instanceof CompoundTerm){
 			arguments.get(0).unities(((CompoundTerm)lst).getArguments().get(0),exec.getCurrentSubst());
-			subst.unassign(var);
+			subst.removeEquation(var);
 			subst.assign(var,((CompoundTerm)lst).getArguments().get(1));
 			return true;
 		}else{

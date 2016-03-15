@@ -59,7 +59,7 @@ public class SetOf extends ReexecutableBuildinPredicate{
 			Lists.sort(tLst);
 			Lists.uniq(tLst);
 			if(arguments.get(2).unities(tLst,exec.getCurrentSubst())){
-				subst.unassign(var);
+				subst.removeEquation(var);
 				subst.assign(var,s);
 				return true;
 			}
