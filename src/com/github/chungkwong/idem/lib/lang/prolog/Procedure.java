@@ -31,10 +31,6 @@ public interface Procedure{
 	 */
 	void reexecute(Processor exec);
 	/**
-	 * @return if the procedure is dynamic
-	 */
-	boolean isDynamic();
-	/**
 	 * @return the predicate corresponsing to the procedure
 	 */
 	Predicate getPredicate();

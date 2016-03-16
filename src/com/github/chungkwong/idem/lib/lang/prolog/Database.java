@@ -17,6 +17,7 @@
 package com.github.chungkwong.idem.lib.lang.prolog;
 import com.github.chungkwong.idem.lib.lang.prolog.buildin.*;
 import com.github.chungkwong.idem.lib.lang.prolog.constructs.*;
+import com.github.chungkwong.idem.lib.lang.prolog.directive.*;
 import java.io.*;
 import java.util.*;
 import java.util.stream.*;
@@ -27,8 +28,20 @@ import java.util.stream.*;
 public class Database{
 	private final HashMap<Predicate,Procedure> procedures;
 	private final HashMap<String,Flag> flags;
+	private final HashSet<File> ensureLoad=new HashSet<>();
+	private static final HashSet<Predicate> DYNAMIC_PREDICATES=new HashSet<>();
+	private static final HashMap<Predicate,Directive> directives=new HashMap<>();
 	private static final Database base=new Database(new HashMap<>());
 	static{
+		addDirective(CharConversion.INSTANCE);
+		addDirective(Discontiguous.INSTANCE);
+		addDirective(Dynamic.INSTANCE);
+		addDirective(EnsureLoaded.INSTANCE);
+		addDirective(Include.INSTANCE);
+		addDirective(Initialization.INSTANCE);
+		addDirective(MultiFile.INSTANCE);
+		addDirective(Op.INSTANCE);
+
 		base.addProcedure(Call.CALL);
 		base.addProcedure(Catch.CATCH);
 		base.addProcedure(Conjunction.CONJUNCTION);
@@ -89,13 +102,7 @@ public class Database{
 		base.addProcedure(Univ.INSTANCE);
 		base.addProcedure(Var.INSTANCE);
 
-		InputStream resource=Database.class.getResourceAsStream("StandardProcedures");
-		PrologParser parser=new PrologParser(new PrologLex(new InputStreamReader(resource)));
-		Predication pred=parser.next();
-		while(pred!=null){
-			base.addPredication(pred);
-			pred=parser.next();
-		}
+		base.loadPrologText(new InputStreamReader(Database.class.getResourceAsStream("StandardProcedures")));
 	}
 	/**
 	 * Construct a prolog database containing the control constructs and buildin predicate
@@ -131,7 +138,7 @@ public class Database{
 	 */
 	public void removeProcedure(Predicate pred){
 		if(procedures.containsKey(pred)){
-			if(procedures.get(pred).isDynamic())
+			if(isDynamic(pred))
 				procedures.remove(pred);
 			else
 				throw new PermissionException(new Constant("modify")
@@ -145,7 +152,7 @@ public class Database{
 	public void addClauseToFirst(Clause clause){
 		Predicate predicate=clause.getHead().getPredicate();
 		if(procedures.containsKey(predicate)){
-			if(procedures.get(predicate).isDynamic())
+			if(isDynamic(predicate))
 				((UserPredicate)procedures.get(predicate)).getClauses().add(0,clause);
 			else
 				throw new PermissionException(new Constant("modify_clause")
@@ -161,7 +168,7 @@ public class Database{
 	public void addClauseToLast(Clause clause){
 		Predicate predicate=clause.getHead().getPredicate();
 		if(procedures.containsKey(predicate)){
-			if(procedures.get(predicate).isDynamic())
+			if(isDynamic(predicate))
 				((UserPredicate)procedures.get(predicate)).getClauses().add(clause);
 			else
 				throw new PermissionException(new Constant("modify_clause")
@@ -170,12 +177,40 @@ public class Database{
 			procedures.put(predicate,new UserPredicate(clause));
 		}
 	}
+	public void include(File file){
+		try{
+			loadPrologText(new FileReader(file));
+		}catch(FileNotFoundException ex){
+			throw new SystemException("Fail to load file",ex);
+		}
+	}
+	public void ensureLoaded(File file){
+		if(!ensureLoad.contains(file)){
+			ensureLoad.add(file);
+			include(file);
+		}
+	}
+	/**
+	 * Prepare prolog text for execution
+	 * @param in source
+	 */
+	public void loadPrologText(Reader in){
+		PrologParser parser=new PrologParser(new PrologLex(in));
+		Predication pred=parser.next();
+		while(pred!=null){
+			addPredication(pred);
+			pred=parser.next();
+		}
+	}
 	/**
 	 * Add a prolog text to the database as a user-defined procedure
 	 * @param pred to be added
 	 */
 	public void addPredication(Predication pred){
-		if(pred.getPredicate().getFunctor().equals(":-"))
+		Predicate predicate=pred.getPredicate();
+		if(directives.containsKey(predicate))
+			directives.get(predicate).process(pred.getArguments(),this);
+		else if(predicate.getFunctor().equals(":-"))
 			addClauseToLast(new Clause((Predication)pred.getArguments().get(0),(Predication)pred.getArguments().get(1)));
 		else
 			addClauseToLast(new Clause(pred,new Constant("true")));
@@ -193,6 +228,9 @@ public class Database{
 	 */
 	public Map<Predicate,Procedure> getProcedures(){
 		return Collections.unmodifiableMap(procedures);
+	}
+	private static void addDirective(Directive directive){
+		directives.put(directive.getPredicate(),directive);
 	}
 	/**
 	 * Add a flag to the database
@@ -220,6 +258,19 @@ public class Database{
 	 */
 	public Map<String,Flag> getFlags(){
 		return Collections.unmodifiableMap(flags);
+	}
+	/**
+	 * @param predicate indicate a procedure to be set dynamic
+	 */
+	public void makeDynamic(Predicate predicate){
+		DYNAMIC_PREDICATES.add(predicate);
+	}
+	/**
+	 * @param predicate
+	 * @return if predicate is dynamic
+	 */
+	public boolean isDynamic(Predicate predicate){
+		return DYNAMIC_PREDICATES.contains(predicate);
 	}
 	@Override
 	public String toString(){

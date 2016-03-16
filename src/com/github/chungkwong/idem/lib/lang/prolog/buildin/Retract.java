@@ -48,7 +48,7 @@ public class Retract extends ReexecutableBuildinPredicate{
 		Predicate predicate=((Predication)head).getPredicate();
 		Procedure proc=exec.getDatabase().getProcedure(predicate);
 		if(proc!=null){
-			if(proc.isDynamic()){
+			if(exec.getDatabase().isDynamic(predicate)){
 				Iterator<Clause> iter=((UserPredicate)proc).getClauses().iterator();
 				while(iter.hasNext()){
 					Clause cand=iter.next();

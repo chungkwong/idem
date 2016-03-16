@@ -32,7 +32,7 @@ public class Dynamic implements Directive{
 	@Override
 	public void process(List<Term> arguments,Database db){
 		List<Term> PI=((CompoundTerm)arguments.get(0)).getArguments();
-		UserPredicate.DYNAMIC_PREDICATES.add(new Predicate(PI.get(0).toString()
+		db.makeDynamic(new Predicate(PI.get(0).toString()
 				,((BigInteger)Helper.getConstantValue(PI.get(1))).intValueExact()));
 	}
 }

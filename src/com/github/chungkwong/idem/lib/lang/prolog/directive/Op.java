@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog.directive;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
+import java.math.*;
 import java.util.*;
 /**
  *
@@ -30,6 +31,7 @@ public class Op implements Directive{
 	}
 	@Override
 	public void process(List<Term> arguments,Database db){
-
+		int priority=((BigInteger)Helper.getConstantValue(arguments.get(0))).intValueExact();
+		//OperatorTable.DEFAULT_OPERATOR_TABLE.addOperator(new Operator(null,priority,Operator.Class.INFIX,Operator.Associativity.LEFT));
 	}
 }

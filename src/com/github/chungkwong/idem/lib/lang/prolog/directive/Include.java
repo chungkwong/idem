@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog.directive;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
+import java.io.*;
 import java.util.*;
 /**
  *
@@ -30,6 +31,6 @@ public class Include implements Directive{
 	}
 	@Override
 	public void process(List<Term> arguments,Database db){
-
+		db.include(new File(Helper.getAtomValue(arguments.get(0))));
 	}
 }

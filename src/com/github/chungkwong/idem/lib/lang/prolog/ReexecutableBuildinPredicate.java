@@ -55,10 +55,6 @@ public abstract class ReexecutableBuildinPredicate implements Procedure{
 		}
 	}
 	@Override
-	public boolean isDynamic(){
-		return false;
-	}
-	@Override
 	public String toString(){
 		return getPredicate().toString();
 	}

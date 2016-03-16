@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog.directive;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
+import java.io.*;
 import java.util.*;
 /**
  *
@@ -24,12 +25,13 @@ import java.util.*;
 public class EnsureLoaded implements Directive{
 	public static final EnsureLoaded INSTANCE=new EnsureLoaded();
 	public static final Predicate pred=new Predicate("ensure_loaded",1);
+
 	@Override
 	public Predicate getPredicate(){
 		return pred;
 	}
 	@Override
 	public void process(List<Term> arguments,Database db){
-
+		db.ensureLoaded(new File(Helper.getAtomValue(arguments.get(0))));
 	}
 }

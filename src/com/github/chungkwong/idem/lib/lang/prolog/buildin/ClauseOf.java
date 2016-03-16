@@ -32,8 +32,9 @@ public class ClauseOf extends ReexecutableBuildinPredicate{
 	public void firstActivate(List<Term> arguments,Processor exec,Variable var){
 		if(!Helper.isCallable(arguments.get(0)))
 			throw new TypeException("callable",arguments.get(0));
-		Procedure proc=exec.getDatabase().getProcedure(((Predication)arguments.get(0)).getPredicate());
-		if(proc!=null&&!proc.isDynamic())
+		Predicate predicate=((Predication)arguments.get(0)).getPredicate();
+		Procedure proc=exec.getDatabase().getProcedure(predicate);
+		if(proc!=null&&!exec.getDatabase().isDynamic(predicate))
 			throw new PermissionException(new Constant("access_clause"),new Constant("static_procedure"),exec.getCurrentActivator());
 		Term lst=Lists.EMPTY_LIST;
 		Term template=new CompoundTerm("clause",arguments.get(0),arguments.get(1));
