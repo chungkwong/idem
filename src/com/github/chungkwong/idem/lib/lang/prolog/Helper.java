@@ -39,6 +39,15 @@ public class Helper{
 		else
 			throw new TypeException("atom",t);
 	}
+	public static final char getCharacterValue(Term t){
+		if(t instanceof Constant&&((Constant)t).getValue()instanceof String
+				&&((String)((Constant)t).getValue()).length()==1)
+			return ((String)((Constant)t).getValue()).charAt(0);
+		else if(t instanceof Variable)
+			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)t);
+		else
+			throw new TypeException("character",t);
+	}
 	public static final boolean isNumber(Term t){
 		return t instanceof Constant&&(((Constant)t).getValue() instanceof BigInteger||((Constant)t).getValue() instanceof BigDecimal);
 	}

@@ -32,6 +32,8 @@ public class Op implements Directive{
 	@Override
 	public void process(List<Term> arguments,Database db){
 		int priority=((BigInteger)Helper.getConstantValue(arguments.get(0))).intValueExact();
-		//OperatorTable.DEFAULT_OPERATOR_TABLE.addOperator(new Operator(null,priority,Operator.Class.INFIX,Operator.Associativity.LEFT));
+		String specifier=Helper.getAtomValue(arguments.get(1));
+		String operator=Helper.getAtomValue(arguments.get(2));
+		db.getOperatorTable().addOperator(new Operator(operator,priority,specifier));
 	}
 }

@@ -23,9 +23,7 @@ import java.util.*;
 public class OperatorTable{
 	/** the standard Operator table */
 	public static final OperatorTable DEFAULT_OPERATOR_TABLE=new OperatorTable();
-	private final Map<String,Operator> infixOperators=new HashMap<>();
-	private final Map<String,Operator> prefixOperators=new HashMap<>();
-	private final Map<String,Operator> postfixOperators=new HashMap<>();
+	private final Map<String,Operator> infixOperators,prefixOperators,postfixOperators;
 	static{
 		DEFAULT_OPERATOR_TABLE.addOperator(new Operator(":-",1200,Operator.Class.INFIX,Operator.Associativity.NO));
 		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("-->",1200,Operator.Class.INFIX,Operator.Associativity.NO));
@@ -68,6 +66,23 @@ public class OperatorTable{
 		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("\\",200,Operator.Class.PREFIX,Operator.Associativity.RIGHT));
 		DEFAULT_OPERATOR_TABLE.addOperator(new Operator("@",100,Operator.Class.INFIX,Operator.Associativity.NO));
 		DEFAULT_OPERATOR_TABLE.addOperator(new Operator(":",50,Operator.Class.INFIX,Operator.Associativity.NO));
+	}
+	/**
+	 * Conctruct a emptyOperator
+	 */
+	public OperatorTable(){
+		prefixOperators=new HashMap<>();
+		infixOperators=new HashMap<>();
+		postfixOperators=new HashMap<>();
+	}
+	/**
+	 * Conctruct a emptyOperator
+	 * @param prototype
+	 */
+	public OperatorTable(OperatorTable prototype){
+		prefixOperators=new HashMap<>(prototype.prefixOperators);
+		infixOperators=new HashMap<>(prototype.infixOperators);
+		postfixOperators=new HashMap<>(prototype.postfixOperators);
 	}
 	/**
 	 * Register a operator

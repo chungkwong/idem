@@ -30,6 +30,8 @@ public class CharConversion implements Directive{
 	}
 	@Override
 	public void process(List<Term> arguments,Database db){
-
+		Character in=Helper.getCharacterValue(arguments.get(0));
+		Character out=Helper.getCharacterValue(arguments.get(1));
+		db.getConversionMap().put(in,out);
 	}
 }

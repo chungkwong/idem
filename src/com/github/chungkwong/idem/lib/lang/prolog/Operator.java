@@ -40,6 +40,48 @@ public class Operator{
 		this.cls=cls;
 		this.associativity=associativity;
 	}
+	/**
+	 * Construct a operator
+	 * @param token the specifier of the operator
+	 * @param priority the priority of the operator should between 1 and 1201
+	 * @param specifier the operator specifier
+	 */
+	public Operator(String token,int priority,String specifier){
+		this.token=token;
+		this.priority=priority;
+		switch(specifier){
+			case "fx":
+				this.cls=Class.PREFIX;
+				this.associativity=Associativity.NO;
+				break;
+			case "fy":
+				this.cls=Class.PREFIX;
+				this.associativity=Associativity.RIGHT;
+				break;
+			case "xfx":
+				this.cls=Class.INFIX;
+				this.associativity=Associativity.NO;
+				break;
+			case "xfy":
+				this.cls=Class.INFIX;
+				this.associativity=Associativity.RIGHT;
+				break;
+			case "yfx":
+				this.cls=Class.INFIX;
+				this.associativity=Associativity.LEFT;
+				break;
+			case "xf":
+				this.cls=Class.POSTFIX;
+				this.associativity=Associativity.NO;
+				break;
+			case "yf":
+				this.cls=Class.POSTFIX;
+				this.associativity=Associativity.LEFT;
+				break;
+			default:
+				throw new DomainException("operator_specifier",new Constant(specifier));
+		}
+	}
 	public String getToken(){
 		return token;
 	}

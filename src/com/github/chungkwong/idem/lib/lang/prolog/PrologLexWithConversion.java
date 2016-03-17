@@ -14,26 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.prolog.directive;
-import com.github.chungkwong.idem.lib.lang.prolog.*;
+package com.github.chungkwong.idem.lib.lang.prolog;
+import java.io.*;
 import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Initialization implements Directive{
-	public static final Initialization INSTANCE=new Initialization();
-	public static final Predicate pred=new Predicate("initialization",1);
-	@Override
-	public Predicate getPredicate(){
-		return pred;
-	}
-	@Override
-	public void process(List<Term> arguments,Database db){
-		Term goal=arguments.get(0);
-		if(Helper.isCallable(goal))
-			db.addInitialization((Predication)goal);
-		else
-			throw new TypeException("callable",goal);
+public class PrologLexWithConversion extends PrologLex{
+	Map<Character,Character> conversion;
+	public PrologLexWithConversion(Reader in,Map<Character,Character> conversion){
+		super(in);
+		this.conversion=conversion;
 	}
 }

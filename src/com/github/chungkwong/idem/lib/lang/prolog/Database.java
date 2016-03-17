@@ -29,6 +29,9 @@ public class Database{
 	private final HashMap<Predicate,Procedure> procedures;
 	private final HashMap<String,Flag> flags;
 	private final HashSet<File> ensureLoad=new HashSet<>();
+	private final List<Predication> initialization=new LinkedList<>();
+	private final Map<Character,Character> conversion=new HashMap<>();
+	private final OperatorTable operaterTable=new OperatorTable(OperatorTable.DEFAULT_OPERATOR_TABLE);
 	private static final HashSet<Predicate> DYNAMIC_PREDICATES=new HashSet<>();
 	private static final HashMap<Predicate,Directive> directives=new HashMap<>();
 	private static final Database base=new Database(new HashMap<>());
@@ -114,6 +117,9 @@ public class Database{
 				entry.setValue(new UserPredicate((UserPredicate)entry.getValue()));
 			}
 		}
+		for(Predication goal:initialization)
+			new Processor(goal,this);
+		initialization.clear();
 	}
 	private Database(HashMap<Predicate,Procedure> procedures){
 		this.procedures=new HashMap<>(procedures);
@@ -177,6 +183,9 @@ public class Database{
 			procedures.put(predicate,new UserPredicate(clause));
 		}
 	}
+	public void addInitialization(Predication goal){
+		initialization.add(goal);
+	}
 	public void include(File file){
 		try{
 			loadPrologText(new FileReader(file));
@@ -195,7 +204,7 @@ public class Database{
 	 * @param in source
 	 */
 	public void loadPrologText(Reader in){
-		PrologParser parser=new PrologParser(new PrologLex(in));
+		PrologParser parser=getParser(in);
 		Predication pred=parser.next();
 		while(pred!=null){
 			addPredication(pred);
@@ -271,6 +280,27 @@ public class Database{
 	 */
 	public boolean isDynamic(Predicate predicate){
 		return DYNAMIC_PREDICATES.contains(predicate);
+	}
+	/**
+	 * @return the operator table used by a parser
+	 */
+	public OperatorTable getOperatorTable(){
+		return operaterTable;
+	}
+	/**
+	 * @return the table for character conversion
+	 */
+	public Map<Character,Character> getConversionMap(){
+		return conversion;
+	}
+	public PrologParser getParser(Reader in){
+		return new PrologParser(getTokenizer(in),operaterTable);
+	}
+	public PrologLex getTokenizer(Reader in){
+		if(flags.get("char_conversion").getValue().toString().equals("on")){
+			return new PrologLexWithConversion(in,conversion);
+		}else
+			return new PrologLex(in);
 	}
 	@Override
 	public String toString(){
