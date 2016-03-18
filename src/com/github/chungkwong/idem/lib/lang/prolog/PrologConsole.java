@@ -29,7 +29,7 @@ public class PrologConsole implements Shell{
 	private List<Predication> predications;
 	@Override
 	public boolean acceptLine(String line){
-		PrologParser parser=new PrologParser(new PrologLex(line));
+		PrologParser parser=db.getParser(line);
 		try{
 			predications=parser.getRemaining();
 		}catch(Exception ex){

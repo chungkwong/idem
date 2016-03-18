@@ -33,7 +33,7 @@ public class NumberCodes extends BuildinPredicate{
 				throw new TypeException("number",number);
 			String atomFromList=Lists.codeListToString(list);
 			try{
-				Predication token=new PrologParser(new PrologLex(atomFromList)).next();
+				Predication token=exec.getDatabase().getParser(atomFromList).next();
 				if(token instanceof Constant&&(((Constant)token).getValue() instanceof BigInteger
 						||((Constant)token).getValue() instanceof BigDecimal))
 					return token.unities(number,exec.getCurrentSubst());

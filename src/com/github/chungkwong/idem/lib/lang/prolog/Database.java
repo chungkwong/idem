@@ -29,10 +29,10 @@ public class Database{
 	private final HashMap<Predicate,Procedure> procedures;
 	private final HashMap<String,Flag> flags;
 	private final HashSet<File> ensureLoad=new HashSet<>();
-	private final List<Predication> initialization=new LinkedList<>();
+	private List<Predication> initialization=new LinkedList<>();
 	private final Map<Character,Character> conversion=new HashMap<>();
 	private final OperatorTable operaterTable=new OperatorTable(OperatorTable.DEFAULT_OPERATOR_TABLE);
-	private static final HashSet<Predicate> DYNAMIC_PREDICATES=new HashSet<>();
+	private final HashSet<Predicate> DYNAMIC_PREDICATES=new HashSet<>();
 	private static final HashMap<Predicate,Directive> directives=new HashMap<>();
 	private static final Database base=new Database(new HashMap<>());
 	static{
@@ -111,15 +111,18 @@ public class Database{
 	 * Construct a prolog database containing the control constructs and buildin predicate
 	 */
 	public Database(){
+		this((FileReader)null);
+	}
+	/**
+	 * Construct a prolog database containing the control constructs and buildin predicate
+	 */
+	public Database(Reader startup){
 		this(base.procedures);
-		for(Map.Entry<Predicate,Procedure> entry:procedures.entrySet()){
-			if(entry.getValue() instanceof UserPredicate){
-				entry.setValue(new UserPredicate((UserPredicate)entry.getValue()));
-			}
-		}
+		if(startup!=null)
+			loadPrologText(startup);
 		for(Predication goal:initialization)
 			new Processor(goal,this);
-		initialization.clear();
+		initialization=null;
 	}
 	private Database(HashMap<Predicate,Procedure> procedures){
 		this.procedures=new HashMap<>(procedures);
@@ -157,15 +160,10 @@ public class Database{
 	 */
 	public void addClauseToFirst(Clause clause){
 		Predicate predicate=clause.getHead().getPredicate();
-		if(procedures.containsKey(predicate)){
-			if(isDynamic(predicate))
+		if(procedures.containsKey(predicate)&&procedures.get(predicate) instanceof UserPredicate)
 				((UserPredicate)procedures.get(predicate)).getClauses().add(0,clause);
-			else
-				throw new PermissionException(new Constant("modify_clause")
-						,new Constant("static_procedure"),AssertA.pred.getIndicator());
-		}else{
+		else
 			procedures.put(predicate,new UserPredicate(clause));
-		}
 	}
 	/**
 	 * Add a clause to a user-defined procedure as the last one
@@ -173,19 +171,25 @@ public class Database{
 	 */
 	public void addClauseToLast(Clause clause){
 		Predicate predicate=clause.getHead().getPredicate();
-		if(procedures.containsKey(predicate)){
-			if(isDynamic(predicate))
+		if(procedures.containsKey(predicate)&&procedures.get(predicate) instanceof UserPredicate)
 				((UserPredicate)procedures.get(predicate)).getClauses().add(clause);
-			else
-				throw new PermissionException(new Constant("modify_clause")
-						,new Constant("static_procedure"),AssertZ.pred.getIndicator());
-		}else{
+		else
 			procedures.put(predicate,new UserPredicate(clause));
-		}
 	}
+	/**
+	 * Add a initialization goal
+	 * @param goal
+	 */
 	public void addInitialization(Predication goal){
-		initialization.add(goal);
+		if(initialization!=null)
+			initialization.add(goal);
+		else
+			new Processor(goal,this);
 	}
+	/**
+	 * Include a file here
+	 * @param file
+	 */
 	public void include(File file){
 		try{
 			loadPrologText(new FileReader(file));
@@ -193,6 +197,10 @@ public class Database{
 			throw new SystemException("Fail to load file",ex);
 		}
 	}
+	/**
+	 * Include a file if it is not included
+	 * @param file
+	 */
 	public void ensureLoaded(File file){
 		if(!ensureLoad.contains(file)){
 			ensureLoad.add(file);
@@ -293,14 +301,36 @@ public class Database{
 	public Map<Character,Character> getConversionMap(){
 		return conversion;
 	}
+	/**
+	 * @param in Prolog source
+	 * @return a parser that can parse source
+	 */
 	public PrologParser getParser(Reader in){
 		return new PrologParser(getTokenizer(in),operaterTable);
 	}
+	/**
+	 * @param source Prolog source
+	 * @return a parser that can parse source
+	 */
+	public PrologParser getParser(String source){
+		return getParser(new StringReader(source));
+	}
+	/**
+	 * @param in Prolog source
+	 * @return a Tokenizer that can tokenize source
+	 */
 	public PrologLex getTokenizer(Reader in){
 		if(flags.get("char_conversion").getValue().toString().equals("on")){
-			return new PrologLexWithConversion(in,conversion);
+			return new PrologLex(in,conversion);
 		}else
 			return new PrologLex(in);
+	}
+	/**
+	 * @param source Prolog source
+	 * @return a Tokenizer that can tokenize source
+	 */
+	public PrologLex getTokenizer(String source){
+		return getTokenizer(new StringReader(source));
 	}
 	@Override
 	public String toString(){

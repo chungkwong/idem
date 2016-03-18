@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
+import java.io.*;
 import java.util.*;
 import org.junit.*;
 /**
@@ -23,11 +24,10 @@ import org.junit.*;
  */
 public class PrologProcessorTest{
 	public static List<Substitution> multiquery(String query,String data,String mode){
-		Database db=new Database();
+		Database db=new Database(new StringReader(data));
 		db.getFlag("undefined_predicate").setValue(new Constant(mode));
-		new PrologParser(new PrologLex(data)).getRemaining().stream().forEach((pred)->db.addPredication(pred));
 		List<Substitution> substs=new ArrayList<>();
-		Processor processor=new Processor(new PrologParser(new PrologLex(query)).next(),db);
+		Processor processor=new Processor(new PrologParser(new PrologLex(new StringReader(query))).next(),db);
 		while(processor.getSubstitution()!=null){
 			substs.add(processor.getSubstitution());
 			processor.reexecute();
@@ -48,10 +48,9 @@ public class PrologProcessorTest{
 		Assert.assertTrue(!multiquery(query,data).isEmpty());
 	}
 	public static void assertGoalError(String query,String data){
-		Database db=new Database();
-		new PrologParser(new PrologLex(data)).getRemaining().stream().forEach((pred)->db.addPredication(pred));
+		Database db=new Database(new StringReader(data));
 		try{
-			Substitution subst=new Processor(new PrologParser(new PrologLex(query)).next(),db).getSubstitution();
+			Substitution subst=new Processor(new PrologParser(new PrologLex(new StringReader(query))).next(),db).getSubstitution();
 			Assert.assertTrue(false);
 		}catch(Exception ex){
 
@@ -59,6 +58,6 @@ public class PrologProcessorTest{
 	}
 	@Test
 	public void test(){
-		
+
 	}
 }

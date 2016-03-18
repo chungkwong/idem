@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
 import com.github.chungkwong.idem.lib.*;
+import java.io.*;
 import java.math.*;
 import java.util.*;
 /**
@@ -60,7 +61,7 @@ public class PrologParser implements SimpleIterator<Predication>{
 		return lst;
 	}
 	/**
-	 * @return the next prolog text
+	 * @return the next prolog text or null if it does not exists
 	 */
 	@Override
 	public Predication next(){
@@ -104,7 +105,7 @@ public class PrologParser implements SimpleIterator<Predication>{
 	public static void main(String[] args){
 		Scanner in=new Scanner(System.in);
 		while(in.hasNextLine()){
-			PrologParser parse=new PrologParser(new PrologLex(in.nextLine()));
+			PrologParser parse=new PrologParser(new PrologLex(new StringReader(in.nextLine())));
 			System.out.println(parse.getRemaining());
 		}
 	}

@@ -322,7 +322,8 @@ public class PrologPredicateTest{
 	}
 	@Test
 	public void testClause(){
-		String db="cat.dog:-true.elk(X):-moose(X).legs(A,6):-insect(A).insect(ann).insect(bee).";
+		String db="dynamic(cat/0).cat.dynamic(dog/0).dog:-true.dynamic(elk/1).elk(X):-moose(X)."
+				+ "dynamic(legs/2).legs(A,6):-insect(A).dynamic(insect/1).insect(ann).insect(bee).";
 		assertGoalSuccess("clause(cat,true).",db);
 		assertGoalSuccess("clause(dog,true).",db);
 		assertGoalSuccess("clause(legs(I,N),Body),N=:=6.",db);
@@ -335,8 +336,8 @@ public class PrologPredicateTest{
 	}
 	@Test
 	public void testAsserta(){
-		assertGoalSuccess("asserta(legs(octopus,8)).","legs(X,6):-insect(X).");
-		assertGoalSuccess("asserta((legs(X,4):-animal(X))).","legs(X,6):-insect(X).");
+		assertGoalSuccess("asserta(legs(octopus,8)).","dynamic(legs/2).legs(X,6):-insect(X).");
+		assertGoalSuccess("asserta((legs(X,4):-animal(X))).","dynamic(legs/2).legs(X,6):-insect(X).");
 		assertGoalError("asserta(_).","");
 		assertGoalError("asserta(4).","");
 		assertGoalError("asserta((foo:-4)).","");
@@ -344,8 +345,8 @@ public class PrologPredicateTest{
 	}
 	@Test
 	public void testAssertz(){
-		assertGoalSuccess("assertz(legs(octopus,8)).","legs(X,6):-insect(X).");
-		assertGoalSuccess("assertz((legs(X,4):-animal(X))).","legs(X,6):-insect(X).");
+		assertGoalSuccess("assertz(legs(octopus,8)).","dynamic(legs/2).legs(X,6):-insect(X).");
+		assertGoalSuccess("assertz((legs(X,4):-animal(X))).","dynamic(legs/2).legs(X,6):-insect(X).");
 		assertGoalError("assertz(_).","");
 		assertGoalError("assertz(4).","");
 		assertGoalError("assertz((foo:-4)).","");
@@ -353,12 +354,13 @@ public class PrologPredicateTest{
 	}
 	@Test
 	public void testRetract(){
-		assertGoalSuccess("retract(legs(X,6):-T).","legs(X,6):-insect(X).legs(octopus,8).insect(ant).");
-		assertGoalSuccess("retract(legs(octopus,8)),legs(ant,6).","legs(X,6):-insect(X).legs(octopus,8).insect(ant).");
-		assertGoalFail("retract(legs(octopus,8)),legs(octopus,8).","legs(X,6):-insect(X).legs(octopus,8).insect(ant).");
-		assertGoalFail("retract(legs(spider,6)).","legs(X,6):-insect(X).legs(octopus,8).insect(ant).");
+		String db="dynamic(legs/2).legs(X,6):-insect(X).legs(octopus,8).dynamic(insect/1).insect(ant).";
+		assertGoalSuccess("retract(legs(X,6):-T).",db);
+		assertGoalSuccess("retract(legs(octopus,8)),legs(ant,6).",db);
+		assertGoalFail("retract(legs(octopus,8)),legs(octopus,8).",db);
+		assertGoalFail("retract(legs(spider,6)).",db);
 		assertGoalFail("retract(foo).","");
-		Assert.assertTrue(multiquery("retract(legs(X,Y):-T).","legs(X,6):-insect(X).legs(octopus,8).insect(ant).").size()==2);
+		Assert.assertTrue(multiquery("retract(legs(X,Y):-T).",db).size()==2);
 		assertGoalError("retract(X:-hello).","");
 		assertGoalError("retract(4:-X).","");
 		assertGoalError("retract(atom(X):=X=='[]').","");

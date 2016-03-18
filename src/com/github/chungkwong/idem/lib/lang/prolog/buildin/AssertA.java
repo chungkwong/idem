@@ -27,13 +27,20 @@ public class AssertA extends BuildinPredicate{
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
 		Term clause=arguments.get(0);
+		Clause toAdd=null;
 		if(clause instanceof CompoundTerm&&((CompoundTerm)clause).getFunctor().equals(":-")
 				&&((CompoundTerm)clause).getArguments().size()==2){
-			exec.getDatabase().addClauseToFirst(new Clause(((CompoundTerm)clause).getArguments().get(0).toHead()
-					,((CompoundTerm)clause).getArguments().get(1).toBody()));
+			toAdd=new Clause(((CompoundTerm)clause).getArguments().get(0).toHead()
+					,((CompoundTerm)clause).getArguments().get(1).toBody());
 		}else
-			exec.getDatabase().addClauseToFirst(new Clause(clause.toHead(),new Constant("true")));
-		return true;
+			toAdd=new Clause(clause.toHead(),new Constant("true"));
+		if(exec.getDatabase().isDynamic(toAdd.getHead().getPredicate())){
+			exec.getDatabase().addClauseToFirst(toAdd);
+			return true;
+		}else{
+			throw new PermissionException(new Constant("modify_clause")
+						,new Constant("static_procedure"),toAdd.getHead().getPredicate().getIndicator());
+		}
 	}
 	@Override
 	public Predicate getPredicate(){

@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
 
+import java.io.*;
 import static org.junit.Assert.assertEquals;
 import org.junit.*;
 
@@ -27,7 +28,7 @@ public class PrologParserTest{
 	public PrologParserTest(){
 	}
 	private void assertParse(String in,String out){
-		assertEquals(new PrologParser(new PrologLex(in)).getRemaining().toString(),out);
+		assertEquals(new PrologParser(new PrologLex(new StringReader(in))).getRemaining().toString(),out);
 	}
 	@Test
 	public void testText(){

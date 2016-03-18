@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
 
+import java.io.*;
 import java.math.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -31,7 +32,7 @@ public class PrologLexTest{
 	public PrologLexTest(){
 	}
 	public Object getSingleToken(String input){
-		PrologLex lex=new PrologLex(input);
+		PrologLex lex=new PrologLex(new StringReader(input));
 		Object ret=lex.next();
 		assertNull(lex.next());
 		return ret;

@@ -35,11 +35,12 @@ public class PrologLex implements SimpleIterator<Object>{
 		this.in=new PushbackReader(in,2);
 	}
 	/**
-	 * Construct a prologLex from a String
-	 * @param code the Prolog code to be analysised
+	 * Construct a prologLex from a Reader with character conversion enabled
+	 * @param in the reader providing Prolog code to be analysised
+	 * @param conversion character conversion table
 	 */
-	public PrologLex(String code){
-		this(new StringReader(code));
+	public PrologLex(Reader in,Map<Character,Character> conversion){
+		this(new ConversionReader(in,conversion));
 	}
 	/**
 	 * Analysis the remaining Prolog code
@@ -313,8 +314,28 @@ public class PrologLex implements SimpleIterator<Object>{
 	public static void main(String[] args) throws IOException{
 		Scanner in=new Scanner(System.in);
 		while(in.hasNextLine()){
-			PrologLex lex=new PrologLex(in.nextLine());
+			PrologLex lex=new PrologLex(new StringReader(in.nextLine()));
 			System.out.println(lex.getRemainingTokens());
 		}
+	}
+}
+class ConversionReader extends Reader{
+	private final Reader in;
+	private final Map<Character,Character> conversion;
+	public ConversionReader(Reader in,Map<Character,Character> conversion){
+		this.in=in;
+		this.conversion=conversion;
+	}
+	@Override
+	public int read(char[] cbuf,int off,int len) throws IOException{
+		int count=in.read(cbuf,off,len);
+		for(int i=off;i<off+count;i++)
+			if(conversion.containsKey(cbuf[i]))
+				cbuf[i]=conversion.get(cbuf[i]);
+		return count;
+	}
+	@Override
+	public void close() throws IOException{
+		in.close();
 	}
 }
