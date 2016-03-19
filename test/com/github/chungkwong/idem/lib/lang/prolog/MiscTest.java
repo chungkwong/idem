@@ -16,10 +16,9 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
 
-import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalError;
-import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalFail;
-import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalSuccess;
-import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.multiquery;
+import static com.github.chungkwong.idem.lib.lang.prolog.ProcessorTest.assertGoalError;
+import static com.github.chungkwong.idem.lib.lang.prolog.ProcessorTest.assertGoalFail;
+import static com.github.chungkwong.idem.lib.lang.prolog.ProcessorTest.assertGoalSuccess;
 import java.math.*;
 import java.util.*;
 import static org.junit.Assert.assertFalse;
@@ -30,7 +29,7 @@ import org.junit.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PrologMiscTest{
+public class MiscTest{
     @Test
 	public void testUnification(){
 		assertTrue(new Constant(3).unities(new Constant(3),new Substitution()));
@@ -57,8 +56,8 @@ public class PrologMiscTest{
 	}
 	@Test
 	public void testCorner(){
-		assertTrue(multiquery("p(X,Y).","p(M,W):-m(M),f(W).","fail").isEmpty());
 		assertGoalFail("p(c).","p(a).p(b).");
+		assertGoalError("p(X,Y).","p(M,W):-m(M),f(W).");
 	}
 	@Test
 	public void testEvaluale(){

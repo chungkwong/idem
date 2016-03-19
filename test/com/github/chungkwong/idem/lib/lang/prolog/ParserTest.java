@@ -24,8 +24,8 @@ import org.junit.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PrologParserTest{
-	public PrologParserTest(){
+public class ParserTest{
+	public ParserTest(){
 	}
 	private void assertParse(String in,String out){
 		assertEquals(new PrologParser(new PrologLex(new StringReader(in))).getRemaining().toString(),out);

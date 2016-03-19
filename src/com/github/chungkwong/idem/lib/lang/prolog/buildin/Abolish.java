@@ -49,7 +49,7 @@ public class Abolish extends BuildinPredicate{
 		}else if(arg instanceof Variable){
 			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)arg);
 		}else
-			return true;
+			throw new TypeException("compound",arg);
 	}
 	@Override
 	public Predicate getPredicate(){

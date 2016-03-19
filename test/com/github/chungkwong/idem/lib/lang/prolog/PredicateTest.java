@@ -15,27 +15,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
-import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalError;
-import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalFail;
-import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalSuccess;
-import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.multiquery;
+import static com.github.chungkwong.idem.lib.lang.prolog.ProcessorTest.assertGoalError;
+import static com.github.chungkwong.idem.lib.lang.prolog.ProcessorTest.assertGoalFail;
+import static com.github.chungkwong.idem.lib.lang.prolog.ProcessorTest.assertGoalSuccess;
+import static com.github.chungkwong.idem.lib.lang.prolog.ProcessorTest.multiquery;
 import java.math.*;
 import org.junit.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PrologPredicateTest{
+public class PredicateTest{
 	@Test
-	public void testJavaInteraction(){
+	public void testIsNull(){
 		assertGoalSuccess("is_null(X).","");
+		assertGoalSuccess("is_null(X),is_null(Y),X==Y.","");
+		assertGoalFail("is_null(X),X==1.","");
+		assertGoalFail("is_null(X),1==X.","");
 		assertGoalFail("is_null('hello').","");
+	}
+	@Test
+	public void testJavaNew(){
 		assertGoalSuccess("java_new(X,'java.lang.String',['hello']).","");
-		assertGoalSuccess("java_field_static(X,'java.lang.Math','E').","");
-		assertGoalSuccess("java_field(X,4,'ONE').","");
+		assertGoalError("java_new(X,Y,['hello']).","");
+		assertGoalError("java_new(X,5,['hello']).","");
+	}
+	@Test
+	public void testJavaInvoke(){
 		assertGoalSuccess("java_invoke_static(X,'java.lang.Integer','parseInt',['230']).","");
 		assertGoalSuccess("java_invoke(X,'hello','replaceAll',['l','kk']).","");
+		assertGoalError("java_invoke_static(X,'java.lang.Foo','parseInt',['230']).","");
+		assertGoalError("java_invoke(X,'hello','replaceThis',['l','kk']).","");
+	}@Test
+	public void testJavaField(){
+		assertGoalSuccess("java_field_static(X,'java.lang.Math','E').","");
+		assertGoalSuccess("java_field(X,4,'ONE').","");
+		assertGoalError("java_field_static(X,'java.lang.Foo','E').","");
+		assertGoalError("java_field(X,4,'FOUR').","");
+	}
+	@Test
+	public void testJavaCast(){
 		assertGoalSuccess("java_cast(X,'hello','java.lang.Object').","");
+		assertGoalError("java_cast(X,'hello','java.lang.Foo').","");
 	}
 	@Test
 	public void testComparison(){
@@ -197,6 +218,7 @@ public class PrologPredicateTest{
 		assertGoalFail("'=='(_,1).","");
 		assertGoalFail("'=='(_,_).","");
 		assertGoalFail("'=='(X,a(X)).","");
+		assertGoalFail("'=='(f(X),g(X)).","");
 	}
 	@Test
 	public void testNotEqual(){
@@ -336,6 +358,7 @@ public class PrologPredicateTest{
 	}
 	@Test
 	public void testAsserta(){
+		assertGoalSuccess("asserta(dog),dog.","dynamic(dog/0).");
 		assertGoalSuccess("asserta(legs(octopus,8)).","dynamic(legs/2).legs(X,6):-insect(X).");
 		assertGoalSuccess("asserta((legs(X,4):-animal(X))).","dynamic(legs/2).legs(X,6):-insect(X).");
 		assertGoalError("asserta(_).","");
@@ -345,7 +368,7 @@ public class PrologPredicateTest{
 	}
 	@Test
 	public void testAssertz(){
-		assertGoalSuccess("assertz(legs(octopus,8)).","dynamic(legs/2).legs(X,6):-insect(X).");
+		assertGoalSuccess("assertz(legs(octopus,8)).legs(octopus,8).","dynamic(legs/2).legs(X,6):-insect(X).");
 		assertGoalSuccess("assertz((legs(X,4):-animal(X))).","dynamic(legs/2).legs(X,6):-insect(X).");
 		assertGoalError("assertz(_).","");
 		assertGoalError("assertz(4).","");
@@ -361,6 +384,7 @@ public class PrologPredicateTest{
 		assertGoalFail("retract(legs(spider,6)).",db);
 		assertGoalFail("retract(foo).","");
 		Assert.assertTrue(multiquery("retract(legs(X,Y):-T).",db).size()==2);
+		assertGoalError("retract(cat).","cat.");
 		assertGoalError("retract(X:-hello).","");
 		assertGoalError("retract(4:-X).","");
 		assertGoalError("retract(atom(X):=X=='[]').","");
@@ -371,9 +395,11 @@ public class PrologPredicateTest{
 		assertGoalSuccess("abolish(foo/2),foo(_).","foo(X).");
 		assertGoalError("abolish(foo/2),foo(a,a).","foo(X,Y):-X=Y.foo(X,Y):-X==Y");
 		assertGoalError("abolish(X).","");
+		assertGoalError("abolish(cat).","");
 		assertGoalError("abolish(foo/_).","");
 		assertGoalError("abolish(foo/a).","");
 		assertGoalError("abolish(4/2).","");
+		assertGoalError("abolish(X/2).","");
 		assertGoalError("abolish(abolish/1).","");
 	}
 	@Test
@@ -408,6 +434,7 @@ public class PrologPredicateTest{
 		assertGoalError("set_prolog_flag(5,decimal).","");
 		assertGoalError("set_prolog_flag(date,'july 1988').","");
 		assertGoalError("set_prolog_flag(debug,trace).","");
+		assertGoalError("set_prolog_flag(debug,_).","");
 	}
 	@Test
 	public void testCurrentPrologFlag(){
@@ -572,5 +599,13 @@ public class PrologPredicateTest{
 		assertGoalError("number_codes(A,['a']).","");
 		assertGoalError("number_codes(A,a).","");
 		assertGoalError("number_codes(5,a).","");
+	}
+	@Test
+	public void testIs(){
+		assertGoalSuccess("X is 3*7.0.","");
+		assertGoalSuccess("X=2,Y is 3*X,Y=:=6 .","");
+		assertGoalFail("foo is 77.","");
+		assertGoalError("77 is N.","");
+		assertGoalError("X is sin(hello(a)).","");
 	}
 }

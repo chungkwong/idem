@@ -22,21 +22,17 @@ import org.junit.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PrologProcessorTest{
-	public static List<Substitution> multiquery(String query,String data,String mode){
+public class ProcessorTest{
+	public static List<Substitution> multiquery(String query,String data){
 		Database db=new Database(new StringReader(data));
-		db.getFlag("undefined_predicate").setValue(new Constant(mode));
 		List<Substitution> substs=new ArrayList<>();
-		Processor processor=new Processor(new PrologParser(new PrologLex(new StringReader(query))).next(),db);
+		Processor processor=new Processor(db.getParser(new StringReader(query)).next(),db);
 		while(processor.getSubstitution()!=null){
 			substs.add(processor.getSubstitution());
 			processor.reexecute();
 		}
 		//System.out.println(substs);
 		return substs;
-	}
-	public static List<Substitution> multiquery(String query,String data){
-		return multiquery(query,data,"error");
 	}
 	public static void assertSuccessCount(String query,String data,int count){
 		Assert.assertEquals(multiquery(query,data).size(),count);
@@ -50,7 +46,7 @@ public class PrologProcessorTest{
 	public static void assertGoalError(String query,String data){
 		Database db=new Database(new StringReader(data));
 		try{
-			Substitution subst=new Processor(new PrologParser(new PrologLex(new StringReader(query))).next(),db).getSubstitution();
+			Substitution subst=new Processor(db.getParser(new StringReader(query)).next(),db).getSubstitution();
 			Assert.assertTrue(false);
 		}catch(Exception ex){
 

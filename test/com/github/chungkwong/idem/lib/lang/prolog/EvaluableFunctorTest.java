@@ -16,8 +16,8 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
 
-import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalError;
-import static com.github.chungkwong.idem.lib.lang.prolog.PrologProcessorTest.assertGoalSuccess;
+import static com.github.chungkwong.idem.lib.lang.prolog.ProcessorTest.assertGoalError;
+import static com.github.chungkwong.idem.lib.lang.prolog.ProcessorTest.assertGoalSuccess;
 import org.junit.*;
 
 /**
@@ -178,7 +178,7 @@ public class EvaluableFunctorTest{
 	@Test
 	public void testAtan(){
 		assertGoalSuccess("X is atan(0.0),X=:=0.0 .","");
-		assertGoalSuccess("X is atan(1),sin(X)=:=cos(X) .","");
+		assertGoalSuccess("X is atan(1),Y is abs(sin(X)-cos(X)),Y=<0.0001 .","");
 		assertGoalError("X is atan(N).","");
 		assertGoalError("X is atan(foo).","");
 	}
@@ -186,7 +186,7 @@ public class EvaluableFunctorTest{
 	public void testExp(){
 		assertGoalSuccess("X is exp(0.0),X=:=1 .","");
 		assertGoalSuccess("X is exp(0),X=:=1 .","");
-		assertGoalSuccess("X is exp(1),X=:=2.718 .","");
+		assertGoalSuccess("X is exp(1),Y is abs(X-2.718),Y=<0.001 .","");
 		assertGoalError("X is exp(N).","");
 		assertGoalError("X is exp(foo).","");
 	}
@@ -206,6 +206,8 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is 2//3,X=:=0 .","");
 		assertGoalSuccess("X is -6//3,X=:= -2 .","");
 		assertGoalSuccess("X is -7//3,X=:= -2 .","");
+		assertGoalError("X is 4.0//2.","");
+		assertGoalError("X is 2//4.0.","");
 		assertGoalError("X is 0//0.","");
 		assertGoalError("X is 4//0.","");
 	}
@@ -216,6 +218,8 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is 2 rem 3,X=:=2 .","");
 		assertGoalSuccess("X is -6 rem 3,X=:=0 .","");
 		assertGoalSuccess("X is -7 rem 3,X=:= -1 .","");
+		assertGoalError("X is 4.0 rem 2.","");
+		assertGoalError("X is 2 rem 4.0.","");
 		assertGoalError("X is 0 rem 0.","");
 		assertGoalError("X is 4 rem 0.","");
 	}
@@ -256,6 +260,7 @@ public class EvaluableFunctorTest{
 		assertGoalSuccess("X is sign(-0.0),X=:=1 .","");
 		assertGoalSuccess("X is sign(-2.0),X=:= -1 .","");
 		assertGoalSuccess("X is sign(-2),X=:= -1 .","");
+		assertGoalError("X is sign(a).","");
 	}
 	@Test
 	public void testIntegerPart(){

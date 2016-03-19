@@ -253,15 +253,8 @@ public class Database{
 	 * Add a flag to the database
 	 * @param flag to be added
 	 */
-	public void addFlag(Flag flag){
+	private void addFlag(Flag flag){
 		flags.put(flag.getName(),flag);
-	}
-	/**
-	 * Remove a flag to the database
-	 * @param flag to be removed
-	 */
-	public void removeFlag(Flag flag){
-		flags.remove(flag.getName());
 	}
 	/**
 	 * @param name the name of a flag

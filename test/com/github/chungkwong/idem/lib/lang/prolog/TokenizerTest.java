@@ -27,9 +27,9 @@ import org.junit.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PrologLexTest{
+public class TokenizerTest{
 
-	public PrologLexTest(){
+	public TokenizerTest(){
 	}
 	public Object getSingleToken(String input){
 		PrologLex lex=new PrologLex(new StringReader(input));
