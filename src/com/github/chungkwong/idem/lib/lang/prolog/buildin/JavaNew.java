@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
-import com.github.chungkwong.idem.lib.lang.prolog.InstantiationException;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 import java.lang.reflect.*;
 import java.util.*;
@@ -29,21 +28,15 @@ public class JavaNew extends BuildinPredicate{
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
 		Term clsName=arguments.get(1);
-		if(clsName instanceof Variable){
-			throw new InstantiationException((Variable)clsName);
-		}else if(clsName instanceof Constant&&((Constant)clsName).getValue()instanceof String){
-			try{
-				Class cls=Class.forName((String)((Constant)clsName).getValue());
-				List<Object> args=Lists.extractJavaArguments(arguments.get(2));
-				Constructor constructor=cls.getConstructor(args.stream().map((arg)->arg.getClass()).toArray(Class[]::new));
-				return arguments.get(0).unities(new Constant(constructor.newInstance(args.toArray())),exec.getCurrentSubst());
-			}catch(ClassNotFoundException|NoSuchMethodException|SecurityException
-					|java.lang.InstantiationException|IllegalAccessException
-					|IllegalArgumentException|InvocationTargetException ex){
-				throw new JavaException(ex,exec.getCurrentActivator());
-			}
-		}else{
-			throw new TypeException("atom",clsName);
+		try{
+			Class cls=Class.forName(Helper.getAtomValue(clsName));
+			List<Object> args=Lists.extractJavaArguments(arguments.get(2));
+			Constructor constructor=cls.getConstructor(args.stream().map((arg)->arg.getClass()).toArray(Class[]::new));
+			return arguments.get(0).unities(new Constant(constructor.newInstance(args.toArray())),exec.getCurrentSubst());
+		}catch(ClassNotFoundException|NoSuchMethodException|SecurityException
+				|java.lang.InstantiationException|IllegalAccessException
+				|IllegalArgumentException|InvocationTargetException ex){
+			throw new JavaException(ex,exec.getCurrentActivator());
 		}
 	}
 	@Override

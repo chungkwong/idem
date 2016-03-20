@@ -21,7 +21,7 @@ import com.github.chungkwong.idem.lib.lang.prolog.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class True extends ControlConstruct{
-	public static True TRUE=new True();
+	public static final True TRUE=new True();
 	private True(){}
 	private static final Predicate pred=new Predicate("true",0);
 	@Override

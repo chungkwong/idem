@@ -21,7 +21,7 @@ import com.github.chungkwong.idem.lib.lang.prolog.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Throw extends ControlConstruct{
-	public static Throw THROW=new Throw();
+	public static final Throw THROW=new Throw();
 	private Throw(){}
 	private static final Predicate pred=new Predicate("throw",1);
 	@Override

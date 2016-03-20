@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
-import static com.github.chungkwong.idem.global.Log.LOG;
 import com.github.chungkwong.idem.lib.*;
 import java.io.*;
 import java.math.*;
@@ -291,6 +290,7 @@ public class PrologLex implements SimpleIterator<Object>{
 			case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':case '8':case '9':
 				return getNumber(c);
 			case -1:
+				in.close();
 				return null;
 			default:
 				return getIdentifier(c);
@@ -301,9 +301,8 @@ public class PrologLex implements SimpleIterator<Object>{
 		try{
 			return nextToken();
 		}catch(IOException ex){
-			LOG.log(java.util.logging.Level.SEVERE,"Reach end of stream",ex);
+			return null;
 		}
-		return null;
 	}
 	/**
 	 * The entry of the debug tool which show the tokens generated from

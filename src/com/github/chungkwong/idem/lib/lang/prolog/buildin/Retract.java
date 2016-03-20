@@ -43,7 +43,7 @@ public class Retract extends ReexecutableBuildinPredicate{
 		}
 		if(head instanceof Variable)
 			throw new InstantiationException((Variable)head);
-		else if(head instanceof Constant&&!(((Constant)head).getValue()instanceof String))
+		else if(!Helper.isCallable(head))
 			throw new TypeException("callable",head);
 		Predicate predicate=((Predication)head).getPredicate();
 		Procedure proc=exec.getDatabase().getProcedure(predicate);

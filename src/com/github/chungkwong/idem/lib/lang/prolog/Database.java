@@ -105,7 +105,11 @@ public class Database{
 		base.addProcedure(Univ.INSTANCE);
 		base.addProcedure(Var.INSTANCE);
 
-		base.loadPrologText(new InputStreamReader(Database.class.getResourceAsStream("StandardProcedures")));
+		try{
+			base.loadPrologText(new InputStreamReader(Database.class.getResourceAsStream("StandardProcedures"),"UTF-8"));
+		}catch(UnsupportedEncodingException ex){
+			throw new SystemException(ex);
+		}
 	}
 	/**
 	 * Construct a prolog database containing the control constructs and buildin predicate
@@ -191,9 +195,9 @@ public class Database{
 	 * @param file
 	 */
 	public void include(File file){
-		try{
-			loadPrologText(new FileReader(file));
-		}catch(FileNotFoundException ex){
+		try(FileReader in=new FileReader(file)){
+			loadPrologText(in);
+		}catch(IOException ex){
 			throw new SystemException("Fail to load file",ex);
 		}
 	}

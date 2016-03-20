@@ -27,6 +27,9 @@ public abstract class PrologException extends RuntimeException{
 	public PrologException(String message){
 		super(message);
 	}
+	public PrologException(Throwable cause){
+		super(cause);
+	}
 	/**
 	 * @return a term that provide information about the error
 	 */

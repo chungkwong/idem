@@ -210,7 +210,6 @@ public class PrologParser implements SimpleIterator<Predication>{
 			}
 		}
 		void pushCloseCurly(){
-			LinkedList<Term> lst=new LinkedList<>();
 			Operator top=operators.peek();
 			while(top!=OPEN_CURLY){
 				reduceTopOperator();

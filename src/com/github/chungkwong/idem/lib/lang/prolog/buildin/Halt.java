@@ -15,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
-import com.github.chungkwong.idem.lib.lang.prolog.InstantiationException;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
-import java.math.*;
 import java.util.*;
 /**
  *
@@ -28,14 +26,7 @@ public class Halt extends BuildinPredicate{
 	public static final Predicate pred=new Predicate("halt",1);
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
-		Term msg=arguments.get(0);
-		if(msg instanceof Constant&&((Constant)msg).getValue()instanceof BigInteger){
-			throw new HaltException(((BigInteger)((Constant)msg).getValue()));
-		}else if(msg instanceof Variable){
-			throw new InstantiationException((Variable)msg);
-		}else{
-			throw new TypeException("integer",msg);
-		}
+		throw new HaltException(Helper.getIntegerValue(arguments.get(0)));
 	}
 	@Override
 	public Predicate getPredicate(){

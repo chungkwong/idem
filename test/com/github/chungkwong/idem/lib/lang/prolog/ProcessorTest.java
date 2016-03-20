@@ -46,7 +46,7 @@ public class ProcessorTest{
 	public static void assertGoalError(String query,String data){
 		Database db=new Database(new StringReader(data));
 		try{
-			Substitution subst=new Processor(db.getParser(new StringReader(query)).next(),db).getSubstitution();
+			new Processor(db.getParser(new StringReader(query)).next(),db).getSubstitution();
 			Assert.assertTrue(false);
 		}catch(Exception ex){
 

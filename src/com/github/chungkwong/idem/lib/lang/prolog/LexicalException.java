@@ -34,4 +34,11 @@ public class LexicalException extends RuntimeException{
 	public LexicalException(String msg) {
 		super(msg);
 	}
+	/**
+	 * Constructs an instance of <code>LexicalException</code> to repack other exception.
+	 * @param cause 
+	 */
+	public LexicalException(Throwable cause){
+		super(cause);
+	}
 }

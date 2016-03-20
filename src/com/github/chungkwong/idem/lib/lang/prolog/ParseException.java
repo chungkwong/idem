@@ -34,6 +34,9 @@ public class ParseException extends PrologException{
 	public ParseException(String msg) {
 		super(msg);
 	}
+	public ParseException(Throwable cause){
+		super(cause);
+	}
 	@Override
 	public Term getErrorTerm(){
 		return new Constant("syntax_error");

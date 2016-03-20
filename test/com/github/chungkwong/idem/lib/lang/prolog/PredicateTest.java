@@ -37,6 +37,7 @@ public class PredicateTest{
 	@Test
 	public void testJavaNew(){
 		assertGoalSuccess("java_new(X,'java.lang.String',['hello']).","");
+		assertGoalError("java_new(X,'java.lang.Foo',['hello']).","");
 		assertGoalError("java_new(X,Y,['hello']).","");
 		assertGoalError("java_new(X,5,['hello']).","");
 	}
@@ -298,6 +299,7 @@ public class PredicateTest{
 		assertGoalFail("arg(0,foo(a,b),foo).","");
 		assertGoalFail("arg(3,foo(3,4),N).","");
 		assertGoalError("arg(X,foo(a,b),a).","");
+		assertGoalError("arg(a,foo(a,b),a).","");
 		assertGoalError("arg(1,X,a).","");
 		assertGoalError("arg(0,atom,A).","");
 		assertGoalError("arg(0,3,A).","");
@@ -544,6 +546,7 @@ public class PredicateTest{
 		assertGoalSuccess("atom_chars('''',['''']).","");
 		assertGoalSuccess("atom_chars('ant',['a','n','t']).","");
 		assertGoalFail("atom_chars(soap,['s','o','p']).","");
+		assertGoalError("atom_chars('ant',[an,t]).","");
 		assertGoalError("atom_chars(3,[]).","");
 		assertGoalError("atom_chars(X,[3]).","");
 		assertGoalError("atom_chars(X,Y).","");

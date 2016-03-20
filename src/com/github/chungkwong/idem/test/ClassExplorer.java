@@ -48,12 +48,9 @@ public final class ClassExplorer extends JPanel implements TreeSelectionListener
 				Class cls=Class.forName(cp);
 				classInfo.setText(getClassDescription(cls));
 				boolean showAll=showDeclared.isSelected();
-				for(Constructor constructor:showAll?cls.getDeclaredConstructors():cls.getConstructors())
-					constructorList.add(constructor);
-				for(Method method:showAll?cls.getDeclaredMethods():cls.getMethods())
-					methodList.add(method);
-				for(Field field:showAll?cls.getDeclaredFields():cls.getFields())
-					fieldList.add(field);
+				constructorList.addAll(Arrays.asList(showAll?cls.getDeclaredConstructors():cls.getConstructors()));
+				methodList.addAll(Arrays.asList(showAll?cls.getDeclaredMethods():cls.getMethods()));
+				fieldList.addAll(Arrays.asList(showAll?cls.getDeclaredFields():cls.getFields()));
 			}catch(Exception ex){
 				LOG.log(Level.WARNING,null,ex);
 			}

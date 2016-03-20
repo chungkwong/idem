@@ -21,7 +21,7 @@ import com.github.chungkwong.idem.lib.lang.prolog.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Catch extends ControlConstruct{
-	public static Catch CATCH=new Catch();
+	public static final Catch CATCH=new Catch();
 	private Catch(){}
 	private static final Predicate pred=new Predicate("catch",3);
 	@Override

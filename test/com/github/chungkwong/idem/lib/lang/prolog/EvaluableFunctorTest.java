@@ -38,7 +38,7 @@ public class EvaluableFunctorTest{
 		assertGoalError("X is 77+foo .","");
 	}
 	@Test
-	public void Negate(){
+	public void testNegate(){
 		assertGoalSuccess("X is '-'(7),X= -7 .","");
 		assertGoalSuccess("X is -(3-11),X=8 .","");
 		assertGoalSuccess("X is -(3.2-11),X=7.8 .","");

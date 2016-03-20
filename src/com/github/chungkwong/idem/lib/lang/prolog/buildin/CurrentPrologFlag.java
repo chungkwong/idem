@@ -33,18 +33,15 @@ public class CurrentPrologFlag extends ReexecutableBuildinPredicate{
 				if(f.getValue().unities(val,Substitution.createCopy(exec.getCurrentSubst())))
 					lst=new CompoundTerm(".",new CompoundTerm("flag",new Constant(f.getName()),f.getValue()),lst);
 			}
-		}else if(flag instanceof Constant&&((Constant)flag).getValue()instanceof String){
-			Flag f=exec.getDatabase().getFlag(((Constant)flag).toString());
+		}else{
+			Flag f=exec.getDatabase().getFlag(Helper.getAtomValue(flag));
 			if(f.getValue().unities(val,Substitution.createCopy(exec.getCurrentSubst())))
 				lst=new CompoundTerm(".",new CompoundTerm("flag",flag,f.getValue()),lst);
-		}else{
-			throw new TypeException("atom",flag);
 		}
 		exec.getCurrentSubst().assign(var,lst);
 	}
 	@Override
 	public boolean againActivate(List<Term> arguments,Processor exec,Variable var){
-		Term flag=arguments.get(0),val=arguments.get(1);
 		Substitution subst=exec.getStack().get(exec.getStack().size()-2).getSubst();
 		Term lst=subst.findRoot(var);
 		if(lst instanceof CompoundTerm){

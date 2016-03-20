@@ -21,7 +21,7 @@ import com.github.chungkwong.idem.lib.lang.prolog.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Disjunction extends ControlConstruct{
-	public static Disjunction DISJUNCTION=new Disjunction();
+	public static final Disjunction DISJUNCTION=new Disjunction();
 	private Disjunction(){}
 	private static final Predicate pred=new Predicate(";",2);
 	@Override

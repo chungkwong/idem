@@ -16,7 +16,6 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
-import java.math.*;
 import java.util.*;
 /**
  *
@@ -27,7 +26,7 @@ public class IsReal extends BuildinPredicate{
 	public static final Predicate pred=new Predicate("real",1);
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
-		return arguments.get(0) instanceof Constant&&((Constant)arguments.get(0)).getValue() instanceof BigDecimal;
+		return Helper.isReal(arguments.get(0));
 	}
 	@Override
 	public Predicate getPredicate(){

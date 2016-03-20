@@ -16,7 +16,6 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
-import java.math.*;
 import java.util.*;
 /**
  *
@@ -32,20 +31,11 @@ public class Abolish extends BuildinPredicate{
 			CompoundTerm proc=(CompoundTerm)arg;
 			if(proc.getFunctor().equals("/")&&proc.getArguments().size()==2){
 				Term functor=proc.getArguments().get(0),arity=proc.getArguments().get(1);
-				if(functor instanceof Constant&&((Constant)functor).getValue()instanceof String){
-					if(arity instanceof Constant&&((Constant)arity).getValue()instanceof BigInteger){
-						exec.getDatabase().removeProcedure(new Predicate(((Constant)functor).getValue(),((BigInteger)((Constant)arity).getValue()).intValueExact()));
-						return true;
-					}else if(arity instanceof Variable)
-						throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)arity);
-					else
-						throw new TypeException("integer",arity);
-				}else if(functor instanceof Variable)
-					throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)functor);
-				else
-					throw new TypeException("atom",arity);
+				exec.getDatabase().removeProcedure(new Predicate(Helper.getAtomValue(functor)
+						,Helper.getIntegerValue(arity).intValueExact()));
+				return true;
 			}else
-				throw new DomainException(null,arg);
+				throw new DomainException("predicate_indicator",arg);
 		}else if(arg instanceof Variable){
 			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)arg);
 		}else

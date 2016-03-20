@@ -71,11 +71,11 @@ public class Processor{
 	public boolean isSucceed(){
 		return stack.size()>=2&&stack.peek().getDecsglstk().isEmpty();
 	}
-	private final int MAX_ITERATOR_COUNT=100;//FIXME
+	//private final int MAX_ITERATOR_COUNT=100;//FIXME
 	private void execute(){
-		int i=0;
+		//int i=0;
 		//System.out.println();
-		while(!isFailed()&&!isSucceed()&&++i<MAX_ITERATOR_COUNT){
+		while(!isFailed()&&!isSucceed()){//&&++i<MAX_ITERATOR_COUNT){
 			//System.out.println(stack);
 			try{
 				selectClause();
@@ -83,8 +83,8 @@ public class Processor{
 				raise(ex);
 			}
 		}
-		if(i==MAX_ITERATOR_COUNT)
-			throw new RuntimeException("Iteration reach limit");
+		//if(i==MAX_ITERATOR_COUNT)
+		//	throw new RuntimeException("Iteration reach limit");
 	}
 	/**
 	 * Reexecute the goal after a success

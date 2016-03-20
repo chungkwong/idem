@@ -16,7 +16,6 @@
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
-import java.math.*;
 import java.util.*;
 /**
  *
@@ -34,30 +33,15 @@ public class NumberCodes extends BuildinPredicate{
 			String atomFromList=Lists.codeListToString(list);
 			try{
 				Predication token=exec.getDatabase().getParser(atomFromList).next();
-				if(token instanceof Constant&&(((Constant)token).getValue() instanceof BigInteger
-						||((Constant)token).getValue() instanceof BigDecimal))
+				if(Helper.isNumber(token))
 					return token.unities(number,exec.getCurrentSubst());
 				else
 					throw new RuntimeException();
 			}catch(RuntimeException ex){
-				ex.printStackTrace();
-				throw new ParseException();
+				throw new ParseException(ex);
 			}
 		}else if(list instanceof Variable){
-			if(number instanceof Constant){
-				Object val=((Constant)number).getValue();
-				if(val instanceof BigInteger){
-					return Lists.asCodeList(((BigInteger)val).toString()).unities(list,exec.getCurrentSubst());
-				}else if(val instanceof BigDecimal){
-					return Lists.asCodeList(((BigDecimal)val).toString()).unities(list,exec.getCurrentSubst());
-				}else{
-					throw new TypeException("number",number);
-				}
-			}else if(number instanceof Variable){
-				throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)number);
-			}else{
-				throw new TypeException("number",number);
-			}
+			return Lists.asCodeList(Helper.getNumberValue(number).toString()).unities(list,exec.getCurrentSubst());
 		}else{
 			throw new DomainException("character_code_list",list);
 		}

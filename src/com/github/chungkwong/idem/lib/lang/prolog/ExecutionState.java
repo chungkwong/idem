@@ -59,8 +59,9 @@ public class ExecutionState{
 	}
 	@Override
 	public String toString(){
-		StringBuilder buf=new StringBuilder("    ");
-		buf.append(getDecsglstk()).append(',').append(getBI()).append(',').append(getSubst());
+		StringBuilder buf=new StringBuilder();
+		buf.append("[decsglstk=").append(getDecsglstk()).append(",BI=")
+				.append(getBI()).append(",subst=").append(getSubst()).append(']');
 		return buf.toString();
 	}
 	/**
@@ -68,13 +69,6 @@ public class ExecutionState{
 	 */
 	public Stack<DecoratedSubgoal> getDecsglstk(){
 		return decsglstk;
-	}
-	/**
-	 * Set the stack of decorated subgoals
-	 * @param decsglstk
-	 */
-	public void setDecsglstk(Stack<DecoratedSubgoal> decsglstk){
-		this.decsglstk=decsglstk;
 	}
 	/**
 	 * @return backtrace information

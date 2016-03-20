@@ -40,19 +40,7 @@ public class Univ extends BuildinPredicate{
 					return ((CompoundTerm)list).getArguments().get(0).unities(term,exec.getCurrentSubst());
 				}else{
 					Term hd=Lists.head(list);
-					if(hd instanceof Constant){
-						if(((Constant)hd).getValue()instanceof String)
-							return new CompoundTerm(((Constant)hd).getValue(),Lists.toJavaTail(list)).unities(term,exec.getCurrentSubst());
-						else
-							throw new TypeException("atom",list);
-					}else if(hd instanceof CompoundTerm){
-						throw new TypeException("atom",list);
-					}else if(hd instanceof Variable){
-						throw new InstantiationException((Variable)hd);
-					}else{
-						assert false;
-						return false;
-					}
+					return new CompoundTerm(Helper.getAtomValue(hd),Lists.toJavaTail(list)).unities(term,exec.getCurrentSubst());
 				}
 			}else if(list instanceof Variable){
 				throw new InstantiationException((Variable)list);

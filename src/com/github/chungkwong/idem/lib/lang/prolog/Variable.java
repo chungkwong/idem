@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog;
+import java.io.*;
 import java.util.*;
 /**
  * Variable
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Variable extends Term{
+public class Variable extends Term implements Serializable{
 	/**Wildcard variable*/
 	public static final Variable WILDCARD=new Variable("");
 	private final String name;

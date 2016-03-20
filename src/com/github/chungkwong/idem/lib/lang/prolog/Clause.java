@@ -43,12 +43,6 @@ public class Clause{
 	public Predication getBody(){
 		return body;
 	}
-	private static Term predicationToTerm(Predication pred){
-		if(pred.getPredicate().getArity()==0)
-			return new Constant(pred.getPredicate().getFunctor());
-		else
-			return pred;
-	}
 	/**
 	 * @return clause(head,body)
 	 */

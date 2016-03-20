@@ -21,5 +21,5 @@ import java.util.concurrent.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MiscUtilities{
-	public static ExecutorService THREAD_POOL=Executors.newCachedThreadPool();
+	public static final ExecutorService THREAD_POOL=Executors.newCachedThreadPool();
 }

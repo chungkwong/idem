@@ -34,27 +34,18 @@ public class Functor extends BuildinPredicate{
 		}else if(term instanceof CompoundTerm){
 			return name.unities(new Constant(((CompoundTerm)term).getFunctor()),subst)&&
 					arity.unities(new Constant(BigInteger.valueOf(((CompoundTerm)term).getArguments().size())),subst);
-		}else if(arity instanceof Constant&&((Constant)arity).getValue()instanceof BigInteger){
-			int n=((BigInteger)((Constant)arity).getValue()).intValueExact();
+		}else{
+			int n=Helper.getIntegerValue(arity).intValueExact();
 			if(n>0){
-				if(name instanceof Constant){
-					List<Term> args=new ArrayList(n);
-					for(int i=0;i<n;i++)
-						args.add(Variable.InternalVariable.newInstance());
-					return term.unities(new CompoundTerm(((Constant)name).getValue(),args),subst);
-				}else if(name instanceof Variable)
-					throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)name);
-				else
-					throw new TypeException("atom",name);
+				List<Term> args=new ArrayList(n);
+				for(int i=0;i<n;i++)
+					args.add(Variable.InternalVariable.newInstance());
+				return term.unities(new CompoundTerm(Helper.getAtomValue(name),args),subst);
 			}else if(n==0){
 				return term.unities(name,subst);
 			}else{
 				throw new DomainException("not_less_than_zero",arity);
 			}
-		}else if(arity instanceof Variable){
-			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)arity);
-		}else{
-			throw new TypeException("integer",arity);
 		}
 	}
 	@Override

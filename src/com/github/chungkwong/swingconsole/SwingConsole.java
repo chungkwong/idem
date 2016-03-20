@@ -99,10 +99,8 @@ public final class SwingConsole extends JPanel implements CaretListener,KeyListe
 					fb.replace(Math.max(offset,start),length,text,attrs);
 			}
 		});
-		doc.addUndoableEditListener(new UndoableEditListener(){
-			public void undoableEditHappened(UndoableEditEvent e){
-				undoManager.addEdit(e.getEdit());
-			}
+		doc.addUndoableEditListener((UndoableEditEvent e)->{
+			undoManager.addEdit(e.getEdit());
 		});
 		InputMap im=area.getInputMap();
 		ActionMap am=area.getActionMap();
@@ -114,9 +112,9 @@ public final class SwingConsole extends JPanel implements CaretListener,KeyListe
 				try{
 					if(jfc.showSaveDialog(null)==JFileChooser.APPROVE_OPTION){
 						File file=jfc.getSelectedFile();
-						Writer out=new OutputStreamWriter(new FileOutputStream(file),"UTF-8");
-						out.write(area.getText());
-						out.close();
+						try (Writer out=new OutputStreamWriter(new FileOutputStream(file),"UTF-8")){
+							out.write(area.getText());
+						}
 					}
 				}catch(Exception ex){
 					LOG.log(Level.INFO,null,ex);
@@ -303,8 +301,6 @@ public final class SwingConsole extends JPanel implements CaretListener,KeyListe
 		if(iter.hasNext())
 			iter.next();
 		if(iter.hasNext()){
-			String tmp=iter.next();
-			iter.previous();
 			return iter.next();
 		}else{
 			iter=null;

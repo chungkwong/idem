@@ -35,10 +35,10 @@ public class SubAtom extends ReexecutableBuildinPredicate{
 		Term lst=Lists.EMPTY_LIST;
 		String str=Helper.getAtomValue(atom);
 		String sub=subatom instanceof Variable?null:Helper.getAtomValue(subatom);
-		int lenMin=length instanceof Variable?0:Math.max(getInteger(length),0);
-		int lenMax=length instanceof Variable?str.length():getInteger(length);
-		int begin=start instanceof Variable?0:Math.max(getInteger(start)-1,0);
-		int end=start instanceof Variable?str.length():getInteger(start)-1;
+		int lenMin=length instanceof Variable?0:Math.max(Helper.getIntegerValue(length).intValueExact(),0);
+		int lenMax=length instanceof Variable?str.length():Helper.getIntegerValue(length).intValueExact();
+		int begin=start instanceof Variable?0:Math.max(Helper.getIntegerValue(start).intValueExact()-1,0);
+		int end=start instanceof Variable?str.length():Helper.getIntegerValue(start).intValueExact()-1;
 		for(int i=begin;i<=end;i++){
 			for(int l=lenMin;l<=lenMax&&i+l<=str.length();l++){
 				String substr=str.substring(i,i+l);
@@ -66,13 +66,5 @@ public class SubAtom extends ReexecutableBuildinPredicate{
 		}else{
 			return false;
 		}
-	}
-	private int getInteger(Term t){
-		if(t instanceof Variable)
-			return -1;
-		else if(t instanceof Constant&&((Constant)t).getValue()instanceof BigInteger)
-			return ((BigInteger)((Constant)t).getValue()).intValueExact();
-		else
-			throw new TypeException("integer",t);
 	}
 }

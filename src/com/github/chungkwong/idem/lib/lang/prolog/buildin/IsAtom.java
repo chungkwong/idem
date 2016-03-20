@@ -26,7 +26,7 @@ public class IsAtom extends BuildinPredicate{
 	public static final Predicate pred=new Predicate("atom",1);
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
-		return arguments.get(0) instanceof Constant&&!(((Constant)arguments.get(0)).getValue() instanceof Number);
+		return Helper.isAtom(arguments.get(0));
 	}
 	@Override
 	public Predicate getPredicate(){

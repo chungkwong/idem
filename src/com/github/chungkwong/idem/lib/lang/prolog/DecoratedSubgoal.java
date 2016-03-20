@@ -20,7 +20,7 @@ package com.github.chungkwong.idem.lib.lang.prolog;
  * Decorated subgoal
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class DecoratedSubgoal{
+public class DecoratedSubgoal implements Cloneable{
 	private Predication activator;
 	private ExecutionState cutparent;
 	/**

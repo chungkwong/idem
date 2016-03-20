@@ -48,8 +48,31 @@ public class Helper{
 		else
 			throw new TypeException("character",t);
 	}
+	public static final BigInteger getIntegerValue(Term t){
+		if(t instanceof Constant&&((Constant)t).getValue()instanceof BigInteger)
+			return (BigInteger)((Constant)t).getValue();
+		else if(t instanceof Variable)
+			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)t);
+		else
+			throw new TypeException("integer",t);
+	}
+	public static final Number getNumberValue(Term t){
+		if(t instanceof Constant
+				&&(((Constant)t).getValue()instanceof BigInteger||((Constant)t).getValue()instanceof BigDecimal))
+			return (Number)((Constant)t).getValue();
+		else if(t instanceof Variable)
+			throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)t);
+		else
+			throw new TypeException("number",t);
+	}
+	public static final boolean isInteger(Term t){
+		return t instanceof Constant&&((Constant)t).getValue() instanceof BigInteger;
+	}
+	public static final boolean isReal(Term t){
+		return t instanceof Constant&&((Constant)t).getValue() instanceof BigDecimal;
+	}
 	public static final boolean isNumber(Term t){
-		return t instanceof Constant&&(((Constant)t).getValue() instanceof BigInteger||((Constant)t).getValue() instanceof BigDecimal);
+		return isInteger(t)||isReal(t);
 	}
 	public static final boolean isAtom(Term t){
 		return t instanceof Constant&&((Constant)t).getValue() instanceof String;

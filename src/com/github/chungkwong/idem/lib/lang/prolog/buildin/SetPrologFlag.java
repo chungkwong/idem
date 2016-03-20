@@ -28,22 +28,16 @@ public class SetPrologFlag extends BuildinPredicate{
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
 		Term flag=arguments.get(0),val=arguments.get(1);
-		if(flag instanceof Variable){
-			throw new InstantiationException((Variable)flag);
-		}else if(flag instanceof Constant){
-			if(val instanceof Variable)
-				throw new InstantiationException((Variable)val);
+		if(val instanceof Variable)
+			throw new InstantiationException((Variable)val);
+		else{
+			Flag toset=exec.getDatabase().getFlag(Helper.getAtomValue(flag));
+			if(toset==null)
+				throw new DomainException("prolog_flag",flag);
 			else{
-				Flag toset=exec.getDatabase().getFlag(((Constant)flag).toString());
-				if(toset==null)
-					throw new DomainException("prolog_flag",flag);
-				else{
-					toset.setValue(val);
-					return true;
-				}
+				toset.setValue(val);
+				return true;
 			}
-		}else{
-			throw new TypeException("atom",flag);
 		}
 	}
 	@Override

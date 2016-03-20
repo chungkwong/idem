@@ -32,13 +32,7 @@ public class AtomChars extends BuildinPredicate{
 				throw new TypeException("atom",atom);
 			return new Constant(Lists.charListToString(list)).unities(atom,exec.getCurrentSubst());
 		}else if(list instanceof Variable){
-			if(atom instanceof Constant&&((Constant)atom).getValue()instanceof String){
-				return Lists.asCharacterList((String)((Constant)atom).getValue()).unities(list,exec.getCurrentSubst());
-			}else if(atom instanceof Variable){
-				throw new com.github.chungkwong.idem.lib.lang.prolog.InstantiationException((Variable)atom);
-			}else{
-				throw new TypeException("atom",atom);
-			}
+			return Lists.asCharacterList(Helper.getAtomValue(atom)).unities(list,exec.getCurrentSubst());
 		}else{
 			throw new DomainException("character_list",list);
 		}

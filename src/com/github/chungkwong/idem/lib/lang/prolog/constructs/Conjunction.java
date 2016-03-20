@@ -22,7 +22,7 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class Conjunction extends ControlConstruct{
-	public static Conjunction CONJUNCTION=new Conjunction();
+	public static final Conjunction CONJUNCTION=new Conjunction();
 	private Conjunction(){}
 	private static final Predicate pred=new Predicate(",",2);
 	@Override

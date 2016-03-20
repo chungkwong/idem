@@ -119,6 +119,12 @@ public final class Partition<T> implements Cloneable{
 		return o.nodes.keySet().equals(nodes.keySet())&&
 				nodes.keySet().stream().allMatch((e)->o.findRoot(e).equals(findRoot(e)));
 	}
+	@Override
+	public int hashCode(){
+		int hash=7;
+		hash=67*hash+nodes.keySet().hashCode();
+		return hash;
+	}
 }
 class Node<T>{
 	T parent=null;

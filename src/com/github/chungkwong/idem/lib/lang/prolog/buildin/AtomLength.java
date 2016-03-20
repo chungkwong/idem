@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.prolog.buildin;
-import com.github.chungkwong.idem.lib.lang.prolog.InstantiationException;
 import com.github.chungkwong.idem.lib.lang.prolog.*;
 import java.math.*;
 import java.util.*;
@@ -29,15 +28,10 @@ public class AtomLength extends BuildinPredicate{
 	@Override
 	public boolean activate(List<Term> arguments,Processor exec){
 		Term atom=arguments.get(0),len=arguments.get(1);
-		if(atom instanceof Variable)
-			throw new InstantiationException((Variable)atom);
-		else if(atom instanceof Constant&&((Constant)atom).getValue()instanceof String){
-			if(len instanceof CompoundTerm||(len instanceof Constant&&!(((Constant)len).getValue()instanceof BigInteger)))
-				throw new TypeException("integer",len);
-			else
-				return new Constant(BigInteger.valueOf(((Constant)atom).getValue().toString().length())).unities(len,exec.getCurrentSubst());
-		}else
-			throw new TypeException("atom",atom);
+		if(len instanceof Variable||Helper.isInteger(len))
+			return new Constant(BigInteger.valueOf(Helper.getAtomValue(atom).length())).unities(len,exec.getCurrentSubst());
+		else
+			throw new TypeException("integer",len);
 	}
 	@Override
 	public Predicate getPredicate(){
