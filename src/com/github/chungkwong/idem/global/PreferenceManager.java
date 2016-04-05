@@ -17,8 +17,9 @@ public final class PreferenceManager{
 					listener.preferenceChange(evt);
 			}
 		});
+
 	}
-	public static PreferenceChangeListener listenTo(String key,PreferenceChangeListener newListener){
+	public static PreferenceChangeListener addListener(String key,PreferenceChangeListener newListener){
 		PreferenceChangeListener oldListener=toNotify.get(key);
 		toNotify.put(key,newListener);
 		return oldListener;

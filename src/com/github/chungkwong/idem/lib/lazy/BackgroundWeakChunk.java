@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.lib.lazy;
 import static com.github.chungkwong.idem.global.MiscUtilities.THREAD_POOL;
+import com.github.chungkwong.idem.util.*;
 import java.lang.ref.*;
 import java.util.concurrent.*;
 /**
@@ -23,19 +24,18 @@ import java.util.concurrent.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class BackgroundWeakChunk<T> implements Chunk<T>,Runnable{
-	Callable<T> proc;
-	SoftReference<T> ref;
-	Exception ex;
-	boolean notnull=true;
+	private final Callable<T> proc;
+	private SoftReference<Pack<T>> ref;
+	private Exception ex;
 	public BackgroundWeakChunk(Callable<T> proc){
 		this.proc=proc;
 		THREAD_POOL.submit(this);
 	}
 	@Override
-	public synchronized T get() throws Exception{
+	public synchronized T get(){
 		T val=getAndSet();
 		if(ex!=null)
-			throw ex;
+			throw new RuntimeException(ex);
 		return val;
 	}
 	@Override
@@ -43,21 +43,21 @@ public class BackgroundWeakChunk<T> implements Chunk<T>,Runnable{
 		getAndSet();
 	}
 	private synchronized T getAndSet(){
-		T val=ref==null?null:ref.get();
+		/*T val=ref==null?null:ref.get();
 		if(val==null&&notnull)
-			val=getAndSet();
-		return val;
-	}
-	private T callAndSet(){
-		ex=null;
-		T val=null;
-		try{
-			val=proc.call();
-		}catch(Exception ex){
-			this.ex=ex;
-		}
-		notnull=val!=null;
-		ref=new SoftReference(val);
-		return val;
+			val=callAndSet();
+		return val;*/
+		Pack<T> buf=ref==null?null:ref.get();
+		if(buf==null){
+			try{
+				T obj=proc.call();
+				ref=new SoftReference(new Pack<>(obj));
+				return obj;
+			}catch(Exception ex){
+				this.ex=ex;
+				return null;
+			}
+		}else
+			return buf.get();
 	}
 }

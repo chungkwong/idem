@@ -22,12 +22,12 @@ import static com.github.chungkwong.idem.global.MiscUtilities.THREAD_POOL;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CallBackChunk<T> implements Chunk<T>{
-	Chunk<T> chunk;
+	private final Chunk<T> chunk;
 	public CallBackChunk(Chunk<T> chunk){
 		this.chunk=chunk;
 	}
 	@Override
-	public T get() throws Exception{
+	public T get(){
 		return chunk.get();
 	}
 	public void get(CallBackHandler handler){

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,33 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lazy;
-import com.github.chungkwong.idem.util.*;
-import java.lang.ref.*;
-import java.util.concurrent.*;
+package com.github.chungkwong.idem.gui;
+import java.awt.*;
+import javax.swing.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
- * @param <T>
  */
-public class LazyWeakChunk<T> implements Chunk<T>{
-	private final Callable<T> proc;
-	private SoftReference<Pack<T>> ref;
-	public LazyWeakChunk(Callable<T> proc){
-		this.proc=proc;
+public class WindowSingle extends Container{
+	 JComponent component;
+	private DataObject obj;
+	public WindowSingle(DataObject obj){
+		this.obj=obj;
+		this.component=obj.createDefaultView();
+		setLayout(new BorderLayout());
+		add(new JScrollPane(component),BorderLayout.CENTER);
+	}
+	public DataObject getDataObject(){
+		return obj;
+	}
+	public void setDataObject(DataObject obj){
+		remove(this.component);
+		this.obj=obj;
+		this.component=obj.createDefaultView();
+		add(new JScrollPane(component),BorderLayout.CENTER);
+		validate();
 	}
 	@Override
-	public synchronized T get(){
-		Pack<T> buf=ref==null?null:ref.get();
-		if(buf==null){
-			try{
-				T obj=proc.call();
-				ref=new SoftReference(new Pack<>(obj));
-				return obj;
-			}catch(Exception ex){
-				throw new RuntimeException(ex);
-			}
-		}else
-			return buf.get();
+	public WindowSingle clone(){
+		return new WindowSingle(obj);
 	}
 }

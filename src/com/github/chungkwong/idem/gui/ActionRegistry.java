@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,27 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lazy;
-import static com.github.chungkwong.idem.global.MiscUtilities.THREAD_POOL;
-import java.util.concurrent.*;
+package com.github.chungkwong.idem.gui;
+import java.util.*;
+import javax.swing.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TimedChunk<T> implements Chunk<T>{
-	private final Chunk<T> chunk;
-	public TimedChunk(Chunk<T> chunk){
-		this.chunk=chunk;
+public class ActionRegistry{
+	private static final HashMap<Object,Action> map=new HashMap<>();
+	public static void registerAction(Object key,Action action){
+		map.put(key,action);
 	}
-	@Override
-	public T get(){
-		return chunk.get();
+	public static Action getAction(Object key){
+		return map.get(key);
 	}
-	public T get(long duration,TimeUnit unit){
-		try{
-			return THREAD_POOL.submit(()->chunk.get()).get(duration,unit);
-		}catch(InterruptedException|ExecutionException|TimeoutException ex){
-			throw new RuntimeException(ex);
-		}
+	public void removeAction(Object key){
+		map.remove(key);
 	}
 }

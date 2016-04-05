@@ -27,8 +27,12 @@ public class BackgroundChunk<T> implements Chunk<T>{
 		future=THREAD_POOL.submit(proc);
 	}
 	@Override
-	public T get() throws Exception{
-		return future.get();
+	public synchronized T get(){
+		try{
+			return future.get();
+		}catch(InterruptedException|ExecutionException ex){
+			throw new RuntimeException(ex);
+		}
 	}
 
 }

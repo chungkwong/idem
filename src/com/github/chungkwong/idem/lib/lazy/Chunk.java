@@ -21,5 +21,5 @@ package com.github.chungkwong.idem.lib.lazy;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public interface Chunk<T>{
-	T get()throws Exception;
+	T get();
 }

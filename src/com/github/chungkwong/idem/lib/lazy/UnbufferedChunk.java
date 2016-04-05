@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,26 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lazy;
-import static com.github.chungkwong.idem.global.MiscUtilities.THREAD_POOL;
 import java.util.concurrent.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TimedChunk<T> implements Chunk<T>{
-	private final Chunk<T> chunk;
-	public TimedChunk(Chunk<T> chunk){
-		this.chunk=chunk;
+public class UnbufferedChunk<T> implements Chunk<T>{
+	private final Callable<T> proc;
+	public UnbufferedChunk(Callable<T> proc){
+		this.proc=proc;
 	}
 	@Override
 	public T get(){
-		return chunk.get();
-	}
-	public T get(long duration,TimeUnit unit){
 		try{
-			return THREAD_POOL.submit(()->chunk.get()).get(duration,unit);
-		}catch(InterruptedException|ExecutionException|TimeoutException ex){
+			return proc.call();
+		}catch(Exception ex){
 			throw new RuntimeException(ex);
 		}
 	}
+	
 }

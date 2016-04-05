@@ -1,14 +1,15 @@
 package com.github.chungkwong.idem.global;
 import java.util.*;
 public class UILanguageManager{
-	static final String path="com.github.chungkwong.idem.resources.PHARSE";
-	static UILanguageManager defaultUILanguageManager=new UILanguageManager(ResourceBundle.getBundle(path));
-	ResourceBundle translation;
+	private static final String path="com.github.chungkwong.idem.resources.PHARSE";
+	private static UILanguageManager defaultUILanguageManager=new UILanguageManager(ResourceBundle.getBundle(path));
+	private final ResourceBundle bundle;
 	/**
 	 * Initialize Environment
+	 * @param bundle
 	 */
-	public UILanguageManager(ResourceBundle translation){
-		this.translation=translation;
+	public UILanguageManager(ResourceBundle bundle){
+		this.bundle=bundle;
 	}
 	/**
 	 * Get the local name corresponding to a code
@@ -16,7 +17,12 @@ public class UILanguageManager{
 	 * @return the local name
 	 */
 	public String getTranslation(String code){
-		return translation.getString(code);
+		try{
+			return bundle.getString(code);
+		}catch(MissingResourceException ex){
+			Log.LOG.throwing("UILanguageManager","getTranslation",ex);
+			return code;
+		}
 	}
 	/**
 	 * Get the local name corresponding to a code by default
