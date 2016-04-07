@@ -35,7 +35,12 @@ public class MenuRegistry{
 		getOrAddMenu(open).addMenuItem(tool);
 		getOrAddMenu(open).addSeparator();
 		getOrAddMenu(open).getOrAddMenu(edit).addMenuItem(new DefaultEditorKit.CopyAction());
-		getOrAddMenu(help);
+		getOrAddMenu(help).addMenuItem(new AbstractAction("Add"){
+			@Override
+			public void actionPerformed(ActionEvent e){
+				getOrAddMenu(open).addMenuItem(new SimpleAction("Test"+System.currentTimeMillis()));
+			}
+		});
 	}
 	public MenuEntry getOrAddMenu(Action action){
 		int menuCount=bar.getMenuCount();
