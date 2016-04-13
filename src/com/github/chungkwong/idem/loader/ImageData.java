@@ -14,22 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.gui;
-import java.util.*;
+package com.github.chungkwong.idem.loader;
+import com.github.chungkwong.idem.gui.*;
+import java.awt.image.*;
 import javax.swing.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ActionRegistry{
-	private static final HashMap<Object,Action> map=new HashMap<>();
-	public static void registerAction(Object key,Action action){
-		map.put(key,action);
+public class ImageData implements DataObject{
+	private BufferedImage image;
+	private Object src;
+	public ImageData(){
+
 	}
-	public static Action getAction(Object key){
-		return map.get(key);
+	public ImageData(BufferedImage image){
+		this.image=image;
 	}
-	public void removeAction(Object key){
-		map.remove(key);
+	public ImageData(BufferedImage image,Object src){
+		this(image);
+		this.src=src;
+	}
+	@Override
+	public JComponent createDefaultView(){
+		return new JLabel(new ImageIcon(image));
 	}
 }

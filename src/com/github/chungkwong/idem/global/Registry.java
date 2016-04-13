@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.global;
+import static com.github.chungkwong.idem.global.PreferenceManager.getPreference;
+import com.github.chungkwong.idem.gui.*;
 import java.util.*;
+import java.util.prefs.*;
 import javax.swing.*;
 /**
  *
@@ -24,13 +27,65 @@ import javax.swing.*;
  * @param <V>
  */
 public class Registry<K,V> implements Map<K,V>{
-	private final HashMap<K,V> mapping=new HashMap<>();
+	private final Map<K,V> mapping=new HashMap<>();
 	private final List<MapChangedListener> listeners=new ArrayList<>();
 	public static final Registry<KeyStroke,Object> KEY_BINDING=new Registry<>();
 	public static final Registry<Object,Action> ACTION=new Registry<>();
-	public static final Registry<Action,JMenu> MENU=new Registry<>();
+	public static final Registry<String,DataLoader> MIME2LOADER=Registry.createObjectRegistry(
+			getPreference("MIME2DataLoader","/com/github/chungkwong/idem/resources/MIME.xml"),DataLoader.class);
+	public static final Registry<String,String> SUFFIX2MIME=Registry.createStringRegistry(
+			getPreference("suffix","/com/github/chungkwong/idem/resources/FILE_SUFFIX.xml"));
+	static{
+
+	}
 	public Registry(){
 
+	}
+	public static Registry<String,String> createStringRegistry(Preferences pref){
+		Registry<String,String> registry=new Registry<>();
+		try{
+			for(String k:pref.keys()){
+				registry.put(k,pref.get(k,null));
+			}
+		}catch(BackingStoreException ex){
+			Log.LOG.throwing("Registry","createRegister",ex);
+		}
+		return registry;
+	}
+	public static Registry<String,Class> createClassRegistry(Preferences pref,boolean init){
+		Registry<String,Class> registry=new Registry<>();
+		ClassLoader loader=ClassLoader.getSystemClassLoader();
+		try{
+			for(String k:pref.keys()){
+				String cls=pref.get(k,null);
+				if(cls!=null)
+					try{
+						registry.put(k,Class.forName(cls,init,loader));
+					}catch(ClassNotFoundException ex){
+						Log.LOG.throwing("Registry","createRegister",ex);
+					}
+			}
+		}catch(BackingStoreException ex){
+			Log.LOG.throwing("Registry","createRegister",ex);
+		}
+		return registry;
+	}
+	public static <V> Registry<String,V> createObjectRegistry(Preferences pref,Class<V> type){
+		Registry<String,V> registry=new Registry<>();
+		try{
+			for(String k:pref.keys()){
+				String cls=pref.get(k,null);
+				if(cls!=null)
+					try{
+						registry.put(k,(V)Class.forName(cls).newInstance());
+					}catch(ClassNotFoundException|InstantiationException|IllegalAccessException ex){
+						Log.LOG.throwing("Registry","createRegister",ex);
+					}
+			}
+		}catch(BackingStoreException ex){
+			Log.LOG.throwing("Registry","createRegister",ex);
+		}
+		return registry;
 	}
 	@Override
 	public int size(){
@@ -69,8 +124,12 @@ public class Registry<K,V> implements Map<K,V>{
 	}
 	@Override
 	public void clear(){
-		listeners.forEach(l->mapping.forEach((key,value)->l.entryRemoved(new EntryRemovalEvent(this,key))));
-		mapping.clear();
+		Iterator<Map.Entry<K,V>> iter=mapping.entrySet().iterator();
+		while(iter.hasNext()){
+			Entry<K,V> entry=iter.next();
+			iter.remove();
+			listeners.forEach(l->l.entryRemoved(new EntryRemovalEvent(this,entry.getKey())));
+		}
 	}
 	@Override
 	public Set keySet(){
@@ -87,5 +146,8 @@ public class Registry<K,V> implements Map<K,V>{
 	@Override
 	public V get(Object key){
 		return mapping.get(key);
+	}
+	public V get(K key,V defaultValue){
+		return mapping.containsKey(key)?mapping.get(key):defaultValue;
 	}
 }

@@ -14,20 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.gui;
-import java.awt.image.*;
+package com.github.chungkwong.idem.actions;
+import com.github.chungkwong.idem.global.*;
+import com.github.chungkwong.idem.gui.*;
+import com.github.chungkwong.idem.loader.*;
+import java.awt.event.*;
 import javax.swing.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ImageData implements DataObject{
-	BufferedImage image;
-	public ImageData(BufferedImage image){
-		this.image=image;
+public class NewAction extends AbstractAction{
+	public NewAction(){
+		super(UILanguageManager.getDefaultTranslation("NEW"));
 	}
 	@Override
-	public JComponent createDefaultView(){
-		return new JLabel(new ImageIcon(image));
+	public void actionPerformed(ActionEvent e){
+		MainFrame.MAIN_FRAME.getWindowRecent().setDataObject(new DefaultData("NEW"));
 	}
+
 }

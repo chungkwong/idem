@@ -14,12 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.gui;
-
+package com.github.chungkwong.idem.loader;
+import com.github.chungkwong.idem.gui.*;
+import java.io.*;
+import javax.swing.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class KeyBindings{
+public class DefaultData implements DataObject{
+	private final String msg;
+	private final InputStream in;
+	private final Object src;
+	public DefaultData(String msg){
+		this.msg=msg;
+		this.in=null;
+		this.src=null;
+	}
+	public DefaultData(String msg,InputStream in,Object src){
+		this.msg=msg;
+		this.in=in;
+		this.src=src;
+	}
+	@Override
+	public JComponent createDefaultView(){
+		return new OpenDialog(msg,in,src);
+	}
 
 }

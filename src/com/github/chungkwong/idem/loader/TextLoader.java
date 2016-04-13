@@ -14,15 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.gui;
+package com.github.chungkwong.idem.loader;
+import com.github.chungkwong.idem.global.*;
+import com.github.chungkwong.idem.gui.*;
 import java.io.*;
 import javax.swing.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface DataLoader{
-	public Icon getIcon();
-	public DataObject newDataObject();
-	public DataObject loadDataObject(InputStream in,Object src)throws Exception;
+public class TextLoader implements DataLoader{
+	public static TextLoader LOADER=new TextLoader();
+	@Override
+	public String toString(){
+		return UILanguageManager.getDefaultTranslation("Text");
+	}
+	@Override
+	public Icon getIcon(){
+		return null;
+	}
+	@Override
+	public DataObject newDataObject(){
+		return new TextData();
+	}
+	@Override
+	public DataObject loadDataObject(InputStream in,Object src)throws Exception{
+		return new TextData(in,src);
+	}
+
 }

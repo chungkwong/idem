@@ -16,32 +16,43 @@
  */
 package com.github.chungkwong.idem.gui;
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class WindowSingle extends Container{
-	 JComponent component;
+public class WindowSingle extends Container implements FocusListener{
+	JScrollPane component;
 	private DataObject obj;
 	public WindowSingle(DataObject obj){
-		this.obj=obj;
-		this.component=obj.createDefaultView();
 		setLayout(new BorderLayout());
-		add(new JScrollPane(component),BorderLayout.CENTER);
+		this.obj=obj;
+		JComponent view=obj.createDefaultView();
+		view.addFocusListener(this);
+		component=new JScrollPane(view);
+		add(component,BorderLayout.CENTER);
 	}
 	public DataObject getDataObject(){
 		return obj;
 	}
 	public void setDataObject(DataObject obj){
-		remove(this.component);
+		remove(component);
+		component.getViewport().getView().removeFocusListener(this);
 		this.obj=obj;
-		this.component=obj.createDefaultView();
-		add(new JScrollPane(component),BorderLayout.CENTER);
+		JComponent view=obj.createDefaultView();
+		view.addFocusListener(this);
+		component=new JScrollPane(view);
+		add(component,BorderLayout.CENTER);
 		validate();
+		view.requestFocusInWindow();
 	}
 	@Override
-	public WindowSingle clone(){
-		return new WindowSingle(obj);
+	public void focusGained(FocusEvent e){
+		MainFrame.MAIN_FRAME.windowRecent=this;
+	}
+	@Override
+	public void focusLost(FocusEvent e){
+
 	}
 }

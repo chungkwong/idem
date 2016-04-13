@@ -14,7 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.gui;
+package com.github.chungkwong.idem.loader;
+import com.github.chungkwong.idem.global.*;
+import com.github.chungkwong.idem.gui.*;
+import java.io.*;
 import javax.swing.*;
 import javax.swing.text.*;
 /**
@@ -23,11 +26,34 @@ import javax.swing.text.*;
  */
 public class TextData implements DataObject{
 	private final StyledDocument doc;
+	private Object src;
 	public TextData(){
 		doc=(StyledDocument)new StyledEditorKit().createDefaultDocument();
 	}
+	public TextData(StyledDocument doc){
+		this.doc=doc;
+	}
+	public TextData(InputStream in,Object src)throws IOException{
+		this();
+		this.src=src;
+		StringBuilder text=new StringBuilder();
+		char[] buf=new char[4096];
+		try(Reader reader=new InputStreamReader(in)){
+			int count=reader.read(buf);
+			while(count!=-1){
+				text.append(buf);
+				count=reader.read(buf);
+			}
+			doc.insertString(doc.getLength(),text.toString(),null);
+		}catch(BadLocationException ex){
+			Log.LOG.throwing("TextData","TextData",ex);
+		}
+	}
+	public StyledDocument getDocument(){
+		return doc;
+	}
 	@Override
-	public JComponent createDefaultView(){
+	public JTextComponent createDefaultView(){
 		return new JTextPane(doc);
 	}
 }

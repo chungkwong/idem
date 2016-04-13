@@ -15,46 +15,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.gui;
+import com.github.chungkwong.idem.actions.*;
 import com.github.chungkwong.idem.global.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
 import javax.swing.*;
-import javax.swing.text.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class MenuRegistry{
 	private final JMenuBar bar;
+	private final HashMap<Action,MenuEntry> mapping=new HashMap<>();
+	public static final Action FILE=new SimpleAction(UILanguageManager.getDefaultTranslation("FILE"));
+	public static final Action EDIT=new SimpleAction(UILanguageManager.getDefaultTranslation("EDIT"));
+	public static final Action VIEW=new SimpleAction(UILanguageManager.getDefaultTranslation("VIEW"));
+	public static final Action TOOL=new SimpleAction(UILanguageManager.getDefaultTranslation("TOOL"));
+	public static final Action HELP=new SimpleAction(UILanguageManager.getDefaultTranslation("HELP"));
+	/**
+	 * No action can appear more than once
+	 * @param bar MenuBar
+	 */
 	public MenuRegistry(JMenuBar bar){
 		this.bar=bar;
-		SimpleAction open=new SimpleAction(UILanguageManager.getDefaultTranslation("OPEN"));
-		SimpleAction edit=new SimpleAction(UILanguageManager.getDefaultTranslation("EDIT"));
-		SimpleAction tool=new SimpleAction(UILanguageManager.getDefaultTranslation("TOOL"));
-		SimpleAction help=new SimpleAction(UILanguageManager.getDefaultTranslation("HELP"));
-		getOrAddMenu(open).addMenuItem(tool);
-		getOrAddMenu(open).addSeparator();
-		getOrAddMenu(open).getOrAddMenu(edit).addMenuItem(new DefaultEditorKit.CopyAction());
-		getOrAddMenu(help).addMenuItem(new AbstractAction("Add"){
-			@Override
-			public void actionPerformed(ActionEvent e){
-				getOrAddMenu(open).addMenuItem(new SimpleAction("Test"+System.currentTimeMillis()));
-			}
-		});
+		getOrAddMenu(FILE).addMenuItem(new OpenAction());
+		getOrAddMenu(FILE).addMenuItem(new NewAction());
+		getOrAddMenu(EDIT);
+		getOrAddMenu(VIEW);
+		getOrAddMenu(TOOL);
+		getOrAddMenu(HELP);
+
 	}
 	public MenuEntry getOrAddMenu(Action action){
-		int menuCount=bar.getMenuCount();
-		for(int i=0;i<menuCount;i++)
-			if(bar.getMenu(i).getAction().equals(action))
-				return new MenuEntry(bar.getMenu(i));
-		JMenu menu=new JMenu(action);
-		bar.add(menu);
-		return new MenuEntry(menu);
+		if(mapping.containsKey(action))
+			return mapping.get(action);
+		else{
+			JMenu menu=new JMenu(action);
+			bar.add(menu);
+			MenuEntry entry=new MenuEntry(menu);
+			mapping.put(action,entry);
+			return entry;
+		}
 	}
-	public static Action createAction(String name,Icon icon){
+	public static Action createSimpleAction(String name,Icon icon){
 		return new SimpleAction(name,icon);
 	}
-	public static Action createAction(String name){
+	public static Action createSimpleAction(String name){
 		return new SimpleAction(name);
 	}
 	public static class SimpleAction extends AbstractAction{
@@ -69,19 +76,21 @@ public class MenuRegistry{
 
 		}
 	}
-	public static class MenuEntry{
+	public class MenuEntry{
 		private final JMenu menu;
 		public MenuEntry(JMenu menu){
 			this.menu=menu;
 		}
 		public MenuEntry getOrAddMenu(Action action){
-			Component[] menuComponents=menu.getMenuComponents();
-			for(Component comp:menuComponents)
-				if(comp instanceof JMenu&&((JMenu)comp).getAction().equals(action))
-					return new MenuEntry((JMenu)comp);
-			JMenu newMenu=new JMenu(action);
-			menu.add(newMenu);
-			return new MenuEntry(newMenu);
+			if(mapping.containsKey(action))
+				return mapping.get(action);
+			else{
+				JMenu submenu=new JMenu(action);
+				menu.add(submenu);
+				MenuEntry entry=new MenuEntry(submenu);
+				mapping.put(action,entry);
+				return entry;
+			}
 		}
 		public void addSeparator(){
 			menu.addSeparator();

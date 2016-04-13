@@ -1,27 +1,23 @@
 package com.github.chungkwong.idem.global;
 
-import java.util.*;
+import java.io.*;
 import java.util.prefs.*;
 /**
  * Store global settings
  */
 public final class PreferenceManager{
 	public static final Preferences PREFERENCE=Preferences.userNodeForPackage(PreferenceManager.class);
-	static final HashMap<String,PreferenceChangeListener> toNotify=new HashMap<>();
-	static{
-		PREFERENCE.addPreferenceChangeListener(new PreferenceChangeListener(){
-			@Override
-			public void preferenceChange(PreferenceChangeEvent evt){
-				PreferenceChangeListener listener=toNotify.get(evt.getKey());
-				if(listener!=null)
-					listener.preferenceChange(evt);
-			}
-		});
-
+	public static Preferences getPreference(String path,String defaultPref){
+		try{
+			if(!Preferences.userRoot().nodeExists(path));//XXXX
+				Preferences.importPreferences(PreferenceManager.class.getResourceAsStream(defaultPref));
+		}catch(BackingStoreException|IOException|InvalidPreferencesFormatException ex){
+			Log.LOG.throwing("Preference","getPreference",ex);
+			ex.printStackTrace();
+		}
+		return PREFERENCE.node(path);
 	}
-	public static PreferenceChangeListener addListener(String key,PreferenceChangeListener newListener){
-		PreferenceChangeListener oldListener=toNotify.get(key);
-		toNotify.put(key,newListener);
-		return oldListener;
+	public static void main(String[] args) throws BackingStoreException{
+		PREFERENCE.removeNode();
 	}
 }

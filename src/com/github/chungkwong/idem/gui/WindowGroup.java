@@ -42,7 +42,7 @@ public class WindowGroup extends JComponent{
 		if(component instanceof WindowSingle){
 			remove(component);
 			WindowSingle first=(WindowSingle)component;
-			WindowSingle second=first.clone();
+			WindowSingle second=new WindowSingle(first.getDataObject());
 			component=new JSplitPane(orientation,WindowGroup.create(first),WindowGroup.create(second));
 			((JSplitPane)component).setOneTouchExpandable(true);
 			add(component,BorderLayout.CENTER);
