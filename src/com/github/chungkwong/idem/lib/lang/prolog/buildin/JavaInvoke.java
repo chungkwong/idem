@@ -35,8 +35,8 @@ public class JavaInvoke extends BuildinPredicate{
 		List<Object> args=Lists.extractJavaArguments(arguments);
 		Object retValue;
 		try{
-			retValue=cls.getMethod(method,args.stream().map((arg)->arg.getClass()).toArray(Class[]::new))
-					.invoke(obj,args.toArray());
+			Class[] paraType=args.stream().map((arg)->arg.getClass()).toArray(Class[]::new);
+			retValue=cls.getMethod(method,paraType).invoke(obj,args.toArray());
 		}catch(NoSuchMethodException|SecurityException|IllegalAccessException
 				|IllegalArgumentException|InvocationTargetException ex){
 			throw new JavaException(ex,exec.getCurrentActivator());

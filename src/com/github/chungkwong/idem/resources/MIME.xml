@@ -31,11 +31,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 							<map/>
 							<node name="MIME2DataLoader">
 								<map>
-									<entry key="text/plain" value="com.github.chungkwong.idem.loader.TextLoader"></entry>
-									<entry key="image/bmp" value="com.github.chungkwong.idem.loader.ImageLoader"></entry>
-									<entry key="image/gif" value="com.github.chungkwong.idem.loader.ImageLoader"></entry>
-									<entry key="image/jpeg" value="com.github.chungkwong.idem.loader.ImageLoader"></entry>
-									<entry key="image/png" value="com.github.chungkwong.idem.loader.ImageLoader"></entry>
+									<entry key="text/plain" value="Text"></entry>
+									<entry key="image/bmp" value="Image"></entry>
+									<entry key="image/gif" value="Image"></entry>
+									<entry key="image/jpeg" value="Image"></entry>
+									<entry key="image/png" value="Image"></entry>
 								</map>
 							</node>
 						</node>

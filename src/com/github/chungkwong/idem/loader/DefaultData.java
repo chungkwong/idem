@@ -40,5 +40,9 @@ public class DefaultData implements DataObject{
 	public JComponent createDefaultView(){
 		return new OpenDialog(msg,in,src);
 	}
+	@Override
+	public String getDescription(){
+		return "Choose";
+	}
 
 }

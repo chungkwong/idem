@@ -56,4 +56,8 @@ public class TextData implements DataObject{
 	public JTextComponent createDefaultView(){
 		return new JTextPane(doc);
 	}
+	@Override
+	public String getDescription(){
+		return "Text";
+	}
 }

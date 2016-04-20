@@ -43,8 +43,8 @@ public class PredicateTest{
 	}
 	@Test
 	public void testJavaInvoke(){
-		assertGoalSuccess("java_invoke_static(X,'java.lang.Integer','parseInt',['230']).","");
 		assertGoalSuccess("java_invoke(X,'hello','replaceAll',['l','kk']).","");
+		assertGoalSuccess("java_invoke_static(X,'java.lang.Integer','parseInt',['230']).","");
 		assertGoalError("java_invoke_static(X,'java.lang.Foo','parseInt',['230']).","");
 		assertGoalError("java_invoke(X,'hello','replaceThis',['l','kk']).","");
 	}@Test

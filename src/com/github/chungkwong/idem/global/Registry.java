@@ -29,12 +29,14 @@ import javax.swing.*;
 public class Registry<K,V> implements Map<K,V>{
 	private final Map<K,V> mapping=new HashMap<>();
 	private final List<MapChangedListener> listeners=new ArrayList<>();
-	public static final Registry<KeyStroke,Object> KEY_BINDING=new Registry<>();
-	public static final Registry<Object,Action> ACTION=new Registry<>();
-	public static final Registry<String,DataLoader> MIME2LOADER=Registry.createObjectRegistry(
-			getPreference("MIME2DataLoader","/com/github/chungkwong/idem/resources/MIME.xml"),DataLoader.class);
+	public static final Registry<KeyStroke,Object> KEY_BINDINGS=new Registry<>();
+	public static final Registry<Object,Action> ACTIONS=new Registry<>();
+	public static final Registry<String,DataLoader> LOADERS=Registry.createObjectRegistry(
+			getPreference("loader","/com/github/chungkwong/idem/resources/LOADER.xml"),DataLoader.class);
+	public static final Registry<String,String> MIME2LOADER=Registry.createStringRegistry(
+			getPreference("MIME2DataLoader","/com/github/chungkwong/idem/resources/MIME.xml"));
 	public static final Registry<String,String> SUFFIX2MIME=Registry.createStringRegistry(
-			getPreference("suffix","/com/github/chungkwong/idem/resources/FILE_SUFFIX.xml"));
+			getPreference("suffix","/com/github/chungkwong/idem/resources/SUFFIX.xml"));
 	static{
 
 	}

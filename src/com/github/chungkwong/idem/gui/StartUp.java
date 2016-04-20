@@ -23,7 +23,7 @@ import java.util.logging.*;
 public class StartUp{
 	public static void startUp(){
 		String[] load=new String[]{
-			"com.github.chungkwong.idem.gui.HelpOperation"
+			//"com.github.chungkwong.idem.gui.HelpOperation"
 		};
 		for(String cls:load)
 			try{

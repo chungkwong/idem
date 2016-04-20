@@ -46,7 +46,7 @@ public class DefaultLoader implements DataLoader{
 		else if(src instanceof URL)
 			suffix=extractSuffix(((URL)src).getFile());
 		if(suffix!=null){
-			DataLoader loader=Registry.MIME2LOADER.get(Registry.SUFFIX2MIME.get(suffix,null),null);
+			DataLoader loader=Registry.LOADERS.get(Registry.MIME2LOADER.get(Registry.SUFFIX2MIME.get(suffix,null),null),null);
 			if(loader!=null)
 				return loader.loadDataObject(in,src);
 		}

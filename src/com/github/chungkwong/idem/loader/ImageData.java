@@ -39,4 +39,8 @@ public class ImageData implements DataObject{
 	public JComponent createDefaultView(){
 		return new JLabel(new ImageIcon(image));
 	}
+	@Override
+	public String getDescription(){
+		return "Image";
+	}
 }

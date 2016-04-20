@@ -14,28 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.gui;
-import com.github.chungkwong.idem.platform.*;
+package com.github.chungkwong.idem.gui.widget;
+import java.awt.*;
 import javax.swing.*;
+import javax.swing.text.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class HelpOperation implements Operation{
-	static{
-		System.out.println("hello");
+public class HexEditor extends JPanel{
+	private final JTextArea area;
+	public HexEditor(Document doc){
+		setLayout(new BorderLayout());
+		area=new JTextArea(doc);
+		area.setWrapStyleWord(true);
+		add(area,BorderLayout.CENTER);
 	}
-	@Override
-	public String getDisplayName(){
-		return "Help";
+	public byte[] getContent(){
+		char[] str=area.getText().toCharArray();
+		int count=str.length*2/3;
+		byte[] buf=new byte[count];
+		for(int i=0,j=0;j<count;i+=3,j++){
+			buf[j]=(byte)((Character.getNumericValue(str[i])<<4)|Character.getNumericValue(str[i+1]));
+		}
+		return buf;
 	}
-	@Override
-	public Icon getIcon(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void fire(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
 }

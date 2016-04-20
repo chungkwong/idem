@@ -29,12 +29,12 @@ public class OpenDialog extends JPanel implements ListSelectionListener{
 	private final JLabel msg;
 	private final InputStream in;
 	private final Object src;
-	private final JList<DataLoader> list;
+	private final JList<String> list;
 	public OpenDialog(String msg,InputStream in,Object src){
 		this.msg=new JLabel(msg);
 		this.in=in;
 		this.src=src;
-		this.list=new JList(new HashSet(Registry.MIME2LOADER.values()).toArray());
+		this.list=new JList(new TreeSet(Registry.LOADERS.keySet()).toArray());
 		setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 		if(src!=null)
 			add(new JLabel(src.toString()));
@@ -46,12 +46,12 @@ public class OpenDialog extends JPanel implements ListSelectionListener{
 	public void valueChanged(ListSelectionEvent e){
 		if(in!=null){
 			try{
-				DataObject obj=list.getSelectedValue().loadDataObject(in,src);
+				DataObject obj=Registry.LOADERS.get(list.getSelectedValue()).loadDataObject(in,src);
 				MainFrame.MAIN_FRAME.getWindowRecent().setDataObject(obj);
 			}catch(Exception ex){
 				msg.setText(UILanguageManager.getDefaultTranslation("FAIL_TO_OPEN"));
 			}
 		}else
-			MainFrame.MAIN_FRAME.getWindowRecent().setDataObject(list.getSelectedValue().newDataObject());
+			MainFrame.MAIN_FRAME.getWindowRecent().setDataObject(Registry.LOADERS.get(list.getSelectedValue()).newDataObject());
 	}
 }

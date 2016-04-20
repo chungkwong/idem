@@ -21,5 +21,6 @@ import javax.swing.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public interface DataObject{
+	String getDescription();
 	JComponent createDefaultView();
 }

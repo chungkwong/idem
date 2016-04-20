@@ -47,7 +47,6 @@ public class MainFrame extends JFrame{
 	}
 	public void setStatus(String msg){
 		statusBar.setText(msg);
-
 	}
 	public static void main(String[] args){
 		SwingUtilities.invokeLater(()->MAIN_FRAME.setVisible(true));

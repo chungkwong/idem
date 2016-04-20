@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,23 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.global;
+package com.github.chungkwong.idem.loader;
+import com.github.chungkwong.idem.gui.*;
 import java.io.*;
-import java.util.logging.*;
+import javax.swing.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Log{
-	public static final Logger LOG=Logger.getAnonymousLogger("com.github.chungkwong.idem.resources.MESSAGE");
-	static{
-		LOG.setUseParentHandlers(false);
-		LOG.setLevel(Level.ALL);
-		LOG.addHandler(new ConsoleHandler());
+public class HexLoader implements DataLoader{
+	@Override
+	public Icon getIcon(){
+		return null;
 	}
-	public static String throwableToString(Throwable t){
-		StringWriter out=new StringWriter();
-		t.printStackTrace(new PrintWriter(out));
-		return out.toString();
+	@Override
+	public DataObject newDataObject(){
+		return new HexData();
 	}
+	@Override
+	public DataObject loadDataObject(InputStream in,Object src) throws Exception{
+		return new HexData(in,src);
+	}
+
 }
