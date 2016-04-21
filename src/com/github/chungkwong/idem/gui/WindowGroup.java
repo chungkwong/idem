@@ -54,7 +54,7 @@ public class WindowGroup extends JComponent{
 			JSplitPane component=new JSplitPane(orientation,WindowGroup.create(first),WindowGroup.create(second));
 			component.setUI(new MySplitPaneUI(component));
 			component.setOneTouchExpandable(true);
-			component.setDividerSize(10);
+			component.setDividerSize(20);
 			add(component,BorderLayout.CENTER);
 			validate();
 			component.setDividerLocation(0.5);
@@ -92,6 +92,10 @@ public class WindowGroup extends JComponent{
 			validate();
 			FocusManager.getCurrentManager().getFocusOwner().requestFocusInWindow();
 		}
+	}
+	public String getDescription(){
+		return isWindowSingle()?getWindowSingle().getDataObject().getDescription()
+						:UILanguageManager.getDefaultTranslation("WINDOW_GROUP");
 	}
 	class SplitAction extends AbstractAction{
 		int orientation;
@@ -136,7 +140,7 @@ public class WindowGroup extends JComponent{
 				super(ui);
 				addMouseListener(this);
 				addMouseMotionListener(this);
-				ui.setLastDragLocation(splitPane.getLastDividerLocation());
+				splitPaneUI.setLastDragLocation(splitPane.getDividerLocation());
 			}
 			@Override
 			protected JButton createLeftOneTouchButton(){
@@ -154,15 +158,24 @@ public class WindowGroup extends JComponent{
 				else
 					paintVertical(g2d);
 			}
-			private boolean isIcon(int x,int y){
-				int cord=orientation==JSplitPane.VERTICAL_SPLIT?x:y;
-				return cord<=rightEnd;
+			private int getMouseCordinate(MouseEvent e){
+				return orientation==JSplitPane.VERTICAL_SPLIT?e.getX():e.getY();
 			}
-			private void setCursor(MouseEvent e){
-				if(isIcon(e.getX(),e.getY()))
-					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-				else
+			private int getDividerCordinate(MouseEvent e){
+				return orientation==JSplitPane.VERTICAL_SPLIT?e.getY():e.getX();
+			}
+			private void updateCursor(MouseEvent e){
+				int cord=getMouseCordinate(e);
+				if(cord>rightEnd){
 					setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+					splitPane.setToolTipText("");
+				}else{
+					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					if(cord>leftEnd)
+						splitPane.setToolTipText(((WindowGroup)splitPane.getRightComponent()).getDescription());
+					else
+						splitPane.setToolTipText(((WindowGroup)splitPane.getLeftComponent()).getDescription());
+				}
 			}
 			private void paintVertical(Graphics2D g2d){
 				g2d.setColor(Color.BLACK);
@@ -172,12 +185,8 @@ public class WindowGroup extends JComponent{
 				int height=ascent+descent;
 				double scale=(dividerSize+0.0)/height;
 				g2d.scale(scale,scale);
-				String descriptionL=((WindowGroup)splitPane.getLeftComponent()).isWindowSingle()?
-						((WindowGroup)splitPane.getLeftComponent()).getWindowSingle().getDataObject().getDescription()
-						:UILanguageManager.getDefaultTranslation("WINDOW_GROUP");
-				String descriptionR=((WindowGroup)splitPane.getRightComponent()).isWindowSingle()?
-						((WindowGroup)splitPane.getRightComponent()).getWindowSingle().getDataObject().getDescription()
-						:UILanguageManager.getDefaultTranslation("WINDOW_GROUP");
+				String descriptionL=((WindowGroup)splitPane.getLeftComponent()).getDescription();
+				String descriptionR=((WindowGroup)splitPane.getRightComponent()).getDescription();
 				g2d.fillPolygon(new int[]{0,ascent/2,ascent},new int[]{ascent,0,ascent},3);
 				offset+=ascent;
 				g2d.drawString(descriptionL,offset,ascent);
@@ -197,25 +206,19 @@ public class WindowGroup extends JComponent{
 				int height=ascent+descent;
 				double scale=(dividerSize+0.0)/height;
 				g2d.scale(scale,scale);
-				String descriptionL=((WindowGroup)splitPane.getLeftComponent()).isWindowSingle()?
-						((WindowGroup)splitPane.getLeftComponent()).getWindowSingle().getDataObject().getDescription()
-						:UILanguageManager.getDefaultTranslation("WINDOW_GROUPllllllllllll");
-				String descriptionR=((WindowGroup)splitPane.getRightComponent()).isWindowSingle()?
-						((WindowGroup)splitPane.getRightComponent()).getWindowSingle().getDataObject().getDescription()
-						:UILanguageManager.getDefaultTranslation("WINDOW_GROUPllllllllllll");
-				g2d.translate(0,g2d.getFontMetrics().stringWidth(descriptionR+descriptionL)+2*ascent);
+				String descriptionL=((WindowGroup)splitPane.getLeftComponent()).getDescription();
+				String descriptionR=((WindowGroup)splitPane.getRightComponent()).getDescription();
 				g2d.rotate(-Math.PI/2);
-				g2d.fillPolygon(new int[]{0,ascent/2,ascent},new int[]{0,ascent,0},3);
-				offset+=ascent;
-				g2d.drawString(descriptionR,offset,ascent);
-				offset+=g2d.getFontMetrics().stringWidth(descriptionR);
-				leftEnd=(int)(offset*scale);
-					g2d.fillPolygon(new int[]{offset,offset+ascent/2,offset+ascent},new int[]{ascent,0,ascent},3);
-				offset+=ascent;
+				offset-=ascent;
+				g2d.fillPolygon(new int[]{offset,offset+ascent/2,offset+ascent},new int[]{ascent,0,ascent},3);
+				offset-=g2d.getFontMetrics().stringWidth(descriptionL);
 				g2d.drawString(descriptionL,offset,ascent);
-				offset+=g2d.getFontMetrics().stringWidth(descriptionL);
-				rightEnd=(int)(offset*scale);
-				leftEnd=rightEnd-leftEnd;
+				leftEnd=(int)(-offset*scale);
+				offset-=ascent;
+				g2d.fillPolygon(new int[]{offset,offset+ascent/2,offset+ascent},new int[]{0,ascent,0},3);
+				offset-=g2d.getFontMetrics().stringWidth(descriptionR);
+				g2d.drawString(descriptionR,offset,ascent);
+				rightEnd=(int)(-offset*scale);
 			}
 			@Override
 			public void paintComponents(Graphics arg0){
@@ -223,18 +226,19 @@ public class WindowGroup extends JComponent{
 			}
 			@Override
 			public void mouseClicked(MouseEvent e){
-				int cord=orientation==JSplitPane.VERTICAL_SPLIT?e.getX():e.getY();
+				int cord=getMouseCordinate(e);
 				int dividerLocation=splitPane.getLastDividerLocation();
 				int minLocation=splitPane.getMinimumDividerLocation();
 				int maxLocation=splitPane.getMaximumDividerLocation();
+				int lastLocation=splitPaneUI.getLastDragLocation();
 				if(cord<=leftEnd){
 					if(dividerLocation<=minLocation)
-						splitPane.setDividerLocation(splitPaneUI.getLastDragLocation());
+						splitPane.setDividerLocation(lastLocation);
 					else
 						splitPane.setDividerLocation(0.0);
 				}else if(cord<=rightEnd){
 					if(dividerLocation>=maxLocation)
-						splitPane.setDividerLocation(splitPaneUI.getLastDragLocation());
+						splitPane.setDividerLocation(lastLocation);
 					else
 						splitPane.setDividerLocation(1.0);
 				}
@@ -249,7 +253,7 @@ public class WindowGroup extends JComponent{
 			}
 			@Override
 			public void mouseEntered(MouseEvent e){
-				setCursor(e);
+				updateCursor(e);
 			}
 			@Override
 			public void mouseExited(MouseEvent e){
@@ -257,11 +261,11 @@ public class WindowGroup extends JComponent{
 			}
 			@Override
 			public void mouseDragged(MouseEvent e){
-				splitPaneUI.setLastDragLocation(orientation==JSplitPane.VERTICAL_SPLIT?e.getX():e.getY());
+				splitPaneUI.setLastDragLocation(splitPane.getDividerLocation());
 			}
 			@Override
 			public void mouseMoved(MouseEvent e){
-				setCursor(e);
+				updateCursor(e);
 			}
 
 		}
