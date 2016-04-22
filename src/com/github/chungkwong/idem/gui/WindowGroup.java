@@ -135,7 +135,7 @@ public class WindowGroup extends JComponent{
 
 		private static class MySplitPaneDivider extends BasicSplitPaneDivider
 				implements MouseListener,MouseMotionListener{
-			int leftEnd=0,rightEnd=0;
+			int leftEnd=0,rightEnd=0,lastLocation=-1;
 			public MySplitPaneDivider(BasicSplitPaneUI ui){
 				super(ui);
 				addMouseListener(this);
@@ -198,6 +198,19 @@ public class WindowGroup extends JComponent{
 				offset+=g2d.getFontMetrics().stringWidth(descriptionR);
 				rightEnd=(int)(offset*scale);
 			}
+			private static String cutTextToWidth(String text,int maxWidth,FontMetrics metric){
+				int width=metric.stringWidth(text);
+				if(width<=maxWidth)
+					return text;
+				int dotsWidth=metric.stringWidth("...");
+				if(dotsWidth<=maxWidth)
+					return "...";
+				while(width>maxWidth){
+					text=text.substring(1);
+					width=metric.stringWidth(text)+dotsWidth;
+				}
+				return "..."+text;
+			}
 			private void paintHorizontal(Graphics2D g2d){
 				g2d.setColor(Color.BLACK);
 				int offset=0;
@@ -227,10 +240,9 @@ public class WindowGroup extends JComponent{
 			@Override
 			public void mouseClicked(MouseEvent e){
 				int cord=getMouseCordinate(e);
-				int dividerLocation=splitPane.getLastDividerLocation();
+				int dividerLocation=splitPane.getDividerLocation();
 				int minLocation=splitPane.getMinimumDividerLocation();
 				int maxLocation=splitPane.getMaximumDividerLocation();
-				int lastLocation=splitPaneUI.getLastDragLocation();
 				if(cord<=leftEnd){
 					if(dividerLocation<=minLocation)
 						splitPane.setDividerLocation(lastLocation);
@@ -261,13 +273,12 @@ public class WindowGroup extends JComponent{
 			}
 			@Override
 			public void mouseDragged(MouseEvent e){
-				splitPaneUI.setLastDragLocation(splitPane.getDividerLocation());
+				lastLocation=getDividerCordinate(e)+splitPane.getDividerLocation();
 			}
 			@Override
 			public void mouseMoved(MouseEvent e){
 				updateCursor(e);
 			}
-
 		}
 	}
 }
