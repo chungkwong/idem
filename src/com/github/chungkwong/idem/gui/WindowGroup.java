@@ -179,59 +179,74 @@ public class WindowGroup extends JComponent{
 			}
 			private void paintVertical(Graphics2D g2d){
 				g2d.setColor(Color.BLACK);
+				FontMetrics metric=g2d.getFontMetrics();
 				int offset=0;
-				int ascent=g2d.getFontMetrics().getAscent();
-				int descent=g2d.getFontMetrics().getDescent();
+				int ascent=metric.getAscent();
+				int descent=metric.getDescent();
 				int height=ascent+descent;
 				double scale=(dividerSize+0.0)/height;
+				int length=(int)(getDividerLength()/scale)-2*ascent;
 				g2d.scale(scale,scale);
 				String descriptionL=((WindowGroup)splitPane.getLeftComponent()).getDescription();
 				String descriptionR=((WindowGroup)splitPane.getRightComponent()).getDescription();
+				if(metric.stringWidth(descriptionL)+metric.stringWidth(descriptionR)>length){
+					descriptionL=cutTextToLength(descriptionL,length/2,metric);
+					descriptionR=cutTextToLength(descriptionR,length/2,metric);
+				}
 				g2d.fillPolygon(new int[]{0,ascent/2,ascent},new int[]{ascent,0,ascent},3);
 				offset+=ascent;
 				g2d.drawString(descriptionL,offset,ascent);
-				offset+=g2d.getFontMetrics().stringWidth(descriptionL);
+				offset+=metric.stringWidth(descriptionL);
 				leftEnd=(int)(offset*scale);
 				g2d.fillPolygon(new int[]{offset,offset+ascent/2,offset+ascent},new int[]{0,ascent,0},3);
 				offset+=ascent;
 				g2d.drawString(descriptionR,offset,ascent);
-				offset+=g2d.getFontMetrics().stringWidth(descriptionR);
+				offset+=metric.stringWidth(descriptionR);
 				rightEnd=(int)(offset*scale);
 			}
-			private static String cutTextToWidth(String text,int maxWidth,FontMetrics metric){
+			private void paintHorizontal(Graphics2D g2d){
+				g2d.setColor(Color.BLACK);
+				FontMetrics metric=g2d.getFontMetrics();
+				int offset=0;
+				int ascent=metric.getAscent();
+				int descent=metric.getDescent();
+				int height=ascent+descent;
+				double scale=(dividerSize+0.0)/height;
+				int length=(int)(getDividerLength()/scale)-2*ascent;
+				g2d.scale(scale,scale);
+				String descriptionL=((WindowGroup)splitPane.getLeftComponent()).getDescription();
+				String descriptionR=((WindowGroup)splitPane.getRightComponent()).getDescription();
+				if(metric.stringWidth(descriptionL)+metric.stringWidth(descriptionR)>length){
+					descriptionL=cutTextToLength(descriptionL,length/2,metric);
+					descriptionR=cutTextToLength(descriptionR,length/2,metric);
+				}
+				g2d.rotate(-Math.PI/2);
+				offset-=ascent;
+				g2d.fillPolygon(new int[]{offset,offset+ascent/2,offset+ascent},new int[]{ascent,0,ascent},3);
+				offset-=metric.stringWidth(descriptionL);
+				g2d.drawString(descriptionL,offset,ascent);
+				leftEnd=(int)(-offset*scale);
+				offset-=ascent;
+				g2d.fillPolygon(new int[]{offset,offset+ascent/2,offset+ascent},new int[]{0,ascent,0},3);
+				offset-=metric.stringWidth(descriptionR);
+				g2d.drawString(descriptionR,offset,ascent);
+				rightEnd=(int)(-offset*scale);
+			}
+			private int getDividerLength(){
+				return orientation==JSplitPane.HORIZONTAL_SPLIT?splitPane.getHeight():splitPane.getWidth();
+			}
+			private static String cutTextToLength(String text,int maxWidth,FontMetrics metric){
 				int width=metric.stringWidth(text);
 				if(width<=maxWidth)
 					return text;
 				int dotsWidth=metric.stringWidth("...");
-				if(dotsWidth<=maxWidth)
-					return "...";
+				if(dotsWidth>=maxWidth)
+					return "";
 				while(width>maxWidth){
 					text=text.substring(1);
 					width=metric.stringWidth(text)+dotsWidth;
 				}
 				return "..."+text;
-			}
-			private void paintHorizontal(Graphics2D g2d){
-				g2d.setColor(Color.BLACK);
-				int offset=0;
-				int ascent=g2d.getFontMetrics().getAscent();
-				int descent=g2d.getFontMetrics().getDescent();
-				int height=ascent+descent;
-				double scale=(dividerSize+0.0)/height;
-				g2d.scale(scale,scale);
-				String descriptionL=((WindowGroup)splitPane.getLeftComponent()).getDescription();
-				String descriptionR=((WindowGroup)splitPane.getRightComponent()).getDescription();
-				g2d.rotate(-Math.PI/2);
-				offset-=ascent;
-				g2d.fillPolygon(new int[]{offset,offset+ascent/2,offset+ascent},new int[]{ascent,0,ascent},3);
-				offset-=g2d.getFontMetrics().stringWidth(descriptionL);
-				g2d.drawString(descriptionL,offset,ascent);
-				leftEnd=(int)(-offset*scale);
-				offset-=ascent;
-				g2d.fillPolygon(new int[]{offset,offset+ascent/2,offset+ascent},new int[]{0,ascent,0},3);
-				offset-=g2d.getFontMetrics().stringWidth(descriptionR);
-				g2d.drawString(descriptionR,offset,ascent);
-				rightEnd=(int)(-offset*scale);
 			}
 			@Override
 			public void paintComponents(Graphics arg0){
