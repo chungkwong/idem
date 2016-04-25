@@ -19,7 +19,8 @@ package com.github.chungkwong.idem.gui;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
+ * @param <T>	the type of application
  */
-public interface ApplicationLauncher{
-	Application launch();
+public interface ApplicationLauncher<T extends Application>{
+	T launch();
 }

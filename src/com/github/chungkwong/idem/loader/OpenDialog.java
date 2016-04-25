@@ -17,6 +17,7 @@
 package com.github.chungkwong.idem.loader;
 import com.github.chungkwong.idem.global.*;
 import com.github.chungkwong.idem.gui.*;
+import java.awt.*;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
@@ -35,6 +36,13 @@ public class OpenDialog extends JPanel implements ListSelectionListener{
 		this.in=in;
 		this.src=src;
 		this.list=new JList(new TreeSet(Registry.LOADERS.keySet()).toArray());
+		list.setCellRenderer(new DefaultListCellRenderer(){
+			@Override
+			public Component getListCellRendererComponent(JList<?> list,Object value,int index,boolean isSelected,boolean cellHasFocus){
+				return super.getListCellRendererComponent(list,UILanguageManager.getDefaultTranslation(value.toString()),index,isSelected,cellHasFocus);
+			}
+
+		});
 		setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 		if(src!=null)
 			add(new JLabel(src.toString()));

@@ -58,6 +58,6 @@ public class TextData implements DataObject{
 	}
 	@Override
 	public String getDescription(){
-		return "Text";
+		return UILanguageManager.getDefaultTranslation("Text");
 	}
 }

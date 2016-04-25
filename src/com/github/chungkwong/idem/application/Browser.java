@@ -19,6 +19,7 @@ import com.github.chungkwong.idem.global.*;
 import com.github.chungkwong.idem.gui.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.html.*;
@@ -27,11 +28,11 @@ import javax.swing.text.html.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class Browser extends JPanel implements Application,ActionListener,HyperlinkListener{
+public class Browser extends JPanel implements DataObject,ActionListener,HyperlinkListener{
 	private final JEditorPane page=new JEditorPane();
 	private final JComboBox in=new JComboBox();
-	Thread curr=null;
-	String url;
+	private Thread curr=null;
+	private String url;
 	public Browser(){
 		setLayout(new BorderLayout());
 		in.setEditable(true);
@@ -40,6 +41,10 @@ public class Browser extends JPanel implements Application,ActionListener,Hyperl
 		page.setEditable(false);
 		page.addHyperlinkListener(this);
 		add(new JScrollPane(page),BorderLayout.CENTER);
+	}
+	public Browser(InputStream in,Object src) throws IOException{
+		this();
+		page.read(in,src);
 	}
 	@Override
 	public void actionPerformed(ActionEvent e){
@@ -68,7 +73,11 @@ public class Browser extends JPanel implements Application,ActionListener,Hyperl
 		}
 	}
 	@Override
-	public JComponent getComponent(){
+	public String getDescription(){
+		return UILanguageManager.getDefaultTranslation("Browser");
+	}
+	@Override
+	public JComponent createDefaultView(){
 		return this;
 	}
 }

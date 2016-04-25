@@ -35,6 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 					<entry key="Text" value="com.github.chungkwong.idem.loader.TextLoader"/>
 					<entry key="Image" value="com.github.chungkwong.idem.loader.ImageLoader"/>
 					<entry key="Hex" value="com.github.chungkwong.idem.loader.HexLoader"/>
+					<entry key="Browser" value="com.github.chungkwong.idem.application.BrowserLauncher"/>
 				</map>
               </node>
             </node>

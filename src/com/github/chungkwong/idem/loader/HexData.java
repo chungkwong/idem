@@ -48,7 +48,7 @@ public class HexData implements DataObject{
 	}
 	@Override
 	public String getDescription(){
-		return "Hex";
+		return UILanguageManager.getDefaultTranslation("Hex");
 	}
 	@Override
 	public JComponent createDefaultView(){

@@ -14,34 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.loader;
-import com.github.chungkwong.idem.global.*;
+package com.github.chungkwong.idem.application;
 import com.github.chungkwong.idem.gui.*;
-import java.awt.image.*;
+import java.io.*;
 import javax.swing.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ImageData implements DataObject{
-	private BufferedImage image;
-	private Object src;
-	public ImageData(){
-
-	}
-	public ImageData(BufferedImage image){
-		this.image=image;
-	}
-	public ImageData(BufferedImage image,Object src){
-		this(image);
-		this.src=src;
+public class BrowserLauncher implements DataLoader<Browser>{
+	@Override
+	public Icon getIcon(){
+		return null;
 	}
 	@Override
-	public JComponent createDefaultView(){
-		return new JLabel(new ImageIcon(image));
+	public Browser newDataObject(){
+		return new Browser();
 	}
 	@Override
-	public String getDescription(){
-		return UILanguageManager.getDefaultTranslation("Image");
+	public Browser loadDataObject(InputStream in,Object src) throws Exception{
+		return new Browser(in,src);
 	}
 }

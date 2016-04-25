@@ -20,9 +20,10 @@ import javax.swing.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
+ * @param <T>
  */
-public interface DataLoader{
+public interface DataLoader<T extends DataObject>{
 	public Icon getIcon();
-	public DataObject newDataObject();
-	public DataObject loadDataObject(InputStream in,Object src)throws Exception;
+	public T newDataObject();
+	public T loadDataObject(InputStream in,Object src)throws Exception;
 }
