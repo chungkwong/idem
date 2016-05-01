@@ -15,38 +15,98 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.gui;
+import static com.github.chungkwong.idem.global.Log.LOG;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.util.logging.*;
 import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class HintedTextField extends JTextField implements FocusListener{
-	private TreeMap<String,String> hints=new TreeMap<>();
-	public HintedTextField(TreeMap<String,String> hints){
-		this.hints=hints;
-		addFocusListener(this);
-		
+public class HintedTextField extends JTextField implements CaretListener,AncestorListener{
+	private HintProvider hintProvider;
+	private HintDaemon hintDaemon;
+	private PopupHint popup;
+	private final Object barrier=new Object();
+	public HintedTextField(HintProvider hintProvider){
+		this.hintProvider=hintProvider;
+		this.popup=new PopupHint(this,getDocument());
+		addCaretListener(this);
+		addAncestorListener(this);
 	}
 	public static void main(String[] args){
-		JFrame f=new JFrame("Console");
-		TreeMap<String,String> hints=new TreeMap<>();
-		hints.put("ls","list file");
-		hints.put("ps","list jobs");
-		hints.put("pwd","working directory");
-		f.add(new HintedTextField(hints),BorderLayout.CENTER);
+		JFrame f=new JFrame("Test");
+		f.add(new HintedTextField(new HintProvider() {
+			@Override
+			public Hint[] getHints(Document doc,int pos){
+				return new Hint[]{
+					new SimpleHint("ls",null,"list file"),
+					new SimpleHint("ln",null,"<h1>link file</h1>"),
+					new SimpleHint("pwd",null,"show working directory")
+				};
+			}
+		}),BorderLayout.CENTER);
 		f.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
 	}
-	@Override
-	public void focusGained(FocusEvent e){
+	public void updateHint(){
 
 	}
+	public void showHint(Hint[] hints){
+		if(hints.length>0){
+			popup.prepare(hints,getCaretPosition());
+			try{
+				Rectangle rect=modelToView(getCaretPosition());
+				popup.show(this,(int)rect.getX(),(int)rect.getY());
+				popup.requestFocusInWindow();
+			}catch(BadLocationException ex){
+				LOG.log(Level.FINE.WARNING,"",ex);
+			}
+		}
+	}
 	@Override
-	public void focusLost(FocusEvent e){
+	public void caretUpdate(CaretEvent e){
+		synchronized(barrier){
+			barrier.notifyAll();
+		}
+	}
+	@Override
+	public synchronized void ancestorAdded(AncestorEvent event){
+		if(hintDaemon==null){
+			hintDaemon=new HintDaemon();
+			hintDaemon.start();
+		}
+	}
+	@Override
+	public synchronized void ancestorRemoved(AncestorEvent event){
+		hintDaemon.interrupt();
+		hintDaemon=null;
+	}
+	@Override
+	public void ancestorMoved(AncestorEvent event){
 
+	}
+	private class HintDaemon extends Thread{
+		public HintDaemon(){
+			setDaemon(true);
+		}
+		@Override
+		public void run(){
+			while(!interrupted()){
+				try{
+					synchronized(barrier){
+						barrier.wait();
+					}
+					SwingUtilities.invokeLater(()->showHint(hintProvider.getHints(getDocument(),getCaretPosition())));
+				}catch(InterruptedException ex){
+
+				}catch(Exception ex){
+					LOG.throwing("HintDaemon","run",ex);
+				}
+			}
+		}
 	}
 }
