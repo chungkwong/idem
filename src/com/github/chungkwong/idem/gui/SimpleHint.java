@@ -23,20 +23,25 @@ import javax.swing.*;
  */
 public class SimpleHint implements Hint{
 	private final Icon icon;
-	private final String text;
+	private final String display;
+	private final String input;
 	private final String document;
-	public SimpleHint(String text,Icon icon,String document){
+	public SimpleHint(String display,String input,Icon icon,String document){
 		this.icon=icon;
-		this.text=text;
+		this.display=display;
+		this.input=input;
 		this.document=document;
+	}
+	public SimpleHint(String text,Icon icon,String document){
+		this(text,text,icon,document);
 	}
 	@Override
 	public String getDisplayText(){
-		return text;
+		return display;
 	}
 	@Override
 	public String getInputText(){
-		return text;
+		return input;
 	}
 	@Override
 	public Reader getDocument(){
@@ -45,9 +50,5 @@ public class SimpleHint implements Hint{
 	@Override
 	public Icon getIcon(){
 		return icon;
-	}
-	@Override
-	public String toString(){
-		return text;
 	}
 }

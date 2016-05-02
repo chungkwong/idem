@@ -55,11 +55,12 @@ public final class PopupHint extends JPopupMenu implements KeyListener,
 		loc.setCellRenderer(new DefaultListCellRenderer(){
 			@Override
 			public Component getListCellRendererComponent(JList arg0,Object arg1,int arg2,boolean arg3,boolean arg4){
-				Component c=super.getListCellRendererComponent(loc,arg1,arg2,arg4,arg4);
-				
+				Component c=super.getListCellRendererComponent(arg0,arg1,arg2,arg3,arg4);
+				((JLabel)c).setText(((Hint)arg1).getDisplayText());
+				((JLabel)c).setIcon(((Hint)arg1).getIcon());
+				((JLabel)c).setHorizontalAlignment(SwingConstants.LEFT);
 				return c;
 			}
-
 		});
 		loc.setOpaque(false);
 		addFocusListener(this);

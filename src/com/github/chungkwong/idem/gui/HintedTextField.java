@@ -18,6 +18,7 @@ package com.github.chungkwong.idem.gui;
 import static com.github.chungkwong.idem.global.Log.LOG;
 import java.awt.*;
 import java.util.logging.*;
+import javax.imageio.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
@@ -41,8 +42,14 @@ public class HintedTextField extends JTextField implements CaretListener,Ancesto
 		f.add(new HintedTextField(new HintProvider() {
 			@Override
 			public Hint[] getHints(Document doc,int pos){
+				ImageIcon icon=null;
+				try{
+					icon=new ImageIcon(ImageIO.read(HintedTextField.class.getResourceAsStream("/com/github/chungkwong/idem/resources/icons/jedit.png")));
+				}catch(Exception ex){
+					ex.printStackTrace();
+				}
 				return new Hint[]{
-					new SimpleHint("ls",null,"list file"),
+					new SimpleHint("<html><i>ls</i></html>","ls",icon,"list file"),
 					new SimpleHint("ln",null,"<h1>link file</h1>"),
 					new SimpleHint("pwd",null,"show working directory")
 				};
