@@ -1,4 +1,4 @@
-/*/*
+/*
  * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.gui;
-
 import static com.github.chungkwong.idem.global.Log.LOG;
 import com.github.chungkwong.idem.global.*;
 import java.awt.*;
@@ -26,10 +25,11 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 /**
- * A swing component that show auto-complete choice
+ *
+ * @author Chan Chung Kwong <1m02math@126.com>
  */
-public final class PopupHint extends JPopupMenu implements KeyListener,
-		UndoableEditListener,MouseListener,FocusListener,PopupMenuListener,ListSelectionListener{
+public class PopupHint2 extends JDialog implements KeyListener,
+		UndoableEditListener,MouseListener,FocusListener,ListSelectionListener{
 	private Hint[] hints;
 	private DefaultListModel<Hint> vec=new DefaultListModel<>();
 	private JTextComponent editor;
@@ -43,10 +43,13 @@ public final class PopupHint extends JPopupMenu implements KeyListener,
 	 * @param area the JTextArea where this component is shown
 	 * @param doc the Document that the final choice is to be inserted
 	 */
-	public PopupHint(JTextComponent editor,Document doc){
+	public PopupHint2(JTextComponent editor,Document doc){
+		super((Window)editor.getTopLevelAncestor());
 		this.doc=doc;
 		this.editor=editor;
-		setOpaque(false);
+		setLayout(new BorderLayout());
+		setUndecorated(true);
+		setSize(400,300);
 		loc.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		loc.setSelectedIndex(0);
 		input.getDocument().addUndoableEditListener(this);
@@ -65,13 +68,12 @@ public final class PopupHint extends JPopupMenu implements KeyListener,
 		});
 		loc.setOpaque(false);
 		addFocusListener(this);
-		addPopupMenuListener(this);
-		add(input);
-		add(new JScrollPane(loc));
+		add(input,BorderLayout.NORTH);
+		add(new JScrollPane(loc),BorderLayout.WEST);
 		note.setContentType("text/html");
 		note.setEditable(false);
-		add(new JScrollPane(note));
-		pack();
+		add(new JScrollPane(note),BorderLayout.EAST);
+		//pack();
 	}
 	public void prepare(Hint[] choices,int pos){
 		this.hints=choices;
@@ -81,7 +83,7 @@ public final class PopupHint extends JPopupMenu implements KeyListener,
 			vec.add(i,choices[i]);
 		this.pos=pos;
 		loc.setSelectedIndex(0);
-		pack();
+		//pack();
 	}
 	@Override
 	public void keyPressed(KeyEvent e){
@@ -115,7 +117,7 @@ public final class PopupHint extends JPopupMenu implements KeyListener,
 			choose(input.getText());
 		}else{
 			loc.setSelectedIndex(0);
-			pack();
+			//pack();
 			//loc.repaint();
 			input.requestFocusInWindow();
 		}
@@ -152,11 +154,11 @@ public final class PopupHint extends JPopupMenu implements KeyListener,
 		}
 	}
 	@Override
-	public void popupMenuWillBecomeVisible(PopupMenuEvent e){
+	public void focusGained(FocusEvent e){
 		input.requestFocusInWindow();
 	}
 	@Override
-	public void popupMenuWillBecomeInvisible(PopupMenuEvent e){
+	public void focusLost(FocusEvent e){
 		String text=input.getText();
 		if(!text.isEmpty()){
 			try{
@@ -167,19 +169,8 @@ public final class PopupHint extends JPopupMenu implements KeyListener,
 			input.setText("");
 		}
 		vec.clear();
-		getInvoker().requestFocusInWindow();
-	}
-	@Override
-	public void popupMenuCanceled(PopupMenuEvent e){
-
-	}
-	@Override
-	public void focusGained(FocusEvent e){
-		input.requestFocusInWindow();
-	}
-	@Override
-	public void focusLost(FocusEvent e){
-
+		setVisible(false);
+		editor.requestFocusInWindow();
 	}
 	@Override
 	public void valueChanged(ListSelectionEvent e){

@@ -29,17 +29,18 @@ import javax.swing.text.*;
 public class HintedTextField extends JTextField implements CaretListener,AncestorListener{
 	private HintProvider hintProvider;
 	private HintDaemon hintDaemon;
-	private PopupHint popup;
+	//private PopupHint popup;
+	private PopupHint2 popup;
 	private final Object barrier=new Object();
 	public HintedTextField(HintProvider hintProvider){
 		this.hintProvider=hintProvider;
-		this.popup=new PopupHint(this,getDocument());
+		this.popup=new PopupHint2(this,getDocument());
 		addCaretListener(this);
 		addAncestorListener(this);
 	}
 	public static void main(String[] args){
 		JFrame f=new JFrame("Test");
-		f.add(new HintedTextField(new HintProvider() {
+		f.add(new HintedTextField(new HintProvider(){
 			@Override
 			public Hint[] getHints(Document doc,int pos){
 				ImageIcon icon=null;
@@ -67,8 +68,11 @@ public class HintedTextField extends JTextField implements CaretListener,Ancesto
 			popup.prepare(hints,getCaretPosition());
 			try{
 				Rectangle rect=modelToView(getCaretPosition());
-				popup.show(this,(int)rect.getX(),(int)rect.getY());
-				popup.requestFocusInWindow();
+				rect.add(getLocationOnScreen());
+				popup.setLocation(rect.getLocation());
+				popup.setVisible(true);
+				//popup.show(this,(int)rect.getX(),(int)rect.getY());
+				//popup.requestFocusInWindow();
 			}catch(BadLocationException ex){
 				LOG.log(Level.FINE.WARNING,"",ex);
 			}
