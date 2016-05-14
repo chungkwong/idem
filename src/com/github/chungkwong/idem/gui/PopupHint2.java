@@ -28,8 +28,8 @@ import javax.swing.text.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PopupHint2 extends JDialog implements KeyListener,
-		UndoableEditListener,MouseListener,FocusListener,ListSelectionListener{
+public class PopupHint2 extends JDialog implements KeyListener,MouseListener,
+		UndoableEditListener,WindowFocusListener,ListSelectionListener{
 	private Hint[] hints;
 	private DefaultListModel<Hint> vec=new DefaultListModel<>();
 	private JTextComponent editor;
@@ -44,7 +44,7 @@ public class PopupHint2 extends JDialog implements KeyListener,
 	 * @param doc the Document that the final choice is to be inserted
 	 */
 	public PopupHint2(JTextComponent editor,Document doc){
-		super((Window)editor.getTopLevelAncestor());
+		super(MainFrame.MAIN_FRAME);
 		this.doc=doc;
 		this.editor=editor;
 		setLayout(new BorderLayout());
@@ -67,7 +67,7 @@ public class PopupHint2 extends JDialog implements KeyListener,
 			}
 		});
 		loc.setOpaque(false);
-		addFocusListener(this);
+		addWindowFocusListener(this);
 		add(input,BorderLayout.NORTH);
 		add(new JScrollPane(loc),BorderLayout.WEST);
 		note.setContentType("text/html");
@@ -154,11 +154,11 @@ public class PopupHint2 extends JDialog implements KeyListener,
 		}
 	}
 	@Override
-	public void focusGained(FocusEvent e){
+	public void windowGainedFocus(WindowEvent e){
 		input.requestFocusInWindow();
 	}
 	@Override
-	public void focusLost(FocusEvent e){
+	public void windowLostFocus(WindowEvent e){
 		String text=input.getText();
 		if(!text.isEmpty()){
 			try{
@@ -168,9 +168,7 @@ public class PopupHint2 extends JDialog implements KeyListener,
 			}
 			input.setText("");
 		}
-		vec.clear();
 		setVisible(false);
-		editor.requestFocusInWindow();
 	}
 	@Override
 	public void valueChanged(ListSelectionEvent e){

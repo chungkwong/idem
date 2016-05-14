@@ -52,7 +52,8 @@ public class HintedTextField extends JTextField implements CaretListener,Ancesto
 				return new Hint[]{
 					new SimpleHint("<html><i>ls</i></html>","ls",icon,"list file"),
 					new SimpleHint("ln",null,"<h1>link file</h1>"),
-					new SimpleHint("pwd",null,"show working directory")
+					new SimpleHint("pwd",null,"show working directory"),
+					new SimpleHint(Integer.toHexString(pos),null,"position")
 				};
 			}
 		}),BorderLayout.CENTER);
@@ -67,10 +68,11 @@ public class HintedTextField extends JTextField implements CaretListener,Ancesto
 		if(hints.length>0){
 			popup.prepare(hints,getCaretPosition());
 			try{
-				Rectangle rect=modelToView(getCaretPosition());
-				rect.add(getLocationOnScreen());
-				popup.setLocation(rect.getLocation());
+				Point loc=modelToView(getCaretPosition()).getLocation();
+				loc.translate((int)getLocationOnScreen().getX(),(int)getLocationOnScreen().getY());
+				popup.setLocation(loc);
 				popup.setVisible(true);
+
 				//popup.show(this,(int)rect.getX(),(int)rect.getY());
 				//popup.requestFocusInWindow();
 			}catch(BadLocationException ex){
@@ -113,7 +115,7 @@ public class HintedTextField extends JTextField implements CaretListener,Ancesto
 					}
 					SwingUtilities.invokeLater(()->showHint(hintProvider.getHints(getDocument(),getCaretPosition())));
 				}catch(InterruptedException ex){
-
+					interrupted();
 				}catch(Exception ex){
 					LOG.throwing("HintDaemon","run",ex);
 				}
