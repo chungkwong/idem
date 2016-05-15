@@ -22,4 +22,5 @@ package com.github.chungkwong.idem.gui.editor;
  */
 public interface Symbol{
 	String getID();
+	String getName();
 }

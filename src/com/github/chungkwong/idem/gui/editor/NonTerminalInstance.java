@@ -21,6 +21,8 @@ import javax.swing.text.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class NonTerminalInstance implements SymbolInstance{
+	private NonTerminal symbol;
+
 	@Override
 	public Document getDocument(){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -59,7 +61,11 @@ public class NonTerminalInstance implements SymbolInstance{
 	}
 	@Override
 	public boolean isLeaf(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return false;
+	}
+	@Override
+	public Symbol getSymbol(){
+		return symbol;
 	}
 
 }

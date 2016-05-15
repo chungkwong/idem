@@ -15,80 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.gui.editor;
-import javax.swing.event.*;
 import javax.swing.text.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CodeDocument implements Document{
-	@Override
-	public int getLength(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void addDocumentListener(DocumentListener listener){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void removeDocumentListener(DocumentListener listener){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void addUndoableEditListener(UndoableEditListener listener){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void removeUndoableEditListener(UndoableEditListener listener){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public Object getProperty(Object key){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void putProperty(Object key,Object value){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void remove(int offs,int len) throws BadLocationException{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void insertString(int offset,String str,AttributeSet a) throws BadLocationException{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public String getText(int offset,int length) throws BadLocationException{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void getText(int offset,int length,Segment txt) throws BadLocationException{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public Position getStartPosition(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public Position getEndPosition(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public Position createPosition(int offs) throws BadLocationException{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public Element[] getRootElements(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+public class CodeDocument extends AbstractDocument{
+	private Element root;
+	public CodeDocument(){
+		super(new GapContent());
 	}
 	@Override
 	public Element getDefaultRootElement(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return root;
 	}
 	@Override
-	public void render(Runnable r){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public Element getParagraphElement(int arg0){
+		return getDefaultRootElement();
 	}
 
 }

@@ -15,18 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.gui.editor;
-
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class NonTerminal implements Symbol{
-	private final String id;
-	public NonTerminal(String id){
+	private final String id,name;
+	public NonTerminal(String name){
+		this(name,name);
+	}
+	public NonTerminal(String id,String name){
 		this.id=id;
+		this.name=name;
 	}
 	@Override
 	public String getID(){
 		return id;
+	}
+	@Override
+	public String getName(){
+		return name;
+	}
+	@Override
+	public boolean equals(Object obj){
+		return obj instanceof NonTerminal&&id.equals(((NonTerminal)obj).id);
+	}
+	@Override
+	public int hashCode(){
+		int hash=5;
+		hash=53*hash+Objects.hashCode(this.id);
+		return hash;
 	}
 }
