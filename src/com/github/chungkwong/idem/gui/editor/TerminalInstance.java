@@ -22,9 +22,7 @@ import javax.swing.text.*;
  */
 public class TerminalInstance implements SymbolInstance{
 	private Terminal symbol;
-	private NonTerminalInstance parent;
 	private String token;
-
 	public TerminalInstance(Terminal symbol,String token){
 		this.symbol=symbol;
 		this.token=token;
@@ -39,11 +37,11 @@ public class TerminalInstance implements SymbolInstance{
 	}
 	@Override
 	public Element getParentElement(){
-		return parent;
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
 	public String getName(){
-		return symbol.getName();
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
 	public AttributeSet getAttributes(){

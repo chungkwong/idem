@@ -22,8 +22,9 @@ import javax.swing.text.*;
  */
 public class CodeDocument extends AbstractDocument{
 	private Element root;
-	public CodeDocument(){
+	public CodeDocument(ContextFreeGrammar grammar){
 		super(new GapContent());
+		root=new NonTerminalInstance((NonTerminal)grammar.getStartSymbol(),null,null);
 	}
 	@Override
 	public Element getDefaultRootElement(){
@@ -33,5 +34,26 @@ public class CodeDocument extends AbstractDocument{
 	public Element getParagraphElement(int arg0){
 		return getDefaultRootElement();
 	}
-
+	class TerminalInstance extends AbstractDocument.LeafElement implements SymbolInstance{
+		Terminal symbol;
+		public TerminalInstance(Terminal symbol,Element arg0,AttributeSet arg1,int arg2,int arg3){
+			super(arg0,arg1,arg2,arg3);
+			this.symbol=symbol;
+		}
+		@Override
+		public Symbol getSymbol(){
+			return symbol;
+		}
+	}
+	class NonTerminalInstance extends AbstractDocument.BranchElement implements SymbolInstance{
+		NonTerminal symbol;
+		public NonTerminalInstance(NonTerminal symbol,Element arg0,AttributeSet arg1){
+			super(arg0,arg1);
+			this.symbol=symbol;
+		}
+		@Override
+		public Symbol getSymbol(){
+			return symbol;
+		}
+	}
 }
