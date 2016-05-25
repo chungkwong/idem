@@ -23,10 +23,15 @@ import javax.swing.text.*;
 public class CodeViewFactory implements ViewFactory{
 	@Override
 	public View create(Element elem){
-		if(elem instanceof TerminalInstance){
-			return new LabelView(elem);
-		}else{
-			return new BoxView(elem,BoxView.HORIZONTAL);
-		}
+		String kind = elem.getName();
+            if (kind != null) {
+                if (kind.equals(AbstractDocument.ContentElementName)) {
+                    return new LabelView(elem);
+                } else if (kind.equals(AbstractDocument.ParagraphElementName)) {
+                    return new ParagraphView(elem);
+                }
+            }
+            // default to text display
+            return new LabelView(elem);
 	}
 }

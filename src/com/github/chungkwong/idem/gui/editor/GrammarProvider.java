@@ -15,31 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.gui.editor;
-import javax.swing.text.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CodeDocument extends AbstractDocument{
-	private static final AttributeSet EMPTY_ATTRIBUTE_SET=new SimpleAttributeSet();
-	Element root;
-	public CodeDocument(ContextFreeGrammar grammar){
-		super(new GapContent());
-		writeLock();
-		//root=createBranchElement(root,EMPTY_ATTRIBUTE_SET);
-		root=createLeafElement(null,EMPTY_ATTRIBUTE_SET,0,0);
-//root=createBranchElement(null,EMPTY_ATTRIBUTE_SET);
-		writeUnlock();
-	}
-	@Override
-	public Element getDefaultRootElement(){
-		return root;
-	}
-	@Override
-	public Element getParagraphElement(int arg0){
-		Element element=root;
-		while(element instanceof BranchElement)
-			element=element.getElement(element.getElementIndex(arg0));
-		return element;
+public class GrammarProvider{
+	public static ContextFreeGrammar getGrammar(){
+		NonTerminal start=new NonTerminal("start");
+		Terminal end=new Terminal("end");
+		HashMap<NonTerminal,ProductionRule> rules=new HashMap<>();
+		rules.put(start,new ProductionRule(start,new Symbol[]{end}));
+		return new ContextFreeGrammar(start,rules);
 	}
 }

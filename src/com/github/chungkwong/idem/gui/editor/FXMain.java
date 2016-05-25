@@ -33,15 +33,6 @@ public class FXMain extends Application{
 		Button back=new Button("<");
 		Button forward=new Button(">");
 		TextField location=new TextField("file:///home/kwong/javatool/html/zh_CN/api/index.html");
-		Popup popup=new Popup();
-		ComboBox combo=new ComboBox();
-		popup.getContent().add(combo);
-		popup.setAutoFix(true);
-		popup.setAutoHide(true);
-		location.setOnKeyTyped((e)->{
-			combo.getItems().add(Integer.toString(location.getCaretPosition()));
-			popup.show(primaryStage,location.getLayoutX(),location.getLayoutY());
-		});
 		WebView browser=new WebView();
 		back.setOnAction((event)->browser.getEngine().getHistory().go(-1));
 		forward.setOnAction((event)->browser.getEngine().getHistory().go(+1));

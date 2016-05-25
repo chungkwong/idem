@@ -15,31 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.gui.editor;
+import java.awt.*;
 import javax.swing.text.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CodeDocument extends AbstractDocument{
-	private static final AttributeSet EMPTY_ATTRIBUTE_SET=new SimpleAttributeSet();
-	Element root;
-	public CodeDocument(ContextFreeGrammar grammar){
-		super(new GapContent());
-		writeLock();
-		//root=createBranchElement(root,EMPTY_ATTRIBUTE_SET);
-		root=createLeafElement(null,EMPTY_ATTRIBUTE_SET,0,0);
-//root=createBranchElement(null,EMPTY_ATTRIBUTE_SET);
-		writeUnlock();
-	}
+public class CodeHightPainter implements Highlighter.HighlightPainter{
 	@Override
-	public Element getDefaultRootElement(){
-		return root;
+	public void paint(Graphics g,int p0,int p1,Shape bounds,JTextComponent c){
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
-	@Override
-	public Element getParagraphElement(int arg0){
-		Element element=root;
-		while(element instanceof BranchElement)
-			element=element.getElement(element.getElementIndex(arg0));
-		return element;
-	}
+
 }

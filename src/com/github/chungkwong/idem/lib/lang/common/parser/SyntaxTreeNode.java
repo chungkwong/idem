@@ -14,25 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.gui.editor;
-import java.awt.*;
-import javax.swing.*;
+package com.github.chungkwong.idem.lib.lang.common.parser;
+
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CodeEditor extends JEditorPane{
-	public CodeEditor(){
-		setEditorKit(CodeEditorKit.DEFAULT_CODE_EDITOR_KIT);
-		//setEditorKit(new javax.swing.text.StyledEditorKit());
-		//setEditorKit(new javax.swing.text.DefaultEditorKit());
-		setEditable(true);
-	}
-	public static void main(String[] args){
-		JFrame f=new JFrame("Test");
-		f.add(new JScrollPane(new CodeEditor()),BorderLayout.CENTER);
-		f.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setVisible(true);
-	}
+public class SyntaxTreeNode{
+
 }

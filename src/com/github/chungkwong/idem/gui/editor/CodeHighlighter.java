@@ -15,61 +15,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.gui.editor;
+import java.awt.*;
 import javax.swing.text.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class TerminalInstance implements SymbolInstance{
-	private Terminal symbol;
-	private String token;
-	public TerminalInstance(Terminal symbol,String token){
-		this.symbol=symbol;
-		this.token=token;
+public class CodeHighlighter implements Highlighter{
+	@Override
+	public void install(JTextComponent c){
+
 	}
 	@Override
-	public Symbol getSymbol(){
-		return symbol;
+	public void deinstall(JTextComponent c){
+
 	}
 	@Override
-	public Document getDocument(){
+	public void paint(Graphics g){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public Element getParentElement(){
+	public Object addHighlight(int p0,int p1,HighlightPainter p) throws BadLocationException{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public String getName(){
+	public void removeHighlight(Object tag){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public AttributeSet getAttributes(){
+	public void removeAllHighlights(){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public int getStartOffset(){
+	public void changeHighlight(Object tag,int p0,int p1) throws BadLocationException{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	@Override
-	public int getEndOffset(){
+	public Highlight[] getHighlights(){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public int getElementIndex(int offset){
-		return 0;
-	}
-	@Override
-	public int getElementCount(){
-		return 0;
-	}
-	@Override
-	public Element getElement(int index){
-		return null;
-	}
-	@Override
-	public boolean isLeaf(){
-		return true;
 	}
 
 }

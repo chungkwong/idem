@@ -22,27 +22,44 @@ import javax.swing.text.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CodeEditorKit extends EditorKit{
-	public static final CodeEditorKit DEFAULT_CODE_EDITOR_KIT=new CodeEditorKit();
+public class CodeEditorKit extends DefaultEditorKit{
+	public static final CodeEditorKit DEFAULT_CODE_EDITOR_KIT=new CodeEditorKit(GrammarProvider.getGrammar(),"text/scheme");
+	private final ContextFreeGrammar cfg;
+	private final String mime;
+	private final Action[] actions=new Action[]{};
+	public CodeEditorKit(ContextFreeGrammar cfg,String mime){
+		this.cfg=cfg;
+		this.mime=mime;
+	}
+	@Override
+	public void install(JEditorPane c){
+		super.install(c);
+		//c.setHighlighter(new CodeHighlighter());
+	}
+
+	public ContextFreeGrammar getCfg(){
+		return cfg;
+	}
 	@Override
 	public String getContentType(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return mime;
 	}
 	@Override
 	public ViewFactory getViewFactory(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return new CodeViewFactory();
 	}
-	@Override
+	/*@Override
 	public Action[] getActions(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
+		return actions;
+	}*/
+	/*@Override
 	public Caret createCaret(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
+		return new DefaultCaret();
+	}*/
 	@Override
 	public Document createDefaultDocument(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return new DefaultStyledDocument();
+		//return new CodeDocument(cfg);
 	}
 	@Override
 	public void read(InputStream in,Document doc,int pos) throws IOException,BadLocationException{
@@ -60,5 +77,4 @@ public class CodeEditorKit extends EditorKit{
 	public void write(Writer out,Document doc,int pos,int len) throws IOException,BadLocationException{
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
-
 }
