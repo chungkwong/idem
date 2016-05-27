@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.util;
 import java.util.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -57,5 +58,17 @@ public class IteratorHelper{
 				return iter.next();
 			}
 		};
+	}
+	public static <T> Stream toStream(Iterator<T> iter,boolean parallel){
+		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iter,Spliterator.ORDERED),parallel);
+	}
+	public static IntStream toStream(PrimitiveIterator.OfInt iter,boolean parallel){
+		return StreamSupport.intStream(Spliterators.spliteratorUnknownSize(iter,Spliterator.ORDERED),parallel);
+	}
+	public static LongStream toStream(PrimitiveIterator.OfLong iter,boolean parallel){
+		return StreamSupport.longStream(Spliterators.spliteratorUnknownSize(iter,Spliterator.ORDERED),parallel);
+	}
+	public static DoubleStream toStream(PrimitiveIterator.OfDouble iter,boolean parallel){
+		return StreamSupport.doubleStream(Spliterators.spliteratorUnknownSize(iter,Spliterator.ORDERED),parallel);
 	}
 }
