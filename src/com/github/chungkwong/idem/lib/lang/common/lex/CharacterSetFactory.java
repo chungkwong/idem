@@ -24,11 +24,14 @@ public class CharacterSetFactory{
 	public static CharacterSet createRangeCharacterSet(int begin,int end){
 		return new RangeCharacterSet(begin,end);
 	}
+	public static CharacterSet createBlockCharacterSet(Character.UnicodeBlock block){
+		return new BlockCharacterSet(block);
+	}
 	public static CharacterSet createUnionCharacterSet(CharacterSet set1,CharacterSet set2){
-		return (c)->set1.contains(c)||set2.contains(c);
+		return new UnionCharacterSet(set1,set2);
 	}
 	public static CharacterSet createIntersectionCharacterSet(CharacterSet set1,CharacterSet set2){
-		return (c)->set1.contains(c)&&set2.contains(c);
+		return new IntersectionCharacterSet(set1,set2);
 	}
 	private static class RangeCharacterSet implements CharacterSet{
 		private final int begin,end;
@@ -47,12 +50,38 @@ public class CharacterSetFactory{
 	}
 	private static class BlockCharacterSet implements CharacterSet{
 		private final Character.UnicodeBlock block;
-		public BlockCharacterSet(Character.UnicodeBlock block){
+		private BlockCharacterSet(Character.UnicodeBlock block){
 			this.block=block;
 		}
 		@Override
 		public boolean contains(int codePoint){
 			return Character.UnicodeBlock.of(codePoint).equals(block);
+		}
+	}
+	private static class IntersectionCharacterSet implements CharacterSet{
+		private final CharacterSet set1,set2;
+		private IntersectionCharacterSet(CharacterSet set1,CharacterSet set2){
+			this.set1=set1;
+			this.set2=set2;
+		}
+		@Override
+		public boolean contains(int codePoint){
+			return set1.contains(codePoint)&&set2.contains(codePoint);
+		}
+		@Override
+		public IntStream stream(){
+			return set1.stream().filter((c)->set2.contains(c));
+		}
+	}
+	private static class UnionCharacterSet implements CharacterSet{
+		private final CharacterSet set1,set2;
+		private UnionCharacterSet(CharacterSet set1,CharacterSet set2){
+			this.set1=set1;
+			this.set2=set2;
+		}
+		@Override
+		public boolean contains(int codePoint){
+			return set1.contains(codePoint)||set2.contains(codePoint);
 		}
 	}
 }

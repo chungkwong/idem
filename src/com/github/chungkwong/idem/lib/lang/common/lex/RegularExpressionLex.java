@@ -21,6 +21,7 @@ package com.github.chungkwong.idem.lib.lang.common.lex;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class RegularExpressionLex implements Lex{
+
 	@Override
 	public Token get(){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
