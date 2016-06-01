@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.common.lex;
-import com.github.chungkwong.idem.lib.*;
+import com.github.chungkwong.idem.lib.Pair;
+import com.github.chungkwong.idem.util.*;
 import java.util.*;
-import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -28,18 +28,26 @@ public class DFA{
 	public DFA(State init){
 		this.init=init;
 	}
-	public State run(IntStream input){
+	public State run(IntCheckPointIterator input){
 		return run(input,init);
 	}
-	public State run(IntStream input,State start){
-		if(input.peek(null)){
-			
+	public State run(IntCheckPointIterator input,State start){
+		State curr=start,lastAccept=FAILED;
+		input.startPreread();
+		while(curr!=FAILED){
+			curr=curr.nextState(input.nextInt());
+			if(curr.isAcceptedState()){
+				input.endPreread(true);
+				input.startPreread();
+			}
 		}
+		input.endPreread(false);
+		return lastAccept;
 	}
-	public boolean isAccepted(IntStream input){
+	public boolean isAccepted(IntCheckPointIterator input){
 		return run(input).isAcceptedState();
 	}
-	public boolean isAccepted(IntStream input,State start){
+	public boolean isAccepted(IntCheckPointIterator input,State start){
 		return run(input,start).isAcceptedState();
 	}
 	public static class State{

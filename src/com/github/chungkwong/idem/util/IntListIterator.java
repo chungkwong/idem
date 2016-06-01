@@ -15,27 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.util;
-import java.util.function.*;
-import java.util.stream.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class IDGenerator implements IntSupplier{
-	private int id=0;
-	private IDGenerator(){
-	}
-	public int getId(){
-		return id++;
-	}
-	public static IDGenerator getIDGenerator(){
-		return new IDGenerator();
-	}
-	public IntStream toStream(){
-		return IntStream.generate(this);
-	}
-	@Override
-	public int getAsInt(){
-		return getId();
-	}
+public interface IntListIterator extends PrimitiveIterator.OfInt{
+	boolean hasPrevious();
+	int nextIndex();
+	int previousIndex();
+	int previous();
+	void set(int e);
+	void add(int e);
 }

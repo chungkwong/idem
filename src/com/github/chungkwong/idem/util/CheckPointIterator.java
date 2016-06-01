@@ -15,27 +15,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.util;
-import java.util.function.*;
-import java.util.stream.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class IDGenerator implements IntSupplier{
-	private int id=0;
-	private IDGenerator(){
+public class CheckPointIterator<T> implements Iterator<T>{
+	private final Iterator<T> src;
+	private boolean preread=false;
+	private List<T> buffer=new ArrayList<>();
+	private int offset=0;
+	public CheckPointIterator(Iterator<T> src){
+		this.src=src;
 	}
-	public int getId(){
-		return id++;
+	public void startPreread(){
+		if(preread){
+			throw new IllegalStateException();
+		}
+		preread=true;
 	}
-	public static IDGenerator getIDGenerator(){
-		return new IDGenerator();
-	}
-	public IntStream toStream(){
-		return IntStream.generate(this);
+	public void endPreread(boolean forward){
+		if(!preread){
+			throw new IllegalStateException();
+		}
+		preread=false;
+		if(forward){
+			buffer.subList(0,offset).clear();
+		}
+		offset=0;
 	}
 	@Override
-	public int getAsInt(){
-		return getId();
+	public boolean hasNext(){
+		return src.hasNext()||offset<buffer.size();
+	}
+	@Override
+	public T next(){
+		if(offset<buffer.size()){
+			return buffer.get(offset++);
+		}else{
+			T element=src.next();
+			if(preread){
+				buffer.add(element);
+			}
+			return element;
+		}
 	}
 }
