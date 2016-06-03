@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.gui;
 import static com.github.chungkwong.idem.global.Log.LOG;
+import com.github.chungkwong.idem.util.*;
 import java.awt.*;
 import java.util.logging.*;
 import javax.imageio.*;
@@ -28,10 +29,9 @@ import javax.swing.text.*;
  */
 public class HintedTextField extends JTextField implements CaretListener,AncestorListener{
 	private HintProvider hintProvider;
-	private HintDaemon hintDaemon;
+	private RealtimeTask hintDaemon;
 	//private PopupHint popup;
 	private PopupHint2 popup;
-	private final Object barrier=new Object();
 	public HintedTextField(HintProvider hintProvider){
 		this.hintProvider=hintProvider;
 		this.popup=new PopupHint2(this,getDocument());
@@ -82,44 +82,23 @@ public class HintedTextField extends JTextField implements CaretListener,Ancesto
 	}
 	@Override
 	public void caretUpdate(CaretEvent e){
-		synchronized(barrier){
-			barrier.notifyAll();
-		}
+		hintDaemon.invoke();
 	}
 	@Override
 	public synchronized void ancestorAdded(AncestorEvent event){
 		if(hintDaemon==null){
-			hintDaemon=new HintDaemon();
-			hintDaemon.start();
+			hintDaemon=new RealtimeTask(
+					()->SwingUtilities.invokeLater(()->showHint(hintProvider.getHints(getDocument(),getCaretPosition()))));
+			hintDaemon.invoke();
 		}
 	}
 	@Override
 	public synchronized void ancestorRemoved(AncestorEvent event){
-		hintDaemon.interrupt();
+		hintDaemon.stop();
 		hintDaemon=null;
 	}
 	@Override
 	public void ancestorMoved(AncestorEvent event){
 
-	}
-	private class HintDaemon extends Thread{
-		public HintDaemon(){
-			setDaemon(true);
-		}
-		@Override
-		public void run(){
-			while(!interrupted()){
-				try{
-					synchronized(barrier){
-						barrier.wait();
-					}
-					SwingUtilities.invokeLater(()->showHint(hintProvider.getHints(getDocument(),getCaretPosition())));
-				}catch(InterruptedException ex){
-					interrupted();
-				}catch(Exception ex){
-					LOG.throwing("HintDaemon","run",ex);
-				}
-			}
-		}
 	}
 }

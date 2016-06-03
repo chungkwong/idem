@@ -147,7 +147,7 @@ public class PopupHint2 extends JDialog implements KeyListener,MouseListener,
 		try{
 			doc.insertString(pos,choice,null);
 			input.setText("");
-			editor.requestFocus();
+			//editor.requestFocus();
 			setVisible(false);
 		}catch(Exception ex){
 			LOG.log(Level.WARNING,null,ex);
