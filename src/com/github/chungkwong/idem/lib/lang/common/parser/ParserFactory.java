@@ -14,15 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.lib.lang.common.lex;
-
+package com.github.chungkwong.idem.lib.lang.common.parser;
+import com.github.chungkwong.idem.lib.lang.common.parser.Parser;
+import com.github.chungkwong.idem.parser.*;
+import com.github.chungkwong.idem.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
- * @param <C> Token type
  */
-public interface Token{
-	String getText();
-	Object getValue();
-	String getType();
+public interface ParserFactory{
+	Parser createParser(CheckPointIterator<Token> src);
 }

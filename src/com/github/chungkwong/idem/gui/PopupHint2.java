@@ -28,9 +28,9 @@ import javax.swing.text.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class PopupHint2 extends JDialog implements KeyListener,MouseListener,
+public class PopupHint2 extends JPanel implements KeyListener,MouseListener,
 		UndoableEditListener,WindowFocusListener,ListSelectionListener{
-	private Hint[] hints;
+	private Hint[] choices;
 	private DefaultListModel<Hint> vec=new DefaultListModel<>();
 	private JTextComponent editor;
 	private JTextField input=new JTextField();
@@ -38,17 +38,17 @@ public class PopupHint2 extends JDialog implements KeyListener,MouseListener,
 	private JList<Hint> loc=new JList<Hint>(vec);
 	private Document doc;
 	private int pos;
+	private Popup popup;
 	/**
 	 * Construct a CompletePrompt
 	 * @param area the JTextArea where this component is shown
 	 * @param doc the Document that the final choice is to be inserted
 	 */
 	public PopupHint2(JTextComponent editor,Document doc){
-		super(MainFrame.MAIN_FRAME);
 		this.doc=doc;
 		this.editor=editor;
 		setLayout(new BorderLayout());
-		setUndecorated(true);
+		//setUndecorated(true);
 		setSize(400,300);
 		loc.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		loc.setSelectedIndex(0);
@@ -67,7 +67,7 @@ public class PopupHint2 extends JDialog implements KeyListener,MouseListener,
 			}
 		});
 		loc.setOpaque(false);
-		addWindowFocusListener(this);
+		//addWindowFocusListener(this);
 		add(input,BorderLayout.NORTH);
 		add(new JScrollPane(loc),BorderLayout.WEST);
 		note.setContentType("text/html");
@@ -75,15 +75,38 @@ public class PopupHint2 extends JDialog implements KeyListener,MouseListener,
 		add(new JScrollPane(note),BorderLayout.EAST);
 		//pack();
 	}
-	public void prepare(Hint[] choices,int pos){
-		this.hints=choices;
-		vec.removeAllElements();
+	public void show(Hint[] choices){
+		this.pos=editor.getCaretPosition();
+		this.choices=choices;
 		vec.ensureCapacity(choices.length);
 		for(int i=0;i<choices.length;i++)
 			vec.add(i,choices[i]);
-		this.pos=pos;
 		loc.setSelectedIndex(0);
+		try{
+			Point loc=editor.modelToView(pos).getLocation();
+			loc.translate((int)editor.getLocationOnScreen().getX(),(int)editor.getLocationOnScreen().getY());
+			popup=PopupFactory.getSharedInstance().getPopup(editor,this,(int)loc.getX(),(int)loc.getY());
+			popup.show();
+			input.requestFocusInWindow();
+			//popup.show(this,(int)rect.getX(),(int)rect.getY());
+			//popup.requestFocusInWindow();
+		}catch(BadLocationException|NullPointerException ex){
+
+		}
 		//pack();
+	}
+	public void hide(){
+		if(popup!=null){
+			popup.hide();
+			popup=null;
+			choices=null;
+			vec.removeAllElements();
+			String text=input.getText();
+			if(!text.isEmpty()){
+				try{doc.insertString(pos,text,null);}catch(BadLocationException ex){}
+			}
+			input.setText("");
+		}
 	}
 	@Override
 	public void keyPressed(KeyEvent e){
@@ -110,9 +133,9 @@ public class PopupHint2 extends JDialog implements KeyListener,MouseListener,
 	public void undoableEditHappened(UndoableEditEvent e){
 		vec.clear();
 		String text=input.getText();
-		for(int i=0,j=0;i<hints.length;i++)
-			if(hints[i].getInputText().startsWith(text))
-				vec.add(j++,hints[i]);
+		for(int i=0,j=0;i<choices.length;i++)
+			if(choices[i].getInputText().startsWith(text))
+				vec.add(j++,choices[i]);
 		if(vec.isEmpty()){
 			choose(input.getText());
 		}else{
@@ -146,12 +169,12 @@ public class PopupHint2 extends JDialog implements KeyListener,MouseListener,
 	public void choose(String choice){
 		try{
 			doc.insertString(pos,choice,null);
-			input.setText("");
-			//editor.requestFocus();
-			setVisible(false);
 		}catch(Exception ex){
 			LOG.log(Level.WARNING,null,ex);
 		}
+		input.setText("");
+		//editor.requestFocus();
+		setVisible(false);
 	}
 	@Override
 	public void windowGainedFocus(WindowEvent e){
@@ -159,15 +182,7 @@ public class PopupHint2 extends JDialog implements KeyListener,MouseListener,
 	}
 	@Override
 	public void windowLostFocus(WindowEvent e){
-		String text=input.getText();
-		if(!text.isEmpty()){
-			try{
-				doc.insertString(pos,text,null);
-			}catch(BadLocationException ex){
 
-			}
-			input.setText("");
-		}
 		setVisible(false);
 	}
 	@Override

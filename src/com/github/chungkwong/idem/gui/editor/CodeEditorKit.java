@@ -15,14 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.gui.editor;
-import java.io.*;
 import javax.swing.*;
 import javax.swing.text.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CodeEditorKit extends DefaultEditorKit{
+public class CodeEditorKit extends StyledEditorKit{
 	public static final CodeEditorKit DEFAULT_CODE_EDITOR_KIT=new CodeEditorKit(GrammarProvider.getGrammar(),"text/scheme");
 	private final ContextFreeGrammar cfg;
 	private final String mime;
@@ -58,23 +57,7 @@ public class CodeEditorKit extends DefaultEditorKit{
 	}*/
 	@Override
 	public Document createDefaultDocument(){
-		return new DefaultStyledDocument();
-		//return new CodeDocument(cfg);
-	}
-	@Override
-	public void read(InputStream in,Document doc,int pos) throws IOException,BadLocationException{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void write(OutputStream out,Document doc,int pos,int len) throws IOException,BadLocationException{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void read(Reader in,Document doc,int pos) throws IOException,BadLocationException{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-	@Override
-	public void write(Writer out,Document doc,int pos,int len) throws IOException,BadLocationException{
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		//return new DefaultStyledDocument();
+		return new CodeDocument(cfg);
 	}
 }

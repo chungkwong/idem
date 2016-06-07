@@ -21,43 +21,52 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class IntCheckPointIterator implements PrimitiveIterator.OfInt{
-		private final PrimitiveIterator.OfInt src;
-		boolean preread=false;
-		List<Integer> buffer=new ArrayList<>();
-		int offset=0;
-		public IntCheckPointIterator(PrimitiveIterator.OfInt src){
-			this.src=src;
+	private final PrimitiveIterator.OfInt src;
+	boolean preread=false;
+	List<Integer> buffer=new ArrayList<>();
+	int offset=0;
+	public IntCheckPointIterator(PrimitiveIterator.OfInt src){
+		this.src=src;
+	}
+	public void startPreread(){
+		if(preread){
+			throw new IllegalStateException();
 		}
-		public void startPreread(){
+		preread=true;
+	}
+	public void endPreread(boolean forward){
+		if(!preread){
+			throw new IllegalStateException();
+		}
+		preread=false;
+		if(forward){
+			buffer.subList(0,offset).clear();
+		}
+		offset=0;
+	}
+	@Override
+	public boolean hasNext(){
+		return src.hasNext()||offset<buffer.size();
+	}
+	@Override
+	public int nextInt(){
+		if(offset<buffer.size()){
+			return buffer.get(offset++);
+		}else{
+			Integer element=src.next();
 			if(preread){
-				throw new IllegalStateException();
+				buffer.add(element);
 			}
-			preread=true;
-		}
-		public void endPreread(boolean forward){
-			if(!preread){
-				throw new IllegalStateException();
-			}
-			preread=false;
-			if(forward){
-				buffer.subList(0,offset).clear();
-			}
-			offset=0;
-		}
-		@Override
-		public boolean hasNext(){
-			return src.hasNext()||offset<buffer.size();
-		}
-		@Override
-		public int nextInt(){
-			if(offset<buffer.size()){
-				return buffer.get(offset++);
-			}else{
-				Integer element=src.next();
-				if(preread){
-					buffer.add(element);
-				}
-				return element;
-			}
+			return element;
 		}
 	}
+	public int peek(){
+		if(preread){
+			throw new IllegalStateException();
+		}
+		startPreread();
+		int val=next();
+		endPreread(false);
+		return val;
+	}
+}

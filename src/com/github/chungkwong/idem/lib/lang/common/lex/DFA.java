@@ -50,6 +50,9 @@ public class DFA{
 	public boolean isAccepted(IntCheckPointIterator input,State start){
 		return run(input,start).isAcceptedState();
 	}
+	public DFA toMinimizedDFA(){
+		return this;
+	}
 	public static class State{
 		private boolean acceptedState;
 		private List<Pair<CharacterSet,State>> transitionTable=new LinkedList<>();

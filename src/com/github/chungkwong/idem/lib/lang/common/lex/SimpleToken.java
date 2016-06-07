@@ -16,13 +16,27 @@
  */
 package com.github.chungkwong.idem.lib.lang.common.lex;
 
-/**
- *
- * @author Chan Chung Kwong <1m02math@126.com>
- * @param <C> Token type
- */
-public interface Token{
-	String getText();
-	Object getValue();
-	String getType();
+
+public class SimpleToken implements Token{
+	private final String text;
+	private final Object val;
+	private final String type;
+	public SimpleToken(String text,Object val,String type){
+		this.text=text;
+		this.val=val;
+		this.type=type;
+	}
+	@Override
+	public String getText(){
+		return text;
+	}
+	@Override
+	public Object getValue(){
+		return val;
+	}
+	@Override
+	public String getType(){
+		return type;
+	}
+
 }

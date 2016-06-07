@@ -17,20 +17,31 @@
 package com.github.chungkwong.idem.gui.editor;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.text.*;
+import javax.swing.tree.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CodeEditor extends JEditorPane{
+	JTree tree;
 	public CodeEditor(){
 		setEditorKit(CodeEditorKit.DEFAULT_CODE_EDITOR_KIT);
 		//setEditorKit(new javax.swing.text.StyledEditorKit());
 		//setEditorKit(new javax.swing.text.DefaultEditorKit());
 		setEditable(true);
+		this.tree=new JTree((AbstractDocument.AbstractElement)getDocument().getDefaultRootElement());
+		getDocument().addUndoableEditListener((e)->((DefaultTreeModel)tree.getModel()).setRoot(
+				(AbstractDocument.AbstractElement)getDocument().getDefaultRootElement()));
+	}
+	public JTree getStructureTree(){
+		return tree;
 	}
 	public static void main(String[] args){
 		JFrame f=new JFrame("Test");
-		f.add(new JScrollPane(new CodeEditor()),BorderLayout.CENTER);
+		CodeEditor editor=new CodeEditor();
+		f.add(new JScrollPane(editor),BorderLayout.CENTER);
+		f.add(new JScrollPane(editor.getStructureTree()),BorderLayout.WEST);
 		f.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);

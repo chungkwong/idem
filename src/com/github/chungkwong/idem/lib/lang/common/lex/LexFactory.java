@@ -15,16 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.common.lex;
-
+import com.github.chungkwong.idem.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
+ * @param <C> Enum of token type
  */
-public class RegularExpressionLex implements Lex{
-
-	@Override
-	public Token get(){
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
+public interface LexFactory{
+	String[] getAllTokenType();
+	Lex createLex(IntCheckPointIterator src);
 }

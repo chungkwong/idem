@@ -14,29 +14,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.gui.editor;
-import javax.swing.text.*;
+package com.github.chungkwong.idem.lib.lang.common.lex;
+import com.github.chungkwong.idem.util.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CodeViewFactory implements ViewFactory{
+public class RegularExpressionLexFactory implements LexFactory{
+	private final ArrayList<String> tokenType=new ArrayList<>();
+	private DFA machine;
+	public RegularExpressionLexFactory(){
+	}
+
+	public void addTokenType(String type,String regex){
+		tokenType.add(type);
+
+	}
 	@Override
-	public View create(Element elem){
-		String kind=elem.getName();
-		if(kind.equals(AbstractDocument.ContentElementName)){
-			return new LabelView(elem);
-		}else if(kind.equals(AbstractDocument.ParagraphElementName)){
-			return new ParagraphView(elem);
-		}else if(kind.equals(AbstractDocument.SectionElementName)){
-			return new BoxView(elem,View.Y_AXIS);
-		}else if(kind.equals(StyleConstants.ComponentElementName)){
-			return new ComponentView(elem);
-		}else if(kind.equals(StyleConstants.IconElementName)){
-			return new IconView(elem);
+	public String[] getAllTokenType(){
+		return tokenType.toArray(new String[0]);
+	}
+	@Override
+	public Lex createLex(IntCheckPointIterator src){
+		return new RegularExpressionLex(src);
+	}
+	private static class RegularExpressionLex implements Lex{
+		private final IntCheckPointIterator src;
+		public RegularExpressionLex(IntCheckPointIterator src){
+			this.src=src;
 		}
-		// default to text display
-		//return new ComponentView(elem);
-		return new LabelView(elem);
+		@Override
+		public Token get(){
+
+		}
+
 	}
 }

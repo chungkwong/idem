@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.gui;
-import static com.github.chungkwong.idem.global.Log.LOG;
 import com.github.chungkwong.idem.util.*;
 import java.awt.*;
-import java.util.logging.*;
 import javax.imageio.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -66,18 +64,8 @@ public class HintedTextField extends JTextField implements CaretListener,Ancesto
 	}
 	public void showHint(Hint[] hints){
 		if(hints.length>0){
-			popup.prepare(hints,getCaretPosition());
-			try{
-				Point loc=modelToView(getCaretPosition()).getLocation();
-				loc.translate((int)getLocationOnScreen().getX(),(int)getLocationOnScreen().getY());
-				popup.setLocation(loc);
-				popup.setVisible(true);
-
-				//popup.show(this,(int)rect.getX(),(int)rect.getY());
-				//popup.requestFocusInWindow();
-			}catch(BadLocationException ex){
-				LOG.log(Level.FINE.WARNING,"",ex);
-			}
+			popup.hide();
+			popup.show(hints);
 		}
 	}
 	@Override

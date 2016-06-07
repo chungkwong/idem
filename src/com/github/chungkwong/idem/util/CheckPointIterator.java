@@ -60,4 +60,13 @@ public class CheckPointIterator<T> implements Iterator<T>{
 			return element;
 		}
 	}
+	public T peek(){
+		if(preread){
+			throw new IllegalStateException();
+		}
+		startPreread();
+		T val=next();
+		endPreread(false);
+		return val;
+	}
 }
