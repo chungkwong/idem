@@ -34,14 +34,22 @@ public class CheckPointIterator<T> implements Iterator<T>{
 		}
 		preread=true;
 	}
-	public void endPreread(boolean forward){
+	public Object[] endPrereadForward(){
 		if(!preread){
 			throw new IllegalStateException();
 		}
 		preread=false;
-		if(forward){
-			buffer.subList(0,offset).clear();
+		List<T> read=buffer.subList(0,offset);
+		Object[] text=read.toArray();
+		read.clear();
+		offset=0;
+		return text;
+	}
+	public void endPrereadBackward(){
+		if(!preread){
+			throw new IllegalStateException();
 		}
+		preread=false;
 		offset=0;
 	}
 	@Override
@@ -66,7 +74,7 @@ public class CheckPointIterator<T> implements Iterator<T>{
 		}
 		startPreread();
 		T val=next();
-		endPreread(false);
+		endPrereadBackward();
 		return val;
 	}
 }

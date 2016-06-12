@@ -23,47 +23,45 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class DFA{
-	private static final State FAILED=new State(false);
-	private State init;
+	private static final State FAILED=new State();
+	private final State init;
 	public DFA(State init){
 		this.init=init;
 	}
-	public State run(IntCheckPointIterator input){
+	public Token run(IntCheckPointIterator input){
 		return run(input,init);
 	}
-	public State run(IntCheckPointIterator input,State start){
-		State curr=start,lastAccept=FAILED;
+	public Token run(IntCheckPointIterator input,State start){
+		State curr=start;
+		AcceptedState lastAccept=null;
+		StringBuilder buf=new StringBuilder();
 		input.startPreread();
-		while(curr!=FAILED){
+		while(curr!=FAILED&&input.hasNext()){
 			curr=curr.nextState(input.nextInt());
-			if(curr.isAcceptedState()){
-				input.endPreread(true);
+			if(curr instanceof AcceptedState){
+				for(int c:input.endPrereadForward())
+					buf.appendCodePoint(c);
+				lastAccept=(AcceptedState)curr;
 				input.startPreread();
 			}
 		}
-		input.endPreread(false);
-		return lastAccept;
+		input.endPrereadBackward();
+		String text=buf.toString();
+		return lastAccept!=null?new SimpleToken(text,text,lastAccept.getTokenType()):null;
 	}
 	public boolean isAccepted(IntCheckPointIterator input){
-		return run(input).isAcceptedState();
+		return run(input)!=null&&!input.hasNext();
 	}
 	public boolean isAccepted(IntCheckPointIterator input,State start){
-		return run(input,start).isAcceptedState();
+		return run(input,start)!=null&&!input.hasNext();
 	}
 	public DFA toMinimizedDFA(){
 		return this;
 	}
 	public static class State{
-		private boolean acceptedState;
 		private List<Pair<CharacterSet,State>> transitionTable=new LinkedList<>();
-		public State(boolean acceptedState){
-			this.acceptedState=acceptedState;
-		}
-		public boolean isAcceptedState(){
-			return acceptedState;
-		}
-		public void setAcceptedState(boolean acceptedState){
-			this.acceptedState=acceptedState;
+		public State(){
+
 		}
 		public void addTransition(CharacterSet set,State next,boolean checkOverlap){
 			if(checkOverlap&&transitionTable.stream().anyMatch((pair)->
@@ -75,6 +73,15 @@ public class DFA{
 		public State nextState(int codePoint){
 			Optional<Pair<CharacterSet,State>> found=transitionTable.stream().filter((pair)->pair.getFirst().contains(codePoint)).findFirst();
 			return found.isPresent()?found.get().getSecond():FAILED;
+		}
+	}
+	public static class AcceptedState extends State{
+		private final String tokenType;
+		public AcceptedState(String tokenType){
+			this.tokenType=tokenType;
+		}
+		public String getTokenType(){
+			return tokenType;
 		}
 	}
 }

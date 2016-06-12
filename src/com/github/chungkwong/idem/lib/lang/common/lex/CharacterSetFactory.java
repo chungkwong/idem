@@ -15,23 +15,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.common.lex;
+import java.util.*;
 import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class CharacterSetFactory{
+	private static final CharacterSet WILDCARD_CHARACTER_SET=(c)->true;
+	public static CharacterSet createWildcardCharacterSet(){
+		return WILDCARD_CHARACTER_SET;
+	}
+	public static CharacterSet createSingletonCharacterSet(int codepoint){
+		return new RangeCharacterSet(codepoint,codepoint);
+	}
 	public static CharacterSet createRangeCharacterSet(int begin,int end){
 		return new RangeCharacterSet(begin,end);
+	}
+	public static CharacterSet createEnumCharacterSet(int... codePoints){
+		return new EnumCharacterSet(codePoints);
 	}
 	public static CharacterSet createBlockCharacterSet(Character.UnicodeBlock block){
 		return new BlockCharacterSet(block);
 	}
-	public static CharacterSet createUnionCharacterSet(CharacterSet set1,CharacterSet set2){
-		return new UnionCharacterSet(set1,set2);
+	public static CharacterSet createUnionCharacterSet(CharacterSet... set){
+		return new UnionCharacterSet(set);
 	}
-	public static CharacterSet createIntersectionCharacterSet(CharacterSet set1,CharacterSet set2){
-		return new IntersectionCharacterSet(set1,set2);
+	public static CharacterSet createIntersectionCharacterSet(CharacterSet... set){
+		return new IntersectionCharacterSet(set);
+	}
+	public static CharacterSet createComplementCharacterSet(CharacterSet set){
+		return new ComplementCharacterSet(set);
+	}
+	private static class EnumCharacterSet implements CharacterSet{
+		private final int[] codePoints;
+		public EnumCharacterSet(int... codePoints){
+			this.codePoints=codePoints;
+		}
+		@Override
+		public boolean contains(int codePoint){
+			return Arrays.stream(codePoints).anyMatch((c)->c==codePoint);
+		}
+		@Override
+		public IntStream stream(){
+			return Arrays.stream(codePoints);
+		}
 	}
 	private static class RangeCharacterSet implements CharacterSet{
 		private final int begin,end;
@@ -59,29 +87,42 @@ public class CharacterSetFactory{
 		}
 	}
 	private static class IntersectionCharacterSet implements CharacterSet{
-		private final CharacterSet set1,set2;
-		private IntersectionCharacterSet(CharacterSet set1,CharacterSet set2){
-			this.set1=set1;
-			this.set2=set2;
+		private final CharacterSet[] set;
+		private IntersectionCharacterSet(CharacterSet... set){
+			this.set=set;
 		}
 		@Override
 		public boolean contains(int codePoint){
-			return set1.contains(codePoint)&&set2.contains(codePoint);
+			return Arrays.stream(set).allMatch((set)->set.contains(codePoint));
 		}
 		@Override
 		public IntStream stream(){
-			return set1.stream().filter((c)->set2.contains(c));
+			return set[0].stream().filter(
+					(c)->Arrays.stream(set,1,set.length).allMatch((set)->set.contains(c)));
 		}
 	}
 	private static class UnionCharacterSet implements CharacterSet{
-		private final CharacterSet set1,set2;
-		private UnionCharacterSet(CharacterSet set1,CharacterSet set2){
-			this.set1=set1;
-			this.set2=set2;
+		private final CharacterSet[] set;
+		private UnionCharacterSet(CharacterSet... set){
+			this.set=set;
 		}
 		@Override
 		public boolean contains(int codePoint){
-			return set1.contains(codePoint)||set2.contains(codePoint);
+			return Arrays.stream(set).anyMatch((set)->set.contains(codePoint));
+		}
+		@Override
+		public IntStream stream(){
+			return Arrays.stream(set).flatMapToInt(CharacterSet::stream);
+		}
+	}
+	private static class ComplementCharacterSet implements CharacterSet{
+		private final CharacterSet set;
+		private ComplementCharacterSet(CharacterSet set){
+			this.set=set;
+		}
+		@Override
+		public boolean contains(int codePoint){
+			return !set.contains(codePoint);
 		}
 	}
 }

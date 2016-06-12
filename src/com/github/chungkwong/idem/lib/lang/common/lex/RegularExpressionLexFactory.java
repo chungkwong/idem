@@ -39,15 +39,14 @@ public class RegularExpressionLexFactory implements LexFactory{
 	public Lex createLex(IntCheckPointIterator src){
 		return new RegularExpressionLex(src);
 	}
-	private static class RegularExpressionLex implements Lex{
+	private class RegularExpressionLex implements Lex{
 		private final IntCheckPointIterator src;
 		public RegularExpressionLex(IntCheckPointIterator src){
 			this.src=src;
 		}
 		@Override
 		public Token get(){
-
+			return machine.run(src);
 		}
-
 	}
 }

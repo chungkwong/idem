@@ -23,7 +23,7 @@ import java.util.*;
 public class IntCheckPointIterator implements PrimitiveIterator.OfInt{
 	private final PrimitiveIterator.OfInt src;
 	boolean preread=false;
-	List<Integer> buffer=new ArrayList<>();
+	IntList buffer=new DefaultIntList();
 	int offset=0;
 	public IntCheckPointIterator(PrimitiveIterator.OfInt src){
 		this.src=src;
@@ -34,14 +34,22 @@ public class IntCheckPointIterator implements PrimitiveIterator.OfInt{
 		}
 		preread=true;
 	}
-	public void endPreread(boolean forward){
+	public int[] endPrereadForward(){
 		if(!preread){
 			throw new IllegalStateException();
 		}
 		preread=false;
-		if(forward){
-			buffer.subList(0,offset).clear();
+		IntList read=buffer.subList(0,offset);
+		int[] text=read.toArray();
+		read.clear();
+		offset=0;
+		return text;
+	}
+	public void endPrereadBackward(){
+		if(!preread){
+			throw new IllegalStateException();
 		}
+		preread=false;
 		offset=0;
 	}
 	@Override
@@ -66,7 +74,7 @@ public class IntCheckPointIterator implements PrimitiveIterator.OfInt{
 		}
 		startPreread();
 		int val=next();
-		endPreread(false);
+		endPrereadBackward();
 		return val;
 	}
 }
