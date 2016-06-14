@@ -39,10 +39,17 @@ public class CharacterSetFactory{
 		return new BlockCharacterSet(block);
 	}
 	public static CharacterSet createUnionCharacterSet(CharacterSet... set){
-		return new UnionCharacterSet(set);
+		switch(set.length){
+			case 1:return set[0];
+			default:return new UnionCharacterSet(set);
+		}
 	}
 	public static CharacterSet createIntersectionCharacterSet(CharacterSet... set){
-		return new IntersectionCharacterSet(set);
+		switch(set.length){
+			case 0:return WILDCARD_CHARACTER_SET;
+			case 1:return set[0];
+			default:return new IntersectionCharacterSet(set);
+		}
 	}
 	public static CharacterSet createComplementCharacterSet(CharacterSet set){
 		return new ComplementCharacterSet(set);

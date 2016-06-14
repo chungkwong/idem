@@ -21,63 +21,63 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class RegularExpression{
-	private static final HashMap<Integer,RegularExpression> SHORT_CHARACTER_TYPE=new HashMap<>();
-	private static final HashMap<String,RegularExpression> LONG_CHARACTER_TYPE=new HashMap<>();
+	private static final HashMap<Integer,CharacterSet> SHORT_CHARACTER_TYPE=new HashMap<>();
+	private static final HashMap<String,CharacterSet> LONG_CHARACTER_TYPE=new HashMap<>();
 	private static final HashMap<String,Byte> UNICODE_CATEGORY=new HashMap<>();
 	private static final HashMap<String,CharacterSet> BINARY_PROPERTY=new HashMap<>();
 	private static final RegularExpression WILDCARD=new CharRegularExpression(CharacterSetFactory.createWildcardCharacterSet());
 	private static final RegularExpression EMPTY=new EmptyRegularExpression();
 	static{
-		addShortCharacterType('\\',CharacterSetFactory.createSingletonCharacterSet('\\'));
-		addShortCharacterType('t',CharacterSetFactory.createSingletonCharacterSet('\t'));
-		addShortCharacterType('n',CharacterSetFactory.createSingletonCharacterSet('\n'));
-		addShortCharacterType('r',CharacterSetFactory.createSingletonCharacterSet('\r'));
-		addShortCharacterType('f',CharacterSetFactory.createSingletonCharacterSet('\f'));
-		addShortCharacterType('a',CharacterSetFactory.createSingletonCharacterSet('\u0007'));
-		addShortCharacterType('e',CharacterSetFactory.createSingletonCharacterSet('\u001B'));
+		SHORT_CHARACTER_TYPE.put((int)'\\',CharacterSetFactory.createSingletonCharacterSet('\\'));
+		SHORT_CHARACTER_TYPE.put((int)'t',CharacterSetFactory.createSingletonCharacterSet('\t'));
+		SHORT_CHARACTER_TYPE.put((int)'n',CharacterSetFactory.createSingletonCharacterSet('\n'));
+		SHORT_CHARACTER_TYPE.put((int)'r',CharacterSetFactory.createSingletonCharacterSet('\r'));
+		SHORT_CHARACTER_TYPE.put((int)'f',CharacterSetFactory.createSingletonCharacterSet('\f'));
+		SHORT_CHARACTER_TYPE.put((int)'a',CharacterSetFactory.createSingletonCharacterSet('\u0007'));
+		SHORT_CHARACTER_TYPE.put((int)'e',CharacterSetFactory.createSingletonCharacterSet('\u001B'));
 		CharacterSet digit=CharacterSetFactory.createRangeCharacterSet('0','9');
-		addShortCharacterType('d',digit);
-		addShortCharacterType('D',CharacterSetFactory.createComplementCharacterSet(digit));
+		SHORT_CHARACTER_TYPE.put((int)'d',digit);
+		SHORT_CHARACTER_TYPE.put((int)'D',CharacterSetFactory.createComplementCharacterSet(digit));
 		CharacterSet hspace=CharacterSetFactory.createUnionCharacterSet(
 				CharacterSetFactory.createRangeCharacterSet(0x2000,0x200A),
 				CharacterSetFactory.createEnumCharacterSet(' ','\t',0xA0,0x1680,0x180E,0x202F,0x205F,0x3000));
-		addShortCharacterType('h',hspace);
-		addShortCharacterType('H',CharacterSetFactory.createComplementCharacterSet(hspace));
+		SHORT_CHARACTER_TYPE.put((int)'h',hspace);
+		SHORT_CHARACTER_TYPE.put((int)'H',CharacterSetFactory.createComplementCharacterSet(hspace));
 		CharacterSet whitespace=CharacterSetFactory.createEnumCharacterSet(' ','\t',0x0B,'\n','\f','\r');
-		addShortCharacterType('s',whitespace);
-		addShortCharacterType('S',CharacterSetFactory.createComplementCharacterSet(whitespace));
+		SHORT_CHARACTER_TYPE.put((int)'s',whitespace);
+		SHORT_CHARACTER_TYPE.put((int)'S',CharacterSetFactory.createComplementCharacterSet(whitespace));
 		CharacterSet vspace=CharacterSetFactory.createEnumCharacterSet('\n',0x0B,'\f','\r',0x85,0x2028,0x2029);
-		addShortCharacterType('v',vspace);
-		addShortCharacterType('V',CharacterSetFactory.createComplementCharacterSet(vspace));
+		SHORT_CHARACTER_TYPE.put((int)'v',vspace);
+		SHORT_CHARACTER_TYPE.put((int)'V',CharacterSetFactory.createComplementCharacterSet(vspace));
 		CharacterSet word=CharacterSetFactory.createUnionCharacterSet(
 				CharacterSetFactory.createRangeCharacterSet('a','z'),
 				CharacterSetFactory.createRangeCharacterSet('A','Z'),digit);
-		addShortCharacterType('w',word);
-		addShortCharacterType('W',CharacterSetFactory.createComplementCharacterSet(word));
+		SHORT_CHARACTER_TYPE.put((int)'w',word);
+		SHORT_CHARACTER_TYPE.put((int)'W',CharacterSetFactory.createComplementCharacterSet(word));
 		CharacterSet lower=CharacterSetFactory.createRangeCharacterSet('a','z');
-		addLongCharacterType("Lower",lower);
+		LONG_CHARACTER_TYPE.put("Lower",lower);
 		CharacterSet upper=CharacterSetFactory.createRangeCharacterSet('A','Z');
-		addLongCharacterType("Upper",upper);
-		addLongCharacterType("ASCII",CharacterSetFactory.createRangeCharacterSet(0x0,0x1F));
-		addLongCharacterType("Alpha",CharacterSetFactory.createUnionCharacterSet(lower,upper));
-		addLongCharacterType("Digit",digit);
-		addLongCharacterType("Alnum",CharacterSetFactory.createUnionCharacterSet(lower,upper,digit));
+		LONG_CHARACTER_TYPE.put("Upper",upper);
+		LONG_CHARACTER_TYPE.put("ASCII",CharacterSetFactory.createRangeCharacterSet(0x0,0x1F));
+		LONG_CHARACTER_TYPE.put("Alpha",CharacterSetFactory.createUnionCharacterSet(lower,upper));
+		LONG_CHARACTER_TYPE.put("Digit",digit);
+		LONG_CHARACTER_TYPE.put("Alnum",CharacterSetFactory.createUnionCharacterSet(lower,upper,digit));
 		CharacterSet punct=CharacterSetFactory.createEnumCharacterSet('!','\"','#','$','%','&','\'','(',')','*','+',',','-','.','/',':',';','<','=','>','?','@','[','\\',']','^','_','`','{','|','}','~');
-		addLongCharacterType("Punct",punct);
-		addLongCharacterType("Graph",CharacterSetFactory.createUnionCharacterSet(lower,upper,digit,punct));
+		LONG_CHARACTER_TYPE.put("Punct",punct);
+		LONG_CHARACTER_TYPE.put("Graph",CharacterSetFactory.createUnionCharacterSet(lower,upper,digit,punct));
 		CharacterSet print=CharacterSetFactory.createUnionCharacterSet(lower,upper,digit,punct,
 				CharacterSetFactory.createSingletonCharacterSet(0x20));
-		addLongCharacterType("Print",print);
-		addLongCharacterType("Blank",CharacterSetFactory.createEnumCharacterSet(' ','\t'));
+		LONG_CHARACTER_TYPE.put("Print",print);
+		LONG_CHARACTER_TYPE.put("Blank",CharacterSetFactory.createEnumCharacterSet(' ','\t'));
 		CharacterSet cntrl=CharacterSetFactory.createUnionCharacterSet(
 				CharacterSetFactory.createRangeCharacterSet(0x0,0x1F),
 				CharacterSetFactory.createSingletonCharacterSet(0x7F));
-		addLongCharacterType("Cntrl",cntrl);
+		LONG_CHARACTER_TYPE.put("Cntrl",cntrl);
 		CharacterSet xdigit=CharacterSetFactory.createUnionCharacterSet(digit,
 				CharacterSetFactory.createRangeCharacterSet('a','f'),
 				CharacterSetFactory.createRangeCharacterSet('A','F'));
-		addLongCharacterType("XDigit",xdigit);
-		addLongCharacterType("Space",whitespace);
+		LONG_CHARACTER_TYPE.put("XDigit",xdigit);
+		LONG_CHARACTER_TYPE.put("Space",whitespace);
 		UNICODE_CATEGORY.put("Cn",Character.UNASSIGNED);
 		UNICODE_CATEGORY.put("Lu",Character.UPPERCASE_LETTER);
 		UNICODE_CATEGORY.put("Ll",Character.LOWERCASE_LETTER);
@@ -138,26 +138,20 @@ public class RegularExpression{
 	 \p{XDigit}	A hexadecimal digit: [0-9a-fA-F]
 	 \p{Space}
 	 */
-	private static void addShortCharacterType(char abbr,CharacterSet set){
-		SHORT_CHARACTER_TYPE.put((int)abbr,new CharRegularExpression(set));
-	}
-	private static void addLongCharacterType(String abbr,CharacterSet set){
-		LONG_CHARACTER_TYPE.put(abbr,new CharRegularExpression(set));
-	}
 	public static RegularExpression parseRegularExpression(String regex){
-		return parseRegularExpression(new CodePointBuffer(regex.codePoints().toArray()));
+		return nextRegularExpression(new CodePointBuffer(regex.codePoints().toArray()));
 	}
-	private static RegularExpression parseRegularExpression(CodePointBuffer buf){
+	private static RegularExpression nextRegularExpression(CodePointBuffer buf){
 		ArrayList<RegularExpression> union=new ArrayList<>();
 		ArrayList<RegularExpression> concat=new ArrayList<>();
-		while(!buf.isEOF()){
-			RegularExpression term=parsePrimaryRegularExpression(buf);
+		while(!buf.isEOF()&&buf.peek()!=')'){
+			RegularExpression term=nextPrimaryRegularExpression(buf);
 			if(!buf.isEOF()){
 				int c=buf.peek();
 				switch(c){
 					case '{':
 						buf.skip();
-						term=parseQuantity(buf,term);
+						term=modifyByQuantity(buf,term);
 						break;
 					case '?':
 						buf.skip();
@@ -173,20 +167,21 @@ public class RegularExpression{
 			if(!buf.isEOF()&&buf.peek()=='|'){
 				buf.skip();
 				union.add(createConcatRegularExpression(concat));
+				concat.clear();
 			}
 		}
 		union.add(createConcatRegularExpression(concat));
 		return createUnionRegularExpression(union);
 	}
-	private static RegularExpression parseQuantity(CodePointBuffer buf,RegularExpression regex){
-		int min=parseInteger(buf);
+	private static RegularExpression modifyByQuantity(CodePointBuffer buf,RegularExpression regex){
+		int min=nextInteger(buf);
 		RegularExpression begin=createConcatRegularExpression(Collections.nCopies(min,regex));
 		if(buf.peek()==','){
 			buf.skip();
 			if(buf.peek()=='}'){
 				regex=createConcatRegularExpression(Arrays.asList(begin,new StarRegularExpression(regex)));
 			}else{
-				int max=parseInteger(buf);
+				int max=nextInteger(buf);
 				RegularExpression tmp=EMPTY;
 				List<RegularExpression> copy=Collections.nCopies(max-min,regex);
 				List<RegularExpression> union=new ArrayList<>(max-min+1);
@@ -201,57 +196,55 @@ public class RegularExpression{
 		buf.eat('}');
 		return regex;
 	}
-	private static int parseInteger(CodePointBuffer buf){
+	private static int nextInteger(CodePointBuffer buf){
 		int i=0;
 		while(Character.isDigit(buf.peek()))
 			i=i*10+Character.forDigit(buf.read(),10);
 		return i;
 	}
-	private static RegularExpression parsePrimaryRegularExpression(CodePointBuffer buf){
+	private static RegularExpression nextPrimaryRegularExpression(CodePointBuffer buf){
 		switch(buf.read()){
-			case '\\':
-				return parseCharacterTypeRegularExpression(buf);
 			case '(':
-				return parseCaughtRegularExpression(buf);
-			case '[':
-				return parseRangeRegularExpression(buf);
+				return nextCapturedRegularExpression(buf);
 			case '.':
-				return parseWildcardRegularExpression(buf);
+				return nextWildcardRegularExpression(buf);
+			case '[':
+				return new CharRegularExpression(nextRangeCharacterSet(buf));
+			case '\\':
+				return new CharRegularExpression(nextTypedCharacterSet(buf));
 			default:
-				return parseSingletonRegularExpression(buf);
+				return new CharRegularExpression(nextSingletonCharacterSet(buf));
 		}
 	}
-	private static RegularExpression parseCharacterTypeRegularExpression(CodePointBuffer buf){
+	private static CharacterSet nextTypedCharacterSet(CodePointBuffer buf){
 		int prefix=buf.read();
-		RegularExpression type=SHORT_CHARACTER_TYPE.get(prefix);
+		CharacterSet type=SHORT_CHARACTER_TYPE.get(prefix);
 		if(type!=null){
 			return type;
 		}
 		if(prefix=='p'){
 			buf.eat('{');
-			String id=parseCurly(buf);
+			String id=nextCurlyToken(buf);
 			type=LONG_CHARACTER_TYPE.get(id);
 			if(type!=null){
 				return type;
 			}
-			return parsePropertyCharacter(id);
+			return nextPropertyCharacterSet(id);
 		}
-		return parseEscapeCharacter(buf,prefix);
+		return nextEscapeCharacterSet(buf,prefix);
 	}
-	private static RegularExpression parsePropertyCharacter(String id){
+	private static CharacterSet nextPropertyCharacterSet(String id){
 		String script=removePrefix(id,"Is","script=","sc=");
 		if(script!=null){
 			try{
-				return new CharRegularExpression((c)
-						->Character.UnicodeScript.of(c).equals(Character.UnicodeScript.forName(script)));
+				return (c)->Character.UnicodeScript.of(c).equals(Character.UnicodeScript.forName(script));
 			}catch(IllegalArgumentException ex){
 			}
 		}
 		String block=removePrefix(id,"In","block=","blk=");
 		if(block!=null){
 			try{
-				return new CharRegularExpression((c)
-						->Character.UnicodeBlock.of(c).equals(Character.UnicodeBlock.forName(block)));
+				return (c)->Character.UnicodeBlock.of(c).equals(Character.UnicodeBlock.forName(block));
 			}catch(IllegalArgumentException ex){
 			}
 		}
@@ -259,13 +252,13 @@ public class RegularExpression{
 		if(spec!=null){
 			CharacterSet set=BINARY_PROPERTY.get(spec);
 			if(set!=null)
-				return new CharRegularExpression(set);
+				return set;
 		}else
 			spec=id;
 		Byte cat=UNICODE_CATEGORY.get(spec);
 		if(cat!=null){
 			int category=cat;
-			return new CharRegularExpression((c)->Character.getType(c)==category);
+			return (c)->Character.getType(c)==category;
 		}
 		throw new IllegalStateException("Unknown type: "+id);
 	}
@@ -277,38 +270,37 @@ public class RegularExpression{
 		}
 		return null;
 	}
-	private static RegularExpression parseScriptCharacter(String id){
-		return new CharRegularExpression((c)
-				->Character.UnicodeBlock.of(c).equals(Character.UnicodeBlock.forName(id)));
-	}
-	private static RegularExpression parseEscapeCharacter(CodePointBuffer buf,int prefix){
+	private static CharacterSet nextEscapeCharacterSet(CodePointBuffer buf,int prefix){
 		int code=prefix;
 		switch(prefix){
 			case '0':
-				code=parseOctInteger(buf);
+				code=nextOctInteger(buf);
+				break;
+			case 'c':
+				code=buf.read()^64;
 				break;
 			case 'x':
 				if(buf.peek()=='{'){
 					buf.read();
-					code=Integer.parseInt(parseCurly(buf),16);
+					code=Integer.parseInt(nextCurlyToken(buf),16);
 				}else{
-					code=parseInteger(buf,2,prefix);
+					code=RegularExpression.nextInteger(buf,2,prefix);
 				}
 				break;
 			case 'u':
-				code=parseInteger(buf,4,prefix);
+				code=RegularExpression.nextInteger(buf,4,prefix);
 				break;
 		}
-		return new CharRegularExpression(CharacterSetFactory.createSingletonCharacterSet(code));
+		return CharacterSetFactory.createSingletonCharacterSet(code);
 	}
-	private static int parseInteger(CodePointBuffer buf,int length,int base){
+	private static int nextInteger(CodePointBuffer buf,int length,int base){
 		int number=0;
 		for(int i=0;i<length;i++){
 			number=number*base+Character.forDigit(buf.read(),base);
 		}
 		return number;
 	}
-	private static int parseOctInteger(CodePointBuffer buf){
+	private static int nextOctInteger(CodePointBuffer buf){
 		int number=buf.read();
 		int length=number<=3?2:1;
 		for(int i=0;i<length;i++){
@@ -322,7 +314,7 @@ public class RegularExpression{
 		}
 		return number;
 	}
-	private static String parseCurly(CodePointBuffer buf){
+	private static String nextCurlyToken(CodePointBuffer buf){
 		int start=buf.offset;
 		int count=0;
 		while(buf.read()!='}'){
@@ -330,18 +322,54 @@ public class RegularExpression{
 		}
 		return new String(buf.codepoints,start,count);
 	}
-	private static RegularExpression parseCaughtRegularExpression(CodePointBuffer buf){
-		RegularExpression caught=parseRegularExpression(buf);
+	private static RegularExpression nextCapturedRegularExpression(CodePointBuffer buf){
+		RegularExpression captured=nextRegularExpression(buf);
 		buf.eat(')');
-		return caught;
+		return captured;
 	}
-	private static RegularExpression parseRangeRegularExpression(CodePointBuffer buf){
+	private static CharacterSet nextRangeCharacterSet(CodePointBuffer buf){
+		boolean complement=false;
+		if(buf.peek()=='^'){
+			buf.skip();
+			complement=true;
+		}
+		List<CharacterSet> union=new ArrayList();
+		while(buf.peek()!=']'){
+			CharacterSet term=null;
+			switch(buf.read()){
+				case '\\':
+					term=nextTypedCharacterSet(buf);
+					break;
+				case '[':
+					term=nextRangeCharacterSet(buf);
+					break;
+				default:
+					term=nextSingletonCharacterSet(buf);
+					break;
+			}
+			union.add(term);
+			if(buf.peek()=='&'&&buf.codepoints[buf.offset+1]=='&'){
+				buf.skip();buf.skip();
+				CharacterSet and=CharacterSetFactory.createIntersectionCharacterSet(CharacterSetFactory.createUnionCharacterSet(union.toArray(new CharacterSet[0])),nextRangeCharacterSet(buf));
+				union.clear();
+				union.add(and);
+				break;
+			}
+		}
+		buf.eat(']');
+		CharacterSet set=CharacterSetFactory.createUnionCharacterSet(union.toArray(new CharacterSet[0]));
+		if(complement)
+			set=CharacterSetFactory.createComplementCharacterSet(set);
+		return set;
 	}
-	private static RegularExpression parseWildcardRegularExpression(CodePointBuffer buf){
+	private static RegularExpression nextWildcardRegularExpression(CodePointBuffer buf){
 		return WILDCARD;
 	}
-	private static RegularExpression parseSingletonRegularExpression(CodePointBuffer buf){
-		return new CharRegularExpression(CharacterSetFactory.createSingletonCharacterSet(buf.codepoints[buf.offset-1]));
+	private static CharacterSet nextSingletonCharacterSet(CodePointBuffer buf){
+		return CharacterSetFactory.createSingletonCharacterSet(nextSingletonCharacter(buf));
+	}
+	private static int nextSingletonCharacter(CodePointBuffer buf){
+		return buf.codepoints[buf.offset-1];
 	}
 	private static class CodePointBuffer extends RegularExpression{
 		final int[] codepoints;
@@ -380,7 +408,11 @@ public class RegularExpression{
 		}
 	}
 	private static RegularExpression createUnionRegularExpression(List<RegularExpression> choices){
-		return choices.size()==1?choices.get(0):new UnionRegularExpression(choices);
+		switch(choices.size()){
+			case 0:return EMPTY;
+			case 1:return choices.get(0);
+			default:return new UnionRegularExpression(choices);
+		}
 	}
 	private static class UnionRegularExpression extends RegularExpression{
 		final List<RegularExpression> choices;
@@ -389,13 +421,20 @@ public class RegularExpression{
 		}
 	}
 	private static RegularExpression createConcatRegularExpression(List<RegularExpression> choices){
-		return choices.size()==1?choices.get(0):new ConcatRegularExpression(choices);
+		switch(choices.size()){
+			case 0:return EMPTY;
+			case 1:return choices.get(0);
+			default:return new ConcatRegularExpression(choices);
+		}
 	}
 	private static class ConcatRegularExpression extends RegularExpression{
 		final List<RegularExpression> parts;
 		public ConcatRegularExpression(List<RegularExpression> parts){
 			this.parts=parts;
 		}
+	}
+	private static RegularExpression createStarRegularExpression(RegularExpression base){
+		return new StarRegularExpression(base);
 	}
 	private static class StarRegularExpression extends RegularExpression{
 		final RegularExpression base;

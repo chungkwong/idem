@@ -22,17 +22,16 @@ import java.util.*;
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class NFA{
-	private static final State FAILED=new State(false);
-	private final State init;
+	private final State init, accept;
 	public NFA(){
 		this.init=new State();
+		this.accept=new State();
 	}
 	public State run(IntCheckPointIterator input){
 		return run(input,init);
 	}
 	public State run(IntCheckPointIterator input,State start){
-		BitSet set=new BitSet(count),tmp=new BitSet(count);
-		set.set(start.id);
+		StateSet set=input;
 
 		State lastAccept=start;
 		return lastAccept;
@@ -46,22 +45,16 @@ public class NFA{
 	public State getInitState(){
 		return init;
 	}
+	public State getAcceptState(){
+		return init;
+	}
 	public State createState(){
 		return new State();
 	}
-	int count=0;
-	public class State{
-		private final int id;
-		private boolean acceptedState=false;
-		private List<com.github.chungkwong.idem.lib.Pair<CharacterSet,State>> transitionTable=new LinkedList<>();
-		public State(){
-			id=count++;
-		}
-		public void setAcceptedState(boolean acceptedState){
-			this.acceptedState=acceptedState;
-		}
-		public boolean isAcceptedState(){
-			return acceptedState;
+	public static class State{
+		private final List<com.github.chungkwong.idem.lib.Pair<CharacterSet,State>> transitionTable=new LinkedList<>();
+		private final List<State> lambdaTransitionTable=new LinkedList<>();
+		State(){
 		}
 		public void addTransition(CharacterSet set,State next,boolean checkOverlap){
 			if(checkOverlap&&transitionTable.stream().anyMatch((pair)->
@@ -70,9 +63,24 @@ public class NFA{
 			}
 			transitionTable.add(new com.github.chungkwong.idem.lib.Pair<>(set,next));
 		}
-		public State nextState(int codePoint){
+		public void addLambdaTransition(State next){
+			lambdaTransitionTable.add(next);
+		}
+		public void nextState(int codePoint,HashSet<State> result){
 			Optional<com.github.chungkwong.idem.lib.Pair<CharacterSet,State>> found=transitionTable.stream().filter((pair)->pair.getFirst().contains(codePoint)).findFirst();
-			return found.isPresent()?found.get().getSecond():FAILED;
+			
+		}
+	}
+	public static class StateSet{
+		HashSet<State> set=new HashSet<>(),spare=new HashSet<>();
+		public StateSet(State start){
+			set.add(start);
+		}
+		public boolean contains(State state){
+			return set.contains(state);
+		}
+		public void next(int codePoint){
+
 		}
 	}
 }
