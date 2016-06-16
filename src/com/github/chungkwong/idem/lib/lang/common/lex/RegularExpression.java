@@ -20,7 +20,7 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class RegularExpression{
+public abstract class RegularExpression{
 	private static final HashMap<Integer,CharacterSet> SHORT_CHARACTER_TYPE=new HashMap<>();
 	private static final HashMap<String,CharacterSet> LONG_CHARACTER_TYPE=new HashMap<>();
 	private static final HashMap<String,Byte> UNICODE_CATEGORY=new HashMap<>();
@@ -371,7 +371,7 @@ public class RegularExpression{
 	private static int nextSingletonCharacter(CodePointBuffer buf){
 		return buf.codepoints[buf.offset-1];
 	}
-	private static class CodePointBuffer extends RegularExpression{
+	private static class CodePointBuffer{
 		final int[] codepoints;
 		int offset=0;
 		public CodePointBuffer(int[] codepoints){
@@ -396,15 +396,28 @@ public class RegularExpression{
 			}
 		}
 	}
+	public abstract NFA toNFA();
 	private static class EmptyRegularExpression extends RegularExpression{
 		public EmptyRegularExpression(){
 
+		}
+		@Override
+		public NFA toNFA(){
+			NFA nfa=new NFA();
+			nfa.getInitState().addLambdaTransition(nfa.getAcceptState());
+			return nfa;
 		}
 	}
 	private static class CharRegularExpression extends RegularExpression{
 		final CharacterSet charSet;
 		public CharRegularExpression(CharacterSet charSet){
 			this.charSet=charSet;
+		}
+		@Override
+		public NFA toNFA(){
+			NFA nfa=new NFA();
+			nfa.getInitState().addTransition(charSet,nfa.getAcceptState(),true);
+			return nfa;
 		}
 	}
 	private static RegularExpression createUnionRegularExpression(List<RegularExpression> choices){
@@ -419,6 +432,16 @@ public class RegularExpression{
 		public UnionRegularExpression(List<RegularExpression> choices){
 			this.choices=choices;
 		}
+		@Override
+		public NFA toNFA(){
+			NFA nfa=new NFA();
+			for(RegularExpression regex:choices){
+				NFA child=regex.toNFA();
+				nfa.getInitState().addLambdaTransition(child.getInitState());
+				child.getAcceptState().addLambdaTransition(nfa.getAcceptState());
+			}
+			return nfa;
+		}
 	}
 	private static RegularExpression createConcatRegularExpression(List<RegularExpression> choices){
 		switch(choices.size()){
@@ -432,6 +455,18 @@ public class RegularExpression{
 		public ConcatRegularExpression(List<RegularExpression> parts){
 			this.parts=parts;
 		}
+		@Override
+		public NFA toNFA(){
+			NFA nfa=new NFA();
+			NFA.State prev=nfa.getInitState();
+			for(RegularExpression regex:parts){
+				NFA child=regex.toNFA();
+				prev.addLambdaTransition(child.getInitState());
+				prev=child.getAcceptState();
+			}
+			prev.addLambdaTransition(nfa.getAcceptState());
+			return nfa;
+		}
 	}
 	private static RegularExpression createStarRegularExpression(RegularExpression base){
 		return new StarRegularExpression(base);
@@ -440,6 +475,15 @@ public class RegularExpression{
 		final RegularExpression base;
 		public StarRegularExpression(RegularExpression base){
 			this.base=base;
+		}
+		@Override
+		public NFA toNFA(){
+			NFA nfa=new NFA();
+			NFA child=base.toNFA();
+			nfa.getAcceptState().addLambdaTransition(child.getInitState());
+			nfa.getInitState().addLambdaTransition(nfa.getAcceptState());
+			child.getAcceptState().addLambdaTransition(nfa.getAcceptState());
+			return nfa;
 		}
 	}
 }

@@ -21,39 +21,79 @@ import java.util.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class NFA{
+public final class NFA{
 	private final State init, accept;
 	public NFA(){
-		this.init=new State();
-		this.accept=new State();
+		this.init=createState();
+		this.accept=createState();
 	}
-	public State run(IntCheckPointIterator input){
+	public StateSet run(IntCheckPointIterator input){
 		return run(input,init);
 	}
-	public State run(IntCheckPointIterator input,State start){
-		StateSet set=input;
-
-		State lastAccept=start;
+	public StateSet run(IntCheckPointIterator input,State start){
+		StateSet set=new StateSet(start);
+		StateSet lastAccept=null;
+		StringBuilder buf=new StringBuilder();
+		input.startPreread();
+		while(!set.isEmpty()&&input.hasNext()){
+			set.next(input.nextInt());
+			if(set.contains(accept)){
+				for(int c:input.endPrereadForward())
+					buf.appendCodePoint(c);
+				lastAccept=set.clone();
+				input.startPreread();
+			}
+		}
+		input.endPrereadBackward();
+		String text=buf.toString();
 		return lastAccept;
 	}
 	public boolean isAccepted(IntCheckPointIterator input){
-		return run(input).isAcceptedState();
+		return isAccepted(input,init);
 	}
 	public boolean isAccepted(IntCheckPointIterator input,State start){
-		return run(input,start).isAcceptedState();
+		return run(input,start).contains(accept);
 	}
 	public State getInitState(){
 		return init;
 	}
 	public State getAcceptState(){
-		return init;
+		return accept;
 	}
 	public State createState(){
-		return new State();
+		State state=new State();
+		states.add(state);
+		return state;
 	}
+	public void prepareForRun(){
+		findLambdaClosure();
+		states=null;
+	}
+	public void findLambdaClosure(){
+		boolean changed=true;
+		while(changed){
+			changed=false;
+			for(State state:states){
+				for(State next:state.lambdaTransitionTable){
+					for(State nextnext:next.lambdaTransitionTable){
+						changed|=!state.lambdaTransitionTable.contains(nextnext);
+						state.lambdaTransitionTable.add(next);
+					}
+				}
+			}
+		}
+	}
+	public DFA toDFA(){
+		DFA dfa=new DFA(null);
+		DFA.State state=new DFA.State();
+
+
+		return dfa;
+	}
+	private List<State> states=new ArrayList<>();
 	public static class State{
 		private final List<com.github.chungkwong.idem.lib.Pair<CharacterSet,State>> transitionTable=new LinkedList<>();
-		private final List<State> lambdaTransitionTable=new LinkedList<>();
+		private final HashSet<State> lambdaTransitionTable=new HashSet<>();
 		State(){
 		}
 		public void addTransition(CharacterSet set,State next,boolean checkOverlap){
@@ -68,19 +108,42 @@ public class NFA{
 		}
 		public void nextState(int codePoint,HashSet<State> result){
 			Optional<com.github.chungkwong.idem.lib.Pair<CharacterSet,State>> found=transitionTable.stream().filter((pair)->pair.getFirst().contains(codePoint)).findFirst();
-			
+
 		}
 	}
 	public static class StateSet{
 		HashSet<State> set=new HashSet<>(),spare=new HashSet<>();
+		public StateSet(){
+		}
 		public StateSet(State start){
 			set.add(start);
+			findClosure();
 		}
 		public boolean contains(State state){
 			return set.contains(state);
 		}
-		public void next(int codePoint){
-
+		public boolean isEmpty(){
+			return set.isEmpty();
 		}
+		public void next(int codePoint){
+			set.stream().forEach((state)->state.nextState(codePoint,spare));
+			HashSet<State> tmp=set;
+			set=spare;
+			spare=tmp;
+			spare.clear();
+			findClosure();
+		}
+		private void findClosure(){
+			set.stream().forEach((state)->{spare.addAll(state.lambdaTransitionTable);});
+			set.addAll(spare);
+			spare.clear();
+		}
+		@Override
+		protected StateSet clone(){
+			StateSet copy=new StateSet();
+			copy.set.addAll(set);
+			return copy;
+		}
+
 	}
 }
