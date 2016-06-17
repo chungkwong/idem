@@ -17,6 +17,7 @@
 package com.github.chungkwong.idem.lib.lang.common.lex;
 import com.github.chungkwong.idem.util.*;
 import java.util.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -62,18 +63,16 @@ public final class NFA{
 	}
 	public State createState(){
 		State state=new State();
-		states.add(state);
 		return state;
 	}
 	public void prepareForRun(){
 		findLambdaClosure();
-		states=null;
 	}
 	public void findLambdaClosure(){
 		boolean changed=true;
 		while(changed){
 			changed=false;
-			for(State state:states){
+			for(State state:getStates()){
 				for(State next:state.lambdaTransitionTable){
 					for(State nextnext:next.lambdaTransitionTable){
 						changed|=!state.lambdaTransitionTable.contains(nextnext);
@@ -83,14 +82,30 @@ public final class NFA{
 			}
 		}
 	}
+	private Collection<State> getStates(){
+		HashSet<State> states=new HashSet<>();
+		Stack<State> tosearch=new Stack<>();
+		states.add(init);
+		tosearch.push(init);
+		while(!tosearch.isEmpty()){
+			State state=tosearch.pop();
+			Set<State> found=state.lambdaTransitionTable.stream().filter((s)->!states.contains(s)).collect(Collectors.toSet());
+			states.addAll(found);
+			tosearch.addAll(found);
+			found=state.transitionTable.stream().map((p)->p.getSecond()).filter((s)->!states.contains(s)).collect(Collectors.toSet());
+			states.addAll(found);
+			tosearch.addAll(found);
+		}
+		return states;
+	}
 	public DFA toDFA(){
+		Collection<State> states=getStates();
 		DFA dfa=new DFA(null);
 		DFA.State state=new DFA.State();
 
 
 		return dfa;
 	}
-	private List<State> states=new ArrayList<>();
 	public static class State{
 		private final List<com.github.chungkwong.idem.lib.Pair<CharacterSet,State>> transitionTable=new LinkedList<>();
 		private final HashSet<State> lambdaTransitionTable=new HashSet<>();
@@ -143,6 +158,16 @@ public final class NFA{
 			StateSet copy=new StateSet();
 			copy.set.addAll(set);
 			return copy;
+		}
+		@Override
+		public boolean equals(Object obj){
+			return obj!=null&&obj instanceof StateSet&&((StateSet)obj).set.equals(set);
+		}
+		@Override
+		public int hashCode(){
+			int hash=7;
+			hash=89*hash+Objects.hashCode(this.set);
+			return hash;
 		}
 
 	}
