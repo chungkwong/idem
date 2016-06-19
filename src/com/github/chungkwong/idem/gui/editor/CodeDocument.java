@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.gui.editor;
-import java.util.logging.*;
-import javax.swing.*;
 import javax.swing.text.*;
 /**
  *
@@ -24,10 +22,9 @@ import javax.swing.text.*;
  */
 public class CodeDocument extends DefaultStyledDocument{
 	private static final AttributeSet EMPTY_ATTRIBUTE_SET=new SimpleAttributeSet();
-	//Element root;
 	static final String TOKEN_TYPE="$token_type";
 	public CodeDocument(ContextFreeGrammar grammar){
-		writeLock();
+		/*writeLock();
 		try{
 			//super(new GapContent());
 			//writeLock();
@@ -37,12 +34,12 @@ public class CodeDocument extends DefaultStyledDocument{
 		}catch(BadLocationException ex){
 			Logger.getLogger(CodeDocument.class.getName()).log(Level.SEVERE,null,ex);
 		}
-		Element f=createLeafElement(getDefaultRootElement(),new SimpleAttributeSet(),0,2);
-		Element s=createLeafElement(getDefaultRootElement(),new SimpleAttributeSet(),2,5);
-		StyleConstants.setComponent((MutableAttributeSet)f.getAttributes(),new JButton("..."));
-		((AbstractDocument.BranchElement)getDefaultRootElement()).replace(0,1,new Element[]{f,s});
+		//Element f=createLeafElement(getDefaultRootElement(),new SimpleAttributeSet(),0,2);
+		//Element s=createLeafElement(getDefaultRootElement(),new SimpleAttributeSet(),2,6);
+		//StyleConstants.setComponent((MutableAttributeSet)f.getAttributes(),new JButton("..."));
+		//((AbstractDocument.BranchElement)getDefaultRootElement()).replace(0,1,new Element[]{f,s});
 		writeUnlock();
 //root=createBranchElement(null,EMPTY_ATTRIBUTE_SET);
-		//writeUnlock();
+		//writeUnlock();*/
 	}
 }
