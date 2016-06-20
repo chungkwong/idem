@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.gui.editor;
+import java.awt.*;
 import java.awt.event.*;
+import java.util.logging.*;
 import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.text.*;
 /**
  *
@@ -27,7 +30,7 @@ public class CodeEditorKit extends StyledEditorKit{
 	private final ContextFreeGrammar cfg;
 	private final String mime;
 	private final Action[] actions=new Action[]{
-		new SelectDownwardAction(),new SelectUpwardAction()
+		new SelectDownwardAction(),new SelectUpwardAction(),new SelectForwardAction(),new SelectBackwardAction()
 	};
 	public CodeEditorKit(ContextFreeGrammar cfg,String mime){
 		this.cfg=cfg;
@@ -40,7 +43,11 @@ public class CodeEditorKit extends StyledEditorKit{
 		c.getActionMap().put(actions[0],actions[0]);
 		c.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke("ctrl U"),actions[1]);
 		c.getActionMap().put(actions[1],actions[1]);
-		//c.setHighlighter(new CodeHighlighter());
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke("ctrl F"),actions[2]);
+		c.getActionMap().put(actions[2],actions[2]);
+		c.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke("ctrl B"),actions[3]);
+		c.getActionMap().put(actions[3],actions[3]);
+		//c.addCaretListener(new TokenHighlight(c));
 	}
 
 	public ContextFreeGrammar getCfg(){
@@ -66,15 +73,6 @@ public class CodeEditorKit extends StyledEditorKit{
 	public Document createDefaultDocument(){
 		//return new DefaultStyledDocument();
 		return new CodeDocument(cfg);
-	}
-	static void setSelection(JTextComponent editor,int offset){
-		editor.setSelectionEnd(offset);
-		editor.setSelectionStart(offset);
-	}
-	static void setSelection(JTextComponent editor,int start,int end){
-		editor.setCaretPosition(start);
-		editor.setSelectionEnd(end);
-		editor.setSelectionStart(start);
 	}
 	static boolean isInclude(int parentStart,int parentEnd,int childStart,int childEnd){
 		return parentStart<=childStart&&childEnd<=parentEnd;
@@ -107,6 +105,18 @@ public class CodeEditorKit extends StyledEditorKit{
 		}
 		return null;
 	}
+	static Element getCurrentElement(JTextComponent editor){
+		int selectionStart=editor.getSelectionStart();
+		int selectionEnd=editor.getSelectionEnd();
+		Element prev=editor.getDocument().getDefaultRootElement();
+		while(!prev.isLeaf()){
+			Element curr=prev.getElement(prev.getElementIndex(selectionStart));
+			if(!isInclude(curr.getStartOffset(),curr.getEndOffset(),selectionStart,selectionEnd))
+				break;
+			prev=curr;
+		}
+		return prev;
+	}
 	static class SelectDownwardAction extends StyledTextAction{
 		public SelectDownwardAction(){
 			super("Narrow selection");
@@ -116,9 +126,9 @@ public class CodeEditorKit extends StyledEditorKit{
 			JEditorPane editor=getEditor(e);
 			Element element=getCurrentElementDown(editor);
 			if(element!=null)
-				setSelection(editor,element.getStartOffset(),element.getEndOffset());
+				editor.select(element.getStartOffset(),element.getEndOffset());
 			else
-				setSelection(editor,editor.getSelectionStart(),editor.getSelectionStart());
+				editor.select(editor.getSelectionStart(),editor.getSelectionStart());
 		}
 	}
 	static class SelectUpwardAction extends StyledTextAction{
@@ -129,7 +139,7 @@ public class CodeEditorKit extends StyledEditorKit{
 		public void actionPerformed(ActionEvent e){
 			JEditorPane editor=getEditor(e);
 			Element element=getCurrentElementUp(editor);
-			setSelection(editor,element.getStartOffset(),element.getEndOffset());
+			editor.select(element.getStartOffset(),element.getEndOffset());
 		}
 	}
 	static class SelectForwardAction extends StyledTextAction{
@@ -139,8 +149,72 @@ public class CodeEditorKit extends StyledEditorKit{
 		@Override
 		public void actionPerformed(ActionEvent e){
 			JEditorPane editor=getEditor(e);
-			Element element=getCurrentElementUp(editor);
-			setSelection(editor,element.getStartOffset(),element.getEndOffset());
+			Element curr=getCurrentElement(editor);
+			Element parent=curr.getParentElement();
+			if(parent!=null){
+				int index=parent.getElementIndex(curr.getStartOffset());
+				while(parent.getParentElement()!=null&&index==parent.getElementCount()-1){
+					curr=parent;
+					parent=curr.getParentElement();
+				}
+				if(index==parent.getElementCount()-1)
+					editor.setCaretPosition(editor.getDocument().getLength());
+				else{
+					curr=parent.getElement(index+1);
+					editor.select(curr.getStartOffset(),curr.getEndOffset());
+				}
+			}else{
+				editor.setCaretPosition(editor.getDocument().getLength());
+			}
+		}
+	}
+	static class SelectBackwardAction extends StyledTextAction{
+		public SelectBackwardAction(){
+			super("Select backward");
+		}
+		@Override
+		public void actionPerformed(ActionEvent e){
+			JEditorPane editor=getEditor(e);
+			Element curr=getCurrentElement(editor);
+			Element parent=curr.getParentElement();
+			if(parent!=null){
+				int index=parent.getElementIndex(curr.getStartOffset());
+				while(parent.getParentElement()!=null&&index==0){
+					curr=parent;
+					parent=curr.getParentElement();
+				}
+				if(index==0)
+					editor.setCaretPosition(0);
+				else{
+					curr=parent.getElement(index-1);
+					editor.select(curr.getStartOffset(),curr.getEndOffset());
+				}
+			}else{
+				editor.setCaretPosition(0);
+			}
+		}
+	}
+	static class TokenHighlight implements CaretListener{
+		private final JTextComponent editor;
+		private static final Highlighter.HighlightPainter painter=new DefaultHighlighter.DefaultHighlightPainter(Color.red);
+		Object prev;
+		public TokenHighlight(JTextComponent editor){
+			this.editor=editor;
+			try{
+				prev=editor.getHighlighter().addHighlight(0,0,painter);
+			}catch(BadLocationException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
+		}
+		@Override
+		public void caretUpdate(CaretEvent e){
+			Element ele=getCurrentElement(editor);
+			editor.getHighlighter().removeHighlight(prev);
+			try{
+				prev=editor.getHighlighter().addHighlight(ele.getStartOffset(),ele.getEndOffset(),painter);
+			}catch(BadLocationException ex){
+				Logger.getGlobal().log(Level.SEVERE,null,ex);
+			}
 		}
 	}
 }

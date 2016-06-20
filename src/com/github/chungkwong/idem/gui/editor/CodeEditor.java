@@ -45,5 +45,6 @@ public class CodeEditor extends JEditorPane{
 		f.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
+		editor.requestFocusInWindow();
 	}
 }
