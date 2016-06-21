@@ -81,6 +81,9 @@ public class CodeEditorKit extends StyledEditorKit{
 		return (parentStart<=childStart&&childEnd<parentEnd)||
 				(parentStart<childStart&&childEnd<=parentEnd);
 	}
+	static boolean isSameRange(int parentStart,int parentEnd,int childStart,int childEnd){
+		return parentStart==childStart&&childEnd==parentEnd;
+	}
 	static Element getCurrentElementUp(JTextComponent editor){
 		int selectionStart=editor.getSelectionStart();
 		int selectionEnd=editor.getSelectionEnd();
@@ -91,6 +94,8 @@ public class CodeEditorKit extends StyledEditorKit{
 				break;
 			prev=curr;
 		}
+		if(selectionEnd==editor.getDocument().getLength())
+			prev=prev.getParentElement();
 		return prev;
 	}
 	static Element getCurrentElementDown(JTextComponent editor){
@@ -111,11 +116,29 @@ public class CodeEditorKit extends StyledEditorKit{
 		Element prev=editor.getDocument().getDefaultRootElement();
 		while(!prev.isLeaf()){
 			Element curr=prev.getElement(prev.getElementIndex(selectionStart));
-			if(!isInclude(curr.getStartOffset(),curr.getEndOffset(),selectionStart,selectionEnd))
-				break;
+			if(!isIncludeProperly(curr.getStartOffset(),curr.getEndOffset(),selectionStart,selectionEnd)){
+				if(isSameRange(curr.getStartOffset(),curr.getEndOffset(),selectionStart,selectionEnd)){
+					return selectionEnd==editor.getDocument().getLength()?prev:curr;
+				}else
+					break;
+			}
 			prev=curr;
 		}
 		return prev;
+	}
+	static Element getNextSiblingElement(Element element){
+		Element parent=element.getParentElement();
+		if(parent==null)
+			return null;
+		int index=parent.getElementIndex(element.getStartOffset());
+		return index==parent.getElementCount()-1?null:parent.getElement(index+1);
+	}
+	static Element getPreviousSiblingElement(Element element){
+		Element parent=element.getParentElement();
+		if(parent==null)
+			return null;
+		int index=parent.getElementIndex(element.getStartOffset());
+		return index==0?null:parent.getElement(index-1);
 	}
 	static class SelectDownwardAction extends StyledTextAction{
 		public SelectDownwardAction(){
@@ -149,23 +172,9 @@ public class CodeEditorKit extends StyledEditorKit{
 		@Override
 		public void actionPerformed(ActionEvent e){
 			JEditorPane editor=getEditor(e);
-			Element curr=getCurrentElement(editor);
-			Element parent=curr.getParentElement();
-			if(parent!=null){
-				int index=parent.getElementIndex(curr.getStartOffset());
-				while(parent.getParentElement()!=null&&index==parent.getElementCount()-1){
-					curr=parent;
-					parent=curr.getParentElement();
-				}
-				if(index==parent.getElementCount()-1)
-					editor.setCaretPosition(editor.getDocument().getLength());
-				else{
-					curr=parent.getElement(index+1);
-					editor.select(curr.getStartOffset(),curr.getEndOffset());
-				}
-			}else{
-				editor.setCaretPosition(editor.getDocument().getLength());
-			}
+			Element curr=getNextSiblingElement(getCurrentElement(editor));
+			if(curr!=null)
+				editor.select(curr.getStartOffset(),curr.getEndOffset());
 		}
 	}
 	static class SelectBackwardAction extends StyledTextAction{
@@ -175,23 +184,9 @@ public class CodeEditorKit extends StyledEditorKit{
 		@Override
 		public void actionPerformed(ActionEvent e){
 			JEditorPane editor=getEditor(e);
-			Element curr=getCurrentElement(editor);
-			Element parent=curr.getParentElement();
-			if(parent!=null){
-				int index=parent.getElementIndex(curr.getStartOffset());
-				while(parent.getParentElement()!=null&&index==0){
-					curr=parent;
-					parent=curr.getParentElement();
-				}
-				if(index==0)
-					editor.setCaretPosition(0);
-				else{
-					curr=parent.getElement(index-1);
-					editor.select(curr.getStartOffset(),curr.getEndOffset());
-				}
-			}else{
-				editor.setCaretPosition(0);
-			}
+			Element curr=getPreviousSiblingElement(getCurrentElement(editor));
+			if(curr!=null)
+				editor.select(curr.getStartOffset(),curr.getEndOffset());
 		}
 	}
 	static class TokenHighlight implements CaretListener{
