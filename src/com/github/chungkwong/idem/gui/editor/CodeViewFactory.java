@@ -27,6 +27,7 @@ public class CodeViewFactory implements ViewFactory{
 		if(kind.equals(AbstractDocument.ContentElementName)){
 			return new LabelView(elem);
 		}else if(kind.equals(AbstractDocument.ParagraphElementName)){
+			//return new LineWithNumberView(elem);
 			return new ParagraphView(elem);
 		}else if(kind.equals(AbstractDocument.SectionElementName)){
 			return new BoxView(elem,View.Y_AXIS);
@@ -39,4 +40,19 @@ public class CodeViewFactory implements ViewFactory{
 		//return new ComponentView(elem);
 		return new LabelView(elem);
 	}
+	/*Simple but strange way to implement line number
+	static class LineWithNumberView extends ParagraphView{
+		public LineWithNumberView(Element elem){
+			super(elem);
+			setFirstLineIndent(50);
+
+		}
+		@Override
+		public void paint(Graphics g,Shape a){
+			g.drawString(Integer.toString(getElement().getParentElement().getElementIndex(getElement().getStartOffset())+1)
+					,0,(int)a.getBounds().getY());
+			super.paint(g,a); //To change body of generated methods, choose Tools | Templates.
+		}
+
+	}*/
 }
