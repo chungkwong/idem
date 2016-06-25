@@ -26,10 +26,11 @@ import javax.swing.tree.*;
 public class CodeEditor extends JScrollPane{
 	private final JTree tree;
 	private final JEditorPane editor;
+	private final LineNumberSideBar lineHeader=new LineNumberSideBar();
 	public CodeEditor(){
 		editor=new JEditorPane();
 		setViewportView(editor);
-		setRowHeaderView(new LineNumberSideBar());
+		setRowHeaderView(lineHeader);
 		editor.setEditorKit(CodeEditorKit.DEFAULT_CODE_EDITOR_KIT);
 		//setEditorKit(new javax.swing.text.StyledEditorKit());
 		//setEditorKit(new javax.swing.text.DefaultEditorKit());
@@ -37,6 +38,7 @@ public class CodeEditor extends JScrollPane{
 		this.tree=new JTree((AbstractDocument.AbstractElement)editor.getDocument().getDefaultRootElement());
 		editor.getDocument().addUndoableEditListener((e)->((DefaultTreeModel)tree.getModel()).setRoot(
 				(AbstractDocument.AbstractElement)editor.getDocument().getDefaultRootElement()));
+		editor.getDocument().addUndoableEditListener((e)->lineHeader.repaint());
 	}
 	public JTree getStructureTree(){
 		return tree;
@@ -52,6 +54,7 @@ public class CodeEditor extends JScrollPane{
 		editor.requestFocusInWindow();
 	}
 	class LineNumberSideBar extends JComponent{
+		private Dimension dimCache=new Dimension(1,1);
 		public LineNumberSideBar(){
 			setMaximumSize(new Dimension(Integer.MAX_VALUE,Integer.MAX_VALUE));
 		}
@@ -59,22 +62,28 @@ public class CodeEditor extends JScrollPane{
 		protected void paintComponent(Graphics g){
 			super.paintComponent(g);
 			BoxView root=(BoxView)editor.getUI().getRootView(editor).getView(0);
+			int numberWidth=g.getFontMetrics().stringWidth(Integer.toString(root.getViewCount()+1));
+			if(dimCache.getWidth()!=numberWidth){
+				dimCache=new Dimension(numberWidth,(int)getVisibleRect().getHeight());
+				invalidate();
+			}
 			Rectangle visibleRect=getViewport().getViewRect();
 			int startOffset=editor.viewToModel(visibleRect.getLocation());
 			int endOffset=editor.viewToModel(new Point(visibleRect.x,visibleRect.y+visibleRect.height));
 			int startLine=root.getViewIndex(startOffset,Position.Bias.Forward);
 			int endLine=root.getViewIndex(endOffset,Position.Bias.Forward);
 			for(int i=startLine;i<=endLine;i++){
-				//g.drawString(Integer.toString(i+1),0,(int));
+				Rectangle bounds=root.getChildAllocation(i,visibleRect).getBounds();
+				g.drawString(Integer.toString(i+1),0,bounds.y+bounds.height-2*visibleRect.y);
 			}
-
-			System.out.println(root.getViewCount()+":"+startOffset+";"+endOffset+";"+startLine+";"+endLine);
 		}
 		@Override
 		public Dimension getPreferredSize(){
-			return new Dimension(30,(int)getVisibleRect().getHeight()); //To change body of generated methods, choose Tools | Templates.
+			return dimCache;
 		}
-
-
+		@Override
+		public Dimension getMinimumSize(){
+			return getPreferredSize();
+		}
 	}
 }
