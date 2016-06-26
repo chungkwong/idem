@@ -16,7 +16,6 @@
  *
  */
 package com.github.chungkwong.swingconsole;
-import static com.github.chungkwong.idem.global.Log.LOG;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -117,7 +116,7 @@ public final class SwingConsole extends JPanel implements CaretListener,KeyListe
 						}
 					}
 				}catch(Exception ex){
-					LOG.log(Level.INFO,null,ex);
+					Logger.getGlobal().log(Level.INFO,null,ex);
 				}
 			}
 		});
@@ -127,7 +126,7 @@ public final class SwingConsole extends JPanel implements CaretListener,KeyListe
 					if(undoManager.canUndo())
 						undoManager.undo();
 				}catch(CannotUndoException ex){
-					LOG.log(Level.INFO,null,ex);
+					Logger.getGlobal().log(Level.INFO,null,ex);
 				}
 			}
 		});
@@ -137,7 +136,7 @@ public final class SwingConsole extends JPanel implements CaretListener,KeyListe
 					if(undoManager.canRedo())
 						undoManager.redo();
 				}catch(CannotUndoException ex){
-					LOG.log(Level.INFO,null,ex);
+					Logger.getGlobal().log(Level.INFO,null,ex);
 				}
 			}
 		});
@@ -207,7 +206,7 @@ public final class SwingConsole extends JPanel implements CaretListener,KeyListe
 					doc.replace(start,doc.getLength()-start,getNextRecord(),null);
 				}
 			}catch(Exception ex){
-				LOG.log(Level.INFO,null,ex);
+				Logger.getGlobal().log(Level.INFO,null,ex);
 			}
 		}else
 			iter=null;

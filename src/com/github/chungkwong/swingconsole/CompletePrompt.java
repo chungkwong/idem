@@ -16,7 +16,6 @@
  *
  */
 package com.github.chungkwong.swingconsole;
-import static com.github.chungkwong.idem.global.Log.LOG;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -62,7 +61,7 @@ public final class CompletePrompt extends JPopupMenu implements KeyListener,Undo
 			Rectangle rect=area.modelToView(pos);
 			show(area,(int)rect.getX(),(int)rect.getY());
 		}catch(Exception ex){
-			LOG.log(Level.WARNING,null,ex);
+			Logger.getGlobal().log(Level.WARNING,null,ex);
 		}
 	}
 	public void keyPressed(KeyEvent e){
@@ -127,7 +126,7 @@ public final class CompletePrompt extends JPopupMenu implements KeyListener,Undo
 			doc.insertString(pos,choice,null);
 			setVisible(false);
 		}catch(Exception ex){
-			LOG.log(Level.WARNING,null,ex);
+			Logger.getGlobal().log(Level.WARNING,null,ex);
 		}
 	}
 }

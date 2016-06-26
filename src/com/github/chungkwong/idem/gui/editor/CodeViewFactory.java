@@ -28,7 +28,8 @@ public class CodeViewFactory implements ViewFactory{
 			return new LabelView(elem);
 		}else if(kind.equals(AbstractDocument.ParagraphElementName)){
 			//return new LineWithNumberView(elem);
-			return new ParagraphView(elem);
+			//return new NoBreakParagraphView(elem);
+			return new BoxView(elem,View.X_AXIS);
 		}else if(kind.equals(AbstractDocument.SectionElementName)){
 			return new BoxView(elem,View.Y_AXIS);
 		}else if(kind.equals(StyleConstants.ComponentElementName)){
@@ -39,6 +40,16 @@ public class CodeViewFactory implements ViewFactory{
 		// default to text display
 		//return new ComponentView(elem);
 		return new LabelView(elem);
+	}
+	static class NoBreakParagraphView extends LabelView{
+		public NoBreakParagraphView(Element elem){
+			super(elem);
+		}
+		@Override
+		public float getAlignment(int axis){
+			return 0.0f;
+		}
+
 	}
 	/*Simple but strange way to implement line number
 	static class LineWithNumberView extends ParagraphView{

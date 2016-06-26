@@ -63,8 +63,11 @@ public class CodeEditor extends JScrollPane{
 			super.paintComponent(g);
 			BoxView root=(BoxView)editor.getUI().getRootView(editor).getView(0);
 			int numberWidth=g.getFontMetrics().stringWidth(Integer.toString(root.getViewCount()+1));
+			int numberHeight=g.getFontMetrics().getHeight();
 			if(dimCache.getWidth()!=numberWidth){
 				dimCache=new Dimension(numberWidth,(int)getVisibleRect().getHeight());
+				setPreferredSize(dimCache);
+				setMinimumSize(dimCache);
 				invalidate();
 			}
 			Rectangle visibleRect=getViewport().getViewRect();
@@ -74,16 +77,8 @@ public class CodeEditor extends JScrollPane{
 			int endLine=root.getViewIndex(endOffset,Position.Bias.Forward);
 			for(int i=startLine;i<=endLine;i++){
 				Rectangle bounds=root.getChildAllocation(i,visibleRect).getBounds();
-				g.drawString(Integer.toString(i+1),0,bounds.y+bounds.height-2*visibleRect.y);
+				g.drawString(Integer.toString(i+1),0,bounds.y+numberHeight-2*visibleRect.y);
 			}
-		}
-		@Override
-		public Dimension getPreferredSize(){
-			return dimCache;
-		}
-		@Override
-		public Dimension getMinimumSize(){
-			return getPreferredSize();
 		}
 	}
 }
