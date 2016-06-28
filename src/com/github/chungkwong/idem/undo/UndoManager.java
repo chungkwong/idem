@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.undo;
+import com.github.chungkwong.idem.util.*;
 import java.util.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -23,13 +25,19 @@ import java.util.*;
 public class UndoManager{
 	private final List<UndoableEvent> events;
 	private ListIterator<UndoableEvent> iter;
+	public UndoManager(){
+		this(new LinkedList<>());
+	}
 	public UndoManager(List<UndoableEvent> events){
 		this.events=events;
-		iter=events.listIterator();
+		iter=events.listIterator(events.size());
 	}
 	public void addEvent(UndoableEvent e){
-		if(iter.hasNext())
+		if(iter.hasNext()){
+			events.addAll(new ReversedList<>(events.subList(iter.nextIndex(),events.size())).stream().map(
+					(ev)->getReverseUndoableEvent(ev)).collect(Collectors.toList()));
 			iter=events.listIterator(events.size());
+		}
 		iter.add(e);
 	}
 	public boolean canUndo(){
@@ -42,6 +50,37 @@ public class UndoManager{
 		iter.previous().undo();
 	}
 	public void redo(){
-		iter.previous().redo();
+		iter.next().redo();
+	}
+	public List<UndoableEvent> getUndoList(){
+		return new ReversedList<>(events.subList(0,iter.nextIndex()));
+	}
+	public List<UndoableEvent> getRedoList(){
+		return events.subList(iter.nextIndex(),events.size());
+	}
+	private static UndoableEvent getReverseUndoableEvent(UndoableEvent event){
+		return event instanceof ReverseUndoableEvent?((ReverseUndoableEvent)event).getRawEvent()
+				:new ReverseUndoableEvent(event);
+	}
+	private static class ReverseUndoableEvent implements UndoableEvent{
+		private final UndoableEvent rawEvent;
+		public ReverseUndoableEvent(UndoableEvent rawEvent){
+			this.rawEvent=rawEvent;
+		}
+		@Override
+		public void undo(){
+			rawEvent.redo();
+		}
+		@Override
+		public void redo(){
+			rawEvent.undo();
+		}
+		@Override
+		public String getDescription(){
+			return "Undo:"+rawEvent.getDescription();
+		}
+		public UndoableEvent getRawEvent(){
+			return rawEvent;
+		}
 	}
 }
