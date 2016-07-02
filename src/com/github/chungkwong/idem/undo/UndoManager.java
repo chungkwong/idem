@@ -15,14 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.undo;
+import com.github.chungkwong.idem.global.*;
 import com.github.chungkwong.idem.util.*;
 import java.util.*;
-import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class UndoManager{
+	public static final UndoManager GLOBAL=new UndoManager();
 	private final List<UndoableEvent> events;
 	private ListIterator<UndoableEvent> iter;
 	public UndoManager(){
@@ -34,8 +35,7 @@ public class UndoManager{
 	}
 	public void addEvent(UndoableEvent e){
 		if(iter.hasNext()){
-			events.addAll(new ReversedList<>(events.subList(iter.nextIndex(),events.size())).stream().map(
-					(ev)->getReverseUndoableEvent(ev)).collect(Collectors.toList()));
+			events.add(getMultipleUndoableEvent(events.subList(iter.nextIndex(),events.size())));
 			iter=events.listIterator(events.size());
 		}
 		iter.add(e);
@@ -77,10 +77,34 @@ public class UndoManager{
 		}
 		@Override
 		public String getDescription(){
-			return "Undo:"+rawEvent.getDescription();
+			return UILanguageManager.getDefaultTranslation("REDO")+":"+rawEvent.getDescription();
 		}
 		public UndoableEvent getRawEvent(){
 			return rawEvent;
+		}
+	}
+	private static UndoableEvent getMultipleUndoableEvent(List<UndoableEvent> events){
+		return new MultipleUndoableEvent(events);
+	}
+	private static class MultipleUndoableEvent implements UndoableEvent{
+		private final List<UndoableEvent> events;
+		public MultipleUndoableEvent(List<UndoableEvent> events){
+			this.events=events;
+		}
+		@Override
+		public void undo(){
+			new ReversedList<>(events).forEach((event)->event.undo());
+		}
+		@Override
+		public void redo(){
+			events.forEach((event)->{event.redo();});
+		}
+		@Override
+		public String getDescription(){
+			return "Multiple undo";
+		}
+		public List<UndoableEvent> getRawEvent(){
+			return events;
 		}
 	}
 }
