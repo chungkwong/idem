@@ -119,7 +119,7 @@ public class CharacterSetFactory{
 		}
 		@Override
 		public IntStream stream(){
-			return Arrays.stream(set).flatMapToInt(CharacterSet::stream);
+			return Arrays.stream(set).distinct().flatMapToInt(CharacterSet::stream);
 		}
 	}
 	private static class ComplementCharacterSet implements CharacterSet{

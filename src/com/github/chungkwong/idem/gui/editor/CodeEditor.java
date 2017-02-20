@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016,2017 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,25 +23,46 @@ import javax.swing.tree.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CodeEditor extends JScrollPane{
+public class CodeEditor extends JPanel{
 	private final JTree tree;
-	private final JEditorPane editor;
+	private final JEditorPane editor=new JEditorPane();
+	private final JScrollPane jsp=new JScrollPane(editor);
 	private final LineNumberSideBar lineHeader=new LineNumberSideBar();
+	private final StyleScheme scheme=new StyleScheme();
+	private boolean editing=true;
 	public CodeEditor(){
-		editor=new JEditorPane();
-		setViewportView(editor);
-		setRowHeaderView(lineHeader);
-		editor.setEditorKit(CodeEditorKit.DEFAULT_CODE_EDITOR_KIT);
-		//setEditorKit(new javax.swing.text.StyledEditorKit());
-		//setEditorKit(new javax.swing.text.DefaultEditorKit());
+		super(new BorderLayout());
+		initScheme();
+		jsp.getVerticalScrollBar().addAdjustmentListener((e)->lineHeader.repaint());
+		add(jsp,BorderLayout.CENTER);
+		add(lineHeader,BorderLayout.WEST);
+		editor.setEditorKit(new javax.swing.text.StyledEditorKit());
 		editor.setEditable(true);
 		this.tree=new JTree((AbstractDocument.AbstractElement)editor.getDocument().getDefaultRootElement());
 		editor.getDocument().addUndoableEditListener((e)->((DefaultTreeModel)tree.getModel()).setRoot(
 				(AbstractDocument.AbstractElement)editor.getDocument().getDefaultRootElement()));
 		editor.getDocument().addUndoableEditListener((e)->lineHeader.repaint());
+		editor.getDocument().addUndoableEditListener((e)->{
+			if(editing){
+				editing=false;
+				scheme.updateStyle((StyledDocument)editor.getDocument());
+				editing=true;
+			}
+		});
 	}
 	public JTree getStructureTree(){
 		return tree;
+	}
+	private void initScheme(){
+		SimpleAttributeSet italic=new SimpleAttributeSet();
+		StyleConstants.setItalic(italic,true);
+		scheme.addTokenType("NUM","[0-9]+",italic);
+		SimpleAttributeSet bold=new SimpleAttributeSet();
+		StyleConstants.setBold(bold,true);
+		scheme.addTokenType("LETTER","[a-zA-Z]+",bold);
+		SimpleAttributeSet red=new SimpleAttributeSet();
+		StyleConstants.setForeground(red,Color.RED);
+		scheme.addTokenType("OTHER","[^0-9a-zA-Z]+",red);
 	}
 	public static void main(String[] args){
 		JFrame f=new JFrame("Test");
@@ -69,8 +90,9 @@ public class CodeEditor extends JScrollPane{
 				setPreferredSize(dimCache);
 				setMinimumSize(dimCache);
 				invalidate();
+				CodeEditor.this.validate();
 			}
-			Rectangle visibleRect=getViewport().getViewRect();
+			Rectangle visibleRect=jsp.getViewport().getViewRect();
 			int startOffset=editor.viewToModel(visibleRect.getLocation());
 			int endOffset=editor.viewToModel(new Point(visibleRect.x,visibleRect.y+visibleRect.height));
 			int startLine=root.getViewIndex(startOffset,Position.Bias.Forward);

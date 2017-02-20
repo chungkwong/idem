@@ -38,5 +38,9 @@ public class SimpleToken implements Token{
 	public String getType(){
 		return type;
 	}
+	@Override
+	public String toString(){
+		return type+":"+val+"("+text+")"; //To change body of generated methods, choose Tools | Templates.
+	}
 
 }

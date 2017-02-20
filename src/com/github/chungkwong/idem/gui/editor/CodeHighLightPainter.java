@@ -21,7 +21,7 @@ import javax.swing.text.*;
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class CodeHightPainter implements Highlighter.HighlightPainter{
+public class CodeHighLightPainter implements Highlighter.HighlightPainter{
 	@Override
 	public void paint(Graphics g,int p0,int p1,Shape bounds,JTextComponent c){
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

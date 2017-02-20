@@ -29,7 +29,7 @@ public interface CharacterSet{
 			int peek=Character.MIN_CODE_POINT-1,curr=peek;
 			@Override
 			public int nextInt(){
-				if(curr!=peek||hasNext()){
+				if(hasNext()){
 					curr=peek;
 					return curr;
 				}else
