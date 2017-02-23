@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016,2017 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,15 @@ public class CharacterSetFactory{
 		public IntStream stream(){
 			return Arrays.stream(codePoints);
 		}
+		@Override
+		public String toString(){
+			StringBuilder buf=new StringBuilder();
+			buf.append("[");
+			for(int c:codePoints)
+				buf.appendCodePoint(c);//FIXME
+			buf.append("]");
+			return buf.toString();
+		}
 	}
 	private static class RangeCharacterSet implements CharacterSet{
 		private final int begin,end;
@@ -82,6 +91,10 @@ public class CharacterSetFactory{
 		public IntStream stream(){
 			return IntStream.range(begin,end+1);
 		}
+		@Override
+		public String toString(){
+			return "["+(char)begin+"-"+(char)end+"]";
+		}
 	}
 	private static class BlockCharacterSet implements CharacterSet{
 		private final Character.UnicodeBlock block;
@@ -92,6 +105,11 @@ public class CharacterSetFactory{
 		public boolean contains(int codePoint){
 			return Character.UnicodeBlock.of(codePoint).equals(block);
 		}
+		@Override
+		public String toString(){
+			return "\\p{In"+block.toString()+"}";
+		}
+
 	}
 	private static class IntersectionCharacterSet implements CharacterSet{
 		private final CharacterSet[] set;
@@ -107,6 +125,10 @@ public class CharacterSetFactory{
 			return set[0].stream().filter(
 					(c)->Arrays.stream(set,1,set.length).allMatch((set)->set.contains(c)));
 		}
+		@Override
+		public String toString(){
+			return Arrays.stream(set).map(Object::toString).collect(Collectors.joining("&&","[","]"));
+		}
 	}
 	private static class UnionCharacterSet implements CharacterSet{
 		private final CharacterSet[] set;
@@ -121,6 +143,10 @@ public class CharacterSetFactory{
 		public IntStream stream(){
 			return Arrays.stream(set).distinct().flatMapToInt(CharacterSet::stream);
 		}
+		@Override
+		public String toString(){
+			return Arrays.stream(set).map(Object::toString).collect(Collectors.joining("","[","]"));
+		}
 	}
 	private static class ComplementCharacterSet implements CharacterSet{
 		private final CharacterSet set;
@@ -130,6 +156,10 @@ public class CharacterSetFactory{
 		@Override
 		public boolean contains(int codePoint){
 			return !set.contains(codePoint);
+		}
+		@Override
+		public String toString(){
+			return "[^"+set+"]";
 		}
 	}
 }

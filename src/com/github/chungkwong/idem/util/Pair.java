@@ -44,4 +44,9 @@ public class Pair<K,V>{
 		hash=89*hash+Objects.hashCode(this.second);
 		return hash;
 	}
+	@Override
+	public String toString(){
+		return "("+first+","+second+")";
+	}
+
 }

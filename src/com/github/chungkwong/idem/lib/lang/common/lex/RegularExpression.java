@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016,2017 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,15 +129,6 @@ public abstract class RegularExpression{
 		BINARY_PROPERTY.put("Noncharacter_Code_Point",c->(c&0xFFFE)==0xFFFE||(c>=0xFDD0&&c<=0xFDEF));
 		BINARY_PROPERTY.put("Assigned",(c)->Character.getType(c)!=Character.UNASSIGNED);
 	}
-	/*
-	 \p{Punct}	Punctuation: One of !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
-	 \p{Graph}	A visible character: [\p{Alnum}\p{Punct}]
-	 \p{Print}	A printable character: [\p{Graph}\x20]
-	 \p{Blank}	A space or a tab: [ \t]
-	 \p{Cntrl}	A control character: [\x00-\x1F\x7F]
-	 \p{XDigit}	A hexadecimal digit: [0-9a-fA-F]
-	 \p{Space}
-	 */
 	public static RegularExpression parseRegularExpression(String regex){
 		return nextRegularExpression(new CodePointBuffer(regex.codePoints().toArray()));
 	}
@@ -167,7 +158,7 @@ public abstract class RegularExpression{
 			if(!buf.isEOF()&&buf.peek()=='|'){
 				buf.skip();
 				union.add(createConcatRegularExpression(concat));
-				concat.clear();
+				concat=new ArrayList<>();
 			}
 		}
 		union.add(createConcatRegularExpression(concat));
@@ -281,7 +272,7 @@ public abstract class RegularExpression{
 				break;
 			case 'x':
 				if(buf.peek()=='{'){
-					buf.read();
+					buf.skip();
 					code=Integer.parseInt(nextCurlyToken(buf),16);
 				}else{
 					code=RegularExpression.nextInteger(buf,2,prefix);
@@ -351,7 +342,7 @@ public abstract class RegularExpression{
 			if(buf.peek()=='&'&&buf.codepoints[buf.offset+1]=='&'){
 				buf.skip();buf.skip();
 				CharacterSet and=CharacterSetFactory.createIntersectionCharacterSet(CharacterSetFactory.createUnionCharacterSet(union.toArray(new CharacterSet[0])),nextRangeCharacterSet(buf));
-				union.clear();
+				union=new ArrayList<>();
 				union.add(and);
 				break;
 			}
@@ -389,7 +380,7 @@ public abstract class RegularExpression{
 		public int peek(){
 			return codepoints[offset];
 		}
-		public void eat(char c){
+		public void eat(int c){
 			int in=read();
 			if(in!=c){
 				throw new IllegalStateException("Expected "+c+" but met "+in);

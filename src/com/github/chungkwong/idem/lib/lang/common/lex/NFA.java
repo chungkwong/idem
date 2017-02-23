@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2016,2017 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +28,10 @@ public final class NFA{
 		this.init=createState();
 		this.accept=createState();
 	}
-	public StateSet run(IntCheckPointIterator input){
+	public Pair<StateSet,String> run(IntCheckPointIterator input){
 		return run(input,init);
 	}
-	public StateSet run(IntCheckPointIterator input,State start){
+	public Pair<StateSet,String> run(IntCheckPointIterator input,State start){
 		StateSet set=new StateSet(start);
 		StateSet lastAccept=null;
 		StringBuilder buf=new StringBuilder();
@@ -46,14 +46,13 @@ public final class NFA{
 			}
 		}
 		input.endPrereadBackward();
-		String text=buf.toString();
-		return lastAccept;
+		return new Pair<>(lastAccept,buf.toString());
 	}
 	public boolean isAccepted(IntCheckPointIterator input){
 		return isAccepted(input,init);
 	}
 	public boolean isAccepted(IntCheckPointIterator input,State start){
-		return run(input,start).contains(accept);
+		return run(input,start).getFirst().contains(accept);
 	}
 	public State getInitState(){
 		return init;
@@ -70,13 +69,16 @@ public final class NFA{
 	}
 	public void findLambdaClosure(){
 		boolean changed=true;
-		while(changed){
+		outer:while(changed){
 			changed=false;
 			for(State state:getStates()){
 				for(State next:state.lambdaTransitionTable){
 					for(State nextnext:next.lambdaTransitionTable){
-						changed|=!state.lambdaTransitionTable.contains(nextnext);
-						state.lambdaTransitionTable.add(next);
+						if(!state.lambdaTransitionTable.contains(nextnext)){
+							changed=true;
+							state.lambdaTransitionTable.add(nextnext);
+							continue outer;
+						}
 					}
 				}
 			}
@@ -98,7 +100,7 @@ public final class NFA{
 		}
 		return states;
 	}
-	public DFA toDFA(){
+	public DFA toDFA(){//TODO
 		Collection<State> states=getStates();
 		DFA dfa=new DFA(null);
 		DFA.State state=new DFA.State();
@@ -123,16 +125,28 @@ public final class NFA{
 		}
 		public void nextState(int codePoint,HashSet<State> result){
 			Optional<com.github.chungkwong.idem.lib.Pair<CharacterSet,State>> found=transitionTable.stream().filter((pair)->pair.getFirst().contains(codePoint)).findFirst();
-
+			if(found.isPresent()){
+				result.add(found.get().getSecond());
+				result.addAll(found.get().getSecond().lambdaTransitionTable);
+			}
+		}
+	}
+	public static class TaggedState<T> extends State{
+		private final T tag;
+		public TaggedState(T tag){
+			this.tag=tag;
+		}
+		public T getTag(){
+			return tag;
 		}
 	}
 	public static class StateSet{
-		HashSet<State> set=new HashSet<>(),spare=new HashSet<>();
+		private HashSet<State> set=new HashSet<>(),spare=new HashSet<>();
 		public StateSet(){
 		}
 		public StateSet(State start){
 			set.add(start);
-			findClosure();
+			set.addAll(start.lambdaTransitionTable);
 		}
 		public boolean contains(State state){
 			return set.contains(state);
@@ -145,12 +159,6 @@ public final class NFA{
 			HashSet<State> tmp=set;
 			set=spare;
 			spare=tmp;
-			spare.clear();
-			findClosure();
-		}
-		private void findClosure(){
-			set.stream().forEach((state)->{spare.addAll(state.lambdaTransitionTable);});
-			set.addAll(spare);
 			spare.clear();
 		}
 		@Override
@@ -169,6 +177,29 @@ public final class NFA{
 			hash=89*hash+Objects.hashCode(this.set);
 			return hash;
 		}
+	}
+	@Override
+	public String toString(){
+		int index=0;
+		Map<State,String> states=new HashMap<>();
+		for(State s:getStates())
+			states.put(s,Integer.toString(index++));
+		StringBuilder buf=new StringBuilder();
+		states.forEach((s,n)->{
+			buf.append(n).append("\n\t");
+			s.lambdaTransitionTable.forEach((t)->buf.append(states.get(t)).append(','));
+			s.transitionTable.forEach((pair)->buf.append("\n\t").append(pair.getFirst()).append("->").append(states.get(pair.getSecond())));
+			buf.append("\n");
+		});
+		buf.append("init:").append(states.get(init)).append('\n');
+		buf.append("accept:").append(states.get(accept)).append('\n');
+		return buf.toString();
+	}
 
+	public static void main(String[] args){
+		NFA matcher=RegularExpression.parseRegularExpression("ab").toNFA();
+		matcher.prepareForRun();
+		System.out.println(matcher);
+		System.out.println(matcher.run(new IntCheckPointIterator("abbdsfeg".codePoints().iterator())));
 	}
 }
