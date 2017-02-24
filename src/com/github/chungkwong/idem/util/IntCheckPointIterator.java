@@ -24,7 +24,7 @@ public class IntCheckPointIterator implements PrimitiveIterator.OfInt{
 	private final PrimitiveIterator.OfInt src;
 	boolean preread=false;
 	IntList buffer=new DefaultIntList();
-	int offset=0;
+	int start=0,curr=0;
 	public IntCheckPointIterator(PrimitiveIterator.OfInt src){
 		this.src=src;
 	}
@@ -33,16 +33,18 @@ public class IntCheckPointIterator implements PrimitiveIterator.OfInt{
 			throw new IllegalStateException();
 		}
 		preread=true;
+		start=curr;
 	}
 	public int[] endPrereadForward(){
 		if(!preread){
 			throw new IllegalStateException();
 		}
 		preread=false;
-		IntList read=buffer.subList(0,offset);
+		IntList read=buffer.subList(start,curr);
 		int[] text=read.toArray();
 		read.clear();
-		offset=0;
+		curr=start;
+		start=0;
 		return text;
 	}
 	public void endPrereadBackward(){
@@ -50,20 +52,21 @@ public class IntCheckPointIterator implements PrimitiveIterator.OfInt{
 			throw new IllegalStateException();
 		}
 		preread=false;
-		offset=0;
+		curr=start;
 	}
 	@Override
 	public boolean hasNext(){
-		return src.hasNext()||offset<buffer.size();
+		return src.hasNext()||curr<buffer.size();
 	}
 	@Override
 	public int nextInt(){
-		if(offset<buffer.size()){
-			return buffer.get(offset++);
+		if(curr<buffer.size()){
+			return buffer.get(curr++);
 		}else{
-			Integer element=src.next();
+			int element=src.nextInt();
 			if(preread){
 				buffer.add(element);
+				++curr;
 			}
 			return element;
 		}
@@ -73,7 +76,7 @@ public class IntCheckPointIterator implements PrimitiveIterator.OfInt{
 			throw new IllegalStateException();
 		}
 		startPreread();
-		int val=next();
+		int val=nextInt();
 		endPrereadBackward();
 		return val;
 	}

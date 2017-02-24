@@ -24,6 +24,8 @@ import java.util.stream.*;
  */
 public final class NFA{
 	private final State init, accept;
+	private static final boolean DEBUG=false;
+	private static final HashMap<State,String> SYMBOLS=DEBUG?new HashMap<>():null;
 	public NFA(){
 		this.init=createState();
 		this.accept=createState();
@@ -38,6 +40,8 @@ public final class NFA{
 		input.startPreread();
 		while(!set.isEmpty()&&input.hasNext()){
 			set.next(input.nextInt());
+			if(DEBUG)
+				printTrace(set);
 			if(set.contains(accept)){
 				for(int c:input.endPrereadForward())
 					buf.appendCodePoint(c);
@@ -47,6 +51,9 @@ public final class NFA{
 		}
 		input.endPrereadBackward();
 		return new Pair<>(lastAccept,buf.toString());
+	}
+	private void printTrace(StateSet set){
+		System.out.println(set.set.stream().map(SYMBOLS::get).collect(Collectors.joining(",")));
 	}
 	public boolean isAccepted(IntCheckPointIterator input){
 		return isAccepted(input,init);
@@ -66,8 +73,10 @@ public final class NFA{
 	}
 	public void prepareForRun(){
 		findLambdaClosure();
+		if(DEBUG)
+			buildDebugSymbols();
 	}
-	public void findLambdaClosure(){
+	private void findLambdaClosure(){
 		boolean changed=true;
 		outer:while(changed){
 			changed=false;
@@ -83,6 +92,11 @@ public final class NFA{
 				}
 			}
 		}
+	}
+	private void buildDebugSymbols(){
+		int index=0;
+		for(State s:getStates())
+			SYMBOLS.put(s,Integer.toString(index++));
 	}
 	private Collection<State> getStates(){
 		HashSet<State> states=new HashSet<>();
@@ -155,11 +169,16 @@ public final class NFA{
 			return set.isEmpty();
 		}
 		public void next(int codePoint){
+			if(DEBUG)
+				System.out.println((char)codePoint);
 			set.stream().forEach((state)->state.nextState(codePoint,spare));
 			HashSet<State> tmp=set;
 			set=spare;
 			spare=tmp;
 			spare.clear();
+		}
+		public Object getTag(){
+			return set.stream().filter((s)->s instanceof TaggedState).findAny().map((s)->((TaggedState)s).getTag()).orElse(null);
 		}
 		@Override
 		protected StateSet clone(){
@@ -180,24 +199,21 @@ public final class NFA{
 	}
 	@Override
 	public String toString(){
-		int index=0;
-		Map<State,String> states=new HashMap<>();
-		for(State s:getStates())
-			states.put(s,Integer.toString(index++));
+		if(!DEBUG)
+			return super.toString();
 		StringBuilder buf=new StringBuilder();
-		states.forEach((s,n)->{
+		SYMBOLS.forEach((s,n)->{
 			buf.append(n).append("\n\t");
-			s.lambdaTransitionTable.forEach((t)->buf.append(states.get(t)).append(','));
-			s.transitionTable.forEach((pair)->buf.append("\n\t").append(pair.getFirst()).append("->").append(states.get(pair.getSecond())));
+			s.lambdaTransitionTable.forEach((t)->buf.append(SYMBOLS.get(t)).append(','));
+			s.transitionTable.forEach((pair)->buf.append("\n\t").append(pair.getFirst()).append("->").append(SYMBOLS.get(pair.getSecond())));
 			buf.append("\n");
 		});
-		buf.append("init:").append(states.get(init)).append('\n');
-		buf.append("accept:").append(states.get(accept)).append('\n');
+		buf.append("init:").append(SYMBOLS.get(init)).append('\n');
+		buf.append("accept:").append(SYMBOLS.get(accept)).append('\n');
 		return buf.toString();
 	}
-
 	public static void main(String[] args){
-		NFA matcher=RegularExpression.parseRegularExpression("ab").toNFA();
+		NFA matcher=RegularExpression.parseRegularExpression("aab|a").toNFA();
 		matcher.prepareForRun();
 		System.out.println(matcher);
 		System.out.println(matcher.run(new IntCheckPointIterator("abbdsfeg".codePoints().iterator())));

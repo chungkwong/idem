@@ -23,13 +23,15 @@ import java.util.*;
  */
 public class RegularExpressionLexFactory implements LexFactory{
 	private final ArrayList<String> tokenType=new ArrayList<>();
-	private DFA machine;
+	private final NFA machine=new NFA();
 	public RegularExpressionLexFactory(){
 	}
-
 	public void addTokenType(String type,String regex){
 		tokenType.add(type);
-
+		NFA child=RegularExpression.parseRegularExpression(regex).toNFA();
+		machine.getInitState().addLambdaTransition(child.getInitState());
+		child.getAcceptState().addLambdaTransition(machine.getAcceptState());
+		child.getAcceptState().addLambdaTransition(new NFA.TaggedState(type));
 	}
 	@Override
 	public String[] getAllTokenType(){
@@ -46,7 +48,8 @@ public class RegularExpressionLexFactory implements LexFactory{
 		}
 		@Override
 		public Token get(){
-			return machine.run(src);
+			Pair<NFA.StateSet,String> pair=machine.run(src);
+			return new SimpleToken(pair.getSecond(),pair.getSecond(),pair.getFirst().getTag().toString());
 		}
 	}
 }
