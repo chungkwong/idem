@@ -24,9 +24,11 @@ import java.util.*;
 public class RegularExpressionLexFactory implements LexFactory{
 	private final ArrayList<String> tokenType=new ArrayList<>();
 	private final NFA machine=new NFA();
+	private boolean changed=true;
 	public RegularExpressionLexFactory(){
 	}
 	public void addTokenType(String type,String regex){
+		changed=true;
 		tokenType.add(type);
 		NFA child=RegularExpression.parseRegularExpression(regex).toNFA();
 		machine.getInitState().addLambdaTransition(child.getInitState());
@@ -39,6 +41,10 @@ public class RegularExpressionLexFactory implements LexFactory{
 	}
 	@Override
 	public Lex createLex(IntCheckPointIterator src){
+		if(changed){
+			machine.prepareForRun();
+			changed=false;
+		}
 		return new RegularExpressionLex(src);
 	}
 	private class RegularExpressionLex implements Lex{
@@ -49,7 +55,21 @@ public class RegularExpressionLexFactory implements LexFactory{
 		@Override
 		public Token get(){
 			Pair<NFA.StateSet,String> pair=machine.run(src);
-			return new SimpleToken(pair.getSecond(),pair.getSecond(),pair.getFirst().getTag().toString());
+			if(pair.getFirst()!=null)
+				return new SimpleToken(pair.getSecond(),pair.getSecond(),pair.getFirst().getTag().toString());
+			else
+				return null;
+		}
+	}
+	public static void main(String[] args){
+		RegularExpressionLexFactory factory=new RegularExpressionLexFactory();
+		factory.addTokenType("NUMBER","[0-9]+");
+		factory.addTokenType("WORD","[a-zA-Z]+");
+		factory.addTokenType("OTHER","[^0-9a-zA-Z]");
+		Lex lex=factory.createLex(new IntCheckPointIterator("fe2672j-=".codePoints().iterator()));
+		Token t;
+		while((t=lex.get())!=null){
+			System.out.println(t);
 		}
 	}
 }

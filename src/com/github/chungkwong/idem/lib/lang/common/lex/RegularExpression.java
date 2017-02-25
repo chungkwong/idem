@@ -58,7 +58,7 @@ public abstract class RegularExpression{
 		LONG_CHARACTER_TYPE.put("Lower",lower);
 		CharacterSet upper=CharacterSetFactory.createRangeCharacterSet('A','Z');
 		LONG_CHARACTER_TYPE.put("Upper",upper);
-		LONG_CHARACTER_TYPE.put("ASCII",CharacterSetFactory.createRangeCharacterSet(0x0,0x1F));
+		LONG_CHARACTER_TYPE.put("ASCII",CharacterSetFactory.createRangeCharacterSet(0x0,0x7F));
 		LONG_CHARACTER_TYPE.put("Alpha",CharacterSetFactory.createUnionCharacterSet(lower,upper));
 		LONG_CHARACTER_TYPE.put("Digit",digit);
 		LONG_CHARACTER_TYPE.put("Alnum",CharacterSetFactory.createUnionCharacterSet(lower,upper,digit));
@@ -228,14 +228,16 @@ public abstract class RegularExpression{
 		String script=removePrefix(id,"Is","script=","sc=");
 		if(script!=null){
 			try{
-				return (c)->Character.UnicodeScript.of(c).equals(Character.UnicodeScript.forName(script));
+				Character.UnicodeScript scriptName=Character.UnicodeScript.forName(script);
+				return (c)->Character.UnicodeScript.of(c).equals(scriptName);
 			}catch(IllegalArgumentException ex){
 			}
 		}
 		String block=removePrefix(id,"In","block=","blk=");
 		if(block!=null){
 			try{
-				return (c)->Character.UnicodeBlock.of(c).equals(Character.UnicodeBlock.forName(block));
+				Character.UnicodeBlock blockName=Character.UnicodeBlock.forName(block);
+				return (c)->Character.UnicodeBlock.of(c).equals(blockName);
 			}catch(IllegalArgumentException ex){
 			}
 		}
@@ -326,17 +328,12 @@ public abstract class RegularExpression{
 		}
 		List<CharacterSet> union=new ArrayList();
 		while(buf.peek()!=']'){
-			CharacterSet term=null;
-			switch(buf.read()){
-				case '\\':
-					term=nextTypedCharacterSet(buf);
-					break;
-				case '[':
-					term=nextRangeCharacterSet(buf);
-					break;
-				default:
-					term=nextSingletonCharacterSet(buf);
-					break;
+			CharacterSet term=nextCharacterSet(buf);
+			if(buf.peek()=='-'){
+				buf.skip();
+				int begin=term.stream().findFirst().getAsInt();
+				int end=nextCharacterSet(buf).stream().findFirst().getAsInt();
+				term=CharacterSetFactory.createRangeCharacterSet(begin,end);
 			}
 			union.add(term);
 			if(buf.peek()=='&'&&buf.codepoints[buf.offset+1]=='&'){
@@ -352,6 +349,16 @@ public abstract class RegularExpression{
 		if(complement)
 			set=CharacterSetFactory.createComplementCharacterSet(set);
 		return set;
+	}
+	private static CharacterSet nextCharacterSet(CodePointBuffer buf){
+		switch(buf.read()){
+			case '\\':
+				return nextTypedCharacterSet(buf);
+			case '[':
+				return nextRangeCharacterSet(buf);
+			default:
+				return nextSingletonCharacterSet(buf);
+		}
 	}
 	private static RegularExpression nextWildcardRegularExpression(CodePointBuffer buf){
 		return WILDCARD;

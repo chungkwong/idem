@@ -35,7 +35,9 @@ public final class NFA{
 	}
 	public Pair<StateSet,String> run(IntCheckPointIterator input,State start){
 		StateSet set=new StateSet(start);
-		StateSet lastAccept=null;
+		StateSet lastAccept=set.contains(accept)?set:null;
+		if(DEBUG)
+			printTrace(set);
 		StringBuilder buf=new StringBuilder();
 		input.startPreread();
 		while(!set.isEmpty()&&input.hasNext()){
@@ -59,7 +61,8 @@ public final class NFA{
 		return isAccepted(input,init);
 	}
 	public boolean isAccepted(IntCheckPointIterator input,State start){
-		return run(input,start).getFirst().contains(accept);
+		StateSet result=run(input,start).getFirst();
+		return !input.hasNext()&&result!=null&&result.contains(accept);
 	}
 	public State getInitState(){
 		return init;
@@ -213,9 +216,9 @@ public final class NFA{
 		return buf.toString();
 	}
 	public static void main(String[] args){
-		NFA matcher=RegularExpression.parseRegularExpression("aab|a").toNFA();
+		NFA matcher=RegularExpression.parseRegularExpression("").toNFA();
 		matcher.prepareForRun();
 		System.out.println(matcher);
-		System.out.println(matcher.run(new IntCheckPointIterator("abbdsfeg".codePoints().iterator())));
+		System.out.println(matcher.run(new IntCheckPointIterator("".codePoints().iterator())));
 	}
 }
