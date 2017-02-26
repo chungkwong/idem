@@ -148,6 +148,10 @@ public abstract class RegularExpression{
 						buf.skip();
 						term=new UnionRegularExpression(Arrays.asList(EMPTY,term));
 						break;
+					case '*':
+						buf.skip();
+						term=new StarRegularExpression(term);
+						break;
 					case '+':
 						buf.skip();
 						term=new ConcatRegularExpression(Arrays.asList(term,new StarRegularExpression(term)));
@@ -190,7 +194,7 @@ public abstract class RegularExpression{
 	private static int nextInteger(CodePointBuffer buf){
 		int i=0;
 		while(Character.isDigit(buf.peek()))
-			i=i*10+Character.forDigit(buf.read(),10);
+			i=i*10+Character.digit(buf.read(),10);
 		return i;
 	}
 	private static RegularExpression nextPrimaryRegularExpression(CodePointBuffer buf){
@@ -277,11 +281,11 @@ public abstract class RegularExpression{
 					buf.skip();
 					code=Integer.parseInt(nextCurlyToken(buf),16);
 				}else{
-					code=RegularExpression.nextInteger(buf,2,prefix);
+					code=RegularExpression.nextInteger(buf,2,16);
 				}
 				break;
 			case 'u':
-				code=RegularExpression.nextInteger(buf,4,prefix);
+				code=RegularExpression.nextInteger(buf,4,16);
 				break;
 		}
 		return CharacterSetFactory.createSingletonCharacterSet(code);
@@ -289,14 +293,14 @@ public abstract class RegularExpression{
 	private static int nextInteger(CodePointBuffer buf,int length,int base){
 		int number=0;
 		for(int i=0;i<length;i++){
-			number=number*base+Character.forDigit(buf.read(),base);
+			number=number*base+Character.digit(buf.read(),base);
 		}
 		return number;
 	}
 	private static int nextOctInteger(CodePointBuffer buf){
-		int number=buf.read();
+		int number=buf.read()-'0';
 		int length=number<=3?2:1;
-		for(int i=0;i<length;i++){
+		for(int i=0;i<length&&!buf.isEOF();i++){
 			int d=buf.peek();
 			if(d>='0'&&d<='7'){
 				number=number*8+(d-'0');
@@ -338,7 +342,7 @@ public abstract class RegularExpression{
 			union.add(term);
 			if(buf.peek()=='&'&&buf.codepoints[buf.offset+1]=='&'){
 				buf.skip();buf.skip();
-				CharacterSet and=CharacterSetFactory.createIntersectionCharacterSet(CharacterSetFactory.createUnionCharacterSet(union.toArray(new CharacterSet[0])),nextRangeCharacterSet(buf));
+				CharacterSet and=CharacterSetFactory.createIntersectionCharacterSet(CharacterSetFactory.createUnionCharacterSet(union.toArray(new CharacterSet[0])),nextCharacterSet(buf));
 				union=new ArrayList<>();
 				union.add(and);
 				break;
@@ -476,11 +480,9 @@ public abstract class RegularExpression{
 		}
 		@Override
 		public NFA toNFA(){
-			NFA nfa=new NFA();
-			NFA child=base.toNFA();
-			nfa.getAcceptState().addLambdaTransition(child.getInitState());
+			NFA nfa=base.toNFA();
+			nfa.getAcceptState().addLambdaTransition(nfa.getInitState());
 			nfa.getInitState().addLambdaTransition(nfa.getAcceptState());
-			child.getAcceptState().addLambdaTransition(nfa.getAcceptState());
 			return nfa;
 		}
 	}

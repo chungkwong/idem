@@ -216,9 +216,9 @@ public final class NFA{
 		return buf.toString();
 	}
 	public static void main(String[] args){
-		NFA matcher=RegularExpression.parseRegularExpression("").toNFA();
+		NFA matcher=RegularExpression.parseRegularExpression("\\040").toNFA();
 		matcher.prepareForRun();
 		System.out.println(matcher);
-		System.out.println(matcher.run(new IntCheckPointIterator("".codePoints().iterator())));
+		System.out.println(matcher.run(new IntCheckPointIterator(" ".codePoints().iterator())));
 	}
 }
