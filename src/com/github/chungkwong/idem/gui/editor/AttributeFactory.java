@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.gui.editor;
+import com.github.chungkwong.idem.lib.lang.common.parser.Symbol;
 import javax.swing.text.*;
 /**
  *

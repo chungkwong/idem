@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.common.lex;
-import java.util.function.*;
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface Lex extends Supplier<Token>{
+public interface Lex extends Iterator<Token>{
 
 }

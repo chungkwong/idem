@@ -14,23 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.gui.editor;
-
+package com.github.chungkwong.idem.lib.lang.common.parser;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class ProductionRule{
-	private final NonTerminal target;
-	private final Symbol[] member;
-	public ProductionRule(NonTerminal target,Symbol[] member){
-		this.target=target;
-		this.member=member;
+public class NonTerminal extends Symbol{
+	public NonTerminal(String name){
+		super(name);
 	}
-	public Symbol[] getMember(){
-		return member;
-	}
-	public NonTerminal getTarget(){
-		return target;
+	public NonTerminal(String id,String name){
+		super(id,name);
 	}
 }

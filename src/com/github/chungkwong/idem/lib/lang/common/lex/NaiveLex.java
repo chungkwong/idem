@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.common.lex;
+import com.github.chungkwong.idem.util.*;
 import java.util.*;
 import java.util.regex.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class NaiveLex{
+public class NaiveLex implements LexFactory{
 	private final HashMap<String,Pattern> types=new HashMap<>();
 	public NaiveLex(){
 
@@ -32,7 +33,18 @@ public class NaiveLex{
 	public Iterator<Token> split(String text){
 		return new TokenIterator(text);
 	}
-	private class TokenIterator implements Iterator<Token>{
+	@Override
+	public String[] getAllTokenType(){
+		return types.keySet().toArray(new String[0]);
+	}
+	@Override
+	public Lex createLex(IntCheckPointIterator src){
+		StringBuilder buf=new StringBuilder();
+		while(src.hasNext())
+			buf.appendCodePoint(src.nextInt());
+		return new TokenIterator(buf.toString());
+	}
+	private class TokenIterator implements Lex{
 		private final String text;
 		private int index=0;
 		private Token token;

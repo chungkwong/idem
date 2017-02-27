@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.gui.editor;
 import com.github.chungkwong.idem.lib.lang.common.lex.*;
+import com.github.chungkwong.idem.util.*;
 import java.util.*;
 import javax.swing.text.*;
 /**
@@ -24,9 +25,9 @@ import javax.swing.text.*;
  */
 public class StyleScheme{
 	private final HashMap<String,AttributeSet> style=new HashMap<>();
-	private final NaiveLex lex=new NaiveLex();
+	private final RegularExpressionLexFactory lex=new RegularExpressionLexFactory();
 	public void addTokenType(String type,String regex,AttributeSet set){
-		lex.addType(type,regex);
+		lex.addTokenType(type,regex);
 		style.put(type,set);
 	}
 	public void updateStyle(StyledDocument doc){
@@ -36,7 +37,7 @@ public class StyleScheme{
 		}catch(BadLocationException ex){
 
 		}
-		Iterator<Token> iter=lex.split(text);
+		Iterator<Token> iter=lex.createLex(new IntCheckPointIterator(text.codePoints().iterator()));
 		int index=0;
 		while(iter.hasNext()){
 			Token token=iter.next();

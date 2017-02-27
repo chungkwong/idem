@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Chan Chung Kwong <1m02math@126.com>
+ * Copyright (C) 2017 Chan Chung Kwong <1m02math@126.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,11 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.common.parser;
-
+import com.github.chungkwong.idem.lib.lang.common.lex.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SyntaxTree{
+public class NaiveParser implements Parser{
+	public static final ParserFactory FACTORY=(g)->new NaiveParser(g);
+	private final ContextFreeGrammar grammar;
+	private NaiveParser(ContextFreeGrammar grammar){
+		this.grammar=grammar;
+	}
+	@Override
+	public Object parse(Lex lex){
+		//TODO
+		return null;
+	}
 
 }

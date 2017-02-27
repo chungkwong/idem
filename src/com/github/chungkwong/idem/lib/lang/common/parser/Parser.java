@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.common.parser;
-
+import com.github.chungkwong.idem.lib.lang.common.lex.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public interface Parser{
-
+	public Object parse(Lex lex);
 }

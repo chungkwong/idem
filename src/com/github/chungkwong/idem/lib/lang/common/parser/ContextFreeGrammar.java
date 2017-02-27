@@ -15,11 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.common.parser;
-
+import java.util.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public class SyntaxTreeNode{
-
+public class ContextFreeGrammar{
+	private final Symbol startSymbol;
+	private final List<ProductionRule> rules;
+	public ContextFreeGrammar(Symbol startSymbol,List<ProductionRule> rules){
+		this.startSymbol=startSymbol;
+		this.rules=rules;
+	}
+	public Symbol getStartSymbol(){
+		return startSymbol;
+	}
+	public List<ProductionRule> getRules(){
+		return rules;
+	}
 }

@@ -14,12 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.chungkwong.idem.gui.editor;
-import javax.swing.text.*;
+package com.github.chungkwong.idem.lib.lang.common.parser;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
-public interface SymbolInstance extends Element{
-	Symbol getSymbol();
+public class SymbolInstance<T>{
+	private final Symbol symbol;
+	private final T semanticValue;
+	public SymbolInstance(Symbol symbol,T semanticValue){
+		this.symbol=symbol;
+		this.semanticValue=semanticValue;
+	}
+	public Symbol getSymbol(){
+		return symbol;
+	}
+	public T getSemanticValue(){
+		return semanticValue;
+	}
 }

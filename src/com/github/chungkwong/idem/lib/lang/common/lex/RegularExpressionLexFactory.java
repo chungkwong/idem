@@ -53,12 +53,16 @@ public class RegularExpressionLexFactory implements LexFactory{
 			this.src=src;
 		}
 		@Override
-		public Token get(){
+		public Token next(){
 			Pair<NFA.StateSet,String> pair=machine.run(src);
 			if(pair.getFirst()!=null)
 				return new SimpleToken(pair.getSecond(),pair.getSecond(),pair.getFirst().getTag().toString());
 			else
 				return null;
+		}
+		@Override
+		public boolean hasNext(){
+			return src.hasNext();
 		}
 	}
 	public static void main(String[] args){
@@ -68,8 +72,8 @@ public class RegularExpressionLexFactory implements LexFactory{
 		factory.addTokenType("OTHER","[^0-9a-zA-Z]");
 		Lex lex=factory.createLex(new IntCheckPointIterator("fe2672j-=".codePoints().iterator()));
 		Token t;
-		while((t=lex.get())!=null){
-			System.out.println(t);
+		while(lex.hasNext()){
+			System.out.println(lex.next());
 		}
 	}
 }
