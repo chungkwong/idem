@@ -45,4 +45,9 @@ public abstract class Symbol{
 		hash=53*hash+Objects.hashCode(this.id);
 		return hash;
 	}
+	@Override
+	public String toString(){
+		return name;
+	}
+
 }

@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.common.lex;
+import com.github.chungkwong.idem.lib.lang.common.parser.*;
 import com.github.chungkwong.idem.util.*;
 import java.util.*;
 import java.util.stream.*;
@@ -148,12 +149,12 @@ public final class NFA{
 			}
 		}
 	}
-	public static class TaggedState<T> extends State{
-		private final T tag;
-		public TaggedState(T tag){
+	public static class TaggedState extends State{
+		private final Terminal tag;
+		public TaggedState(Terminal tag){
 			this.tag=tag;
 		}
-		public T getTag(){
+		public Terminal getTag(){
 			return tag;
 		}
 	}
@@ -180,7 +181,7 @@ public final class NFA{
 			spare=tmp;
 			spare.clear();
 		}
-		public Object getTag(){
+		public Terminal getTag(){
 			return set.stream().filter((s)->s instanceof TaggedState).findAny().map((s)->((TaggedState)s).getTag()).orElse(null);
 		}
 		@Override

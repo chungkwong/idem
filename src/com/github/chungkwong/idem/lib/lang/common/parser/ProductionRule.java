@@ -24,8 +24,8 @@ import java.util.function.*;
 public class ProductionRule{
 	private final NonTerminal target;
 	private final Symbol[] member;
-	private final Function<Object,Object[]> action;
-	public ProductionRule(NonTerminal target,Symbol[] member,Function<Object,Object[]> action){
+	private final Function<Object[],Object> action;
+	public ProductionRule(NonTerminal target,Symbol[] member,Function<Object[],Object> action){
 		this.target=target;
 		this.member=member;
 		this.action=action;

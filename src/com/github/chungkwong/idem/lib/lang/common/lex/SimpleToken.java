@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.common.lex;
-
+import com.github.chungkwong.idem.lib.lang.common.parser.*;
 
 public class SimpleToken implements Token{
 	private final String text;
 	private final Object val;
-	private final String type;
-	public SimpleToken(String text,Object val,String type){
+	private final Terminal type;
+	public SimpleToken(String text,Object val,Terminal type){
 		this.text=text;
 		this.val=val;
 		this.type=type;
@@ -35,7 +35,7 @@ public class SimpleToken implements Token{
 		return val;
 	}
 	@Override
-	public String getType(){
+	public Terminal getType(){
 		return type;
 	}
 	@Override

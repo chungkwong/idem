@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.lib.lang.common.lex;
 import com.github.chungkwong.idem.lib.Pair;
+import com.github.chungkwong.idem.lib.lang.common.parser.*;
 import com.github.chungkwong.idem.util.*;
 import java.util.*;
 /**
@@ -76,11 +77,11 @@ public class DFA{
 		}
 	}
 	public static class AcceptedState extends State{
-		private final String tokenType;
-		public AcceptedState(String tokenType){
+		private final Terminal tokenType;
+		public AcceptedState(Terminal tokenType){
 			this.tokenType=tokenType;
 		}
-		public String getTokenType(){
+		public Terminal getTokenType(){
 			return tokenType;
 		}
 	}

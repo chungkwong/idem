@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.common.lex;
-
+import com.github.chungkwong.idem.lib.lang.common.parser.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -24,5 +24,5 @@ package com.github.chungkwong.idem.lib.lang.common.lex;
 public interface Token{
 	String getText();
 	Object getValue();
-	String getType();
+	Terminal getType();
 }

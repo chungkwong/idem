@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.common.lex;
+import com.github.chungkwong.idem.lib.lang.common.parser.*;
 import com.github.chungkwong.idem.util.*;
 import java.util.*;
 /**
@@ -33,7 +34,7 @@ public class RegularExpressionLexFactory implements LexFactory{
 		NFA child=RegularExpression.parseRegularExpression(regex).toNFA();
 		machine.getInitState().addLambdaTransition(child.getInitState());
 		child.getAcceptState().addLambdaTransition(machine.getAcceptState());
-		child.getAcceptState().addLambdaTransition(new NFA.TaggedState(type));
+		child.getAcceptState().addLambdaTransition(new NFA.TaggedState(new Terminal(type)));
 	}
 	@Override
 	public String[] getAllTokenType(){
@@ -56,7 +57,7 @@ public class RegularExpressionLexFactory implements LexFactory{
 		public Token next(){
 			Pair<NFA.StateSet,String> pair=machine.run(src);
 			if(pair.getFirst()!=null)
-				return new SimpleToken(pair.getSecond(),pair.getSecond(),pair.getFirst().getTag().toString());
+				return new SimpleToken(pair.getSecond(),pair.getSecond(),pair.getFirst().getTag());
 			else
 				return null;
 		}
