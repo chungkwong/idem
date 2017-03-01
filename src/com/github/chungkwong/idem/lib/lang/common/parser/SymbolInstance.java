@@ -32,4 +32,8 @@ public class SymbolInstance<T>{
 	public T getSemanticValue(){
 		return semanticValue;
 	}
+	@Override
+	public String toString(){
+		return semanticValue+"("+symbol.getName()+")";
+	}
 }

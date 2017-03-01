@@ -16,6 +16,7 @@
  */
 package com.github.chungkwong.idem.lib.lang.common.parser;
 import java.util.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -33,4 +34,9 @@ public class ContextFreeGrammar{
 	public List<ProductionRule> getRules(){
 		return rules;
 	}
+	@Override
+	public String toString(){
+		return rules.stream().map(ProductionRule::toString).collect(Collectors.joining("\n",startSymbol.getName()+"\n",""));
+	}
+
 }

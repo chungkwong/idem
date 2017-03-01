@@ -17,6 +17,7 @@
 package com.github.chungkwong.idem.lib.lang.common.parser;
 import java.util.*;
 import java.util.function.*;
+import java.util.stream.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
@@ -44,7 +45,14 @@ public class ProductionRule{
 				return false;
 		return true;
 	}
+	Function<Object[],Object> getAction(){
+		return action;
+	}
 	public SymbolInstance apply(SymbolInstance... comp){
 		return new SymbolInstance(target,action.apply(Arrays.stream(comp).map(SymbolInstance::getSemanticValue).toArray()));
+	}
+	@Override
+	public String toString(){
+		return Arrays.stream(member).map(Symbol::getName).collect(Collectors.joining(" ",target.getName()+":",""));
 	}
 }
