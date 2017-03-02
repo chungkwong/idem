@@ -18,27 +18,28 @@ package com.github.chungkwong.idem.lib.lang.common.lex;
 import com.github.chungkwong.idem.lib.lang.common.parser.*;
 import com.github.chungkwong.idem.util.*;
 import java.util.*;
+import java.util.function.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class RegularExpressionLexFactory implements LexFactory{
-	private final ArrayList<String> tokenType=new ArrayList<>();
+	private final Map<Terminal,Function<String,Object>> tokenType=new HashMap<>();
 	private final NFA machine=new NFA();
 	private boolean changed=true;
 	public RegularExpressionLexFactory(){
 	}
-	public void addTokenType(String type,String regex){
+	public void addTokenType(Terminal type,String regex,Function<String,Object> converter){
 		changed=true;
-		tokenType.add(type);
+		tokenType.put(type,converter);
 		NFA child=RegularExpression.parseRegularExpression(regex).toNFA();
 		machine.getInitState().addLambdaTransition(child.getInitState());
 		child.getAcceptState().addLambdaTransition(machine.getAcceptState());
-		child.getAcceptState().addLambdaTransition(new NFA.TaggedState(new Terminal(type)));
+		child.getAcceptState().addLambdaTransition(new NFA.TaggedState(type));
 	}
 	@Override
-	public String[] getAllTokenType(){
-		return tokenType.toArray(new String[0]);
+	public Collection<Terminal> getAllTokenType(){
+		return tokenType.keySet();
 	}
 	@Override
 	public Lex createLex(IntCheckPointIterator src){
@@ -56,9 +57,11 @@ public class RegularExpressionLexFactory implements LexFactory{
 		@Override
 		public Token next(){
 			Pair<NFA.StateSet,String> pair=machine.run(src);
-			if(pair.getFirst()!=null)
-				return new SimpleToken(pair.getSecond(),pair.getSecond(),pair.getFirst().getTag());
-			else
+			if(pair.getFirst()!=null){
+				Terminal type=pair.getFirst().getTag();
+				String text=pair.getSecond();
+				return new SimpleToken(text,tokenType.get(type).apply(text),type);
+			}else
 				return null;
 		}
 		@Override

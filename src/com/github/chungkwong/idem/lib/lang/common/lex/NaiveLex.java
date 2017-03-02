@@ -18,25 +18,27 @@ package com.github.chungkwong.idem.lib.lang.common.lex;
 import com.github.chungkwong.idem.lib.lang.common.parser.*;
 import com.github.chungkwong.idem.util.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.regex.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  */
 public class NaiveLex implements LexFactory{
-	private final HashMap<Terminal,Pattern> types=new HashMap<>();
+	private final HashMap<Terminal,Pair<Pattern,Function<String,Object>>> types=new HashMap<>();
 	public NaiveLex(){
 
 	}
-	public void addType(String type,String regex){
-		types.put(new Terminal(type),Pattern.compile(regex));
+	@Override
+	public void addTokenType(Terminal type,String regex,Function<String,Object> converter){
+		types.put(type,new Pair<>(Pattern.compile(regex),converter));
 	}
 	public Iterator<Token> split(String text){
 		return new TokenIterator(text);
 	}
 	@Override
-	public String[] getAllTokenType(){
-		return types.keySet().toArray(new String[0]);
+	public Collection<Terminal> getAllTokenType(){
+		return types.keySet();
 	}
 	@Override
 	public Lex createLex(IntCheckPointIterator src){
@@ -56,11 +58,11 @@ public class NaiveLex implements LexFactory{
 		public boolean hasNext(){
 			if(token!=null)
 				return true;
-			for(Map.Entry<Terminal,Pattern> entry:types.entrySet()){
-				Matcher matcher=entry.getValue().matcher(text);
+			for(Map.Entry<Terminal,Pair<Pattern,Function<String,Object>>> entry:types.entrySet()){
+				Matcher matcher=entry.getValue().getFirst().matcher(text);
 				matcher.region(index,text.length());
 				if(matcher.lookingAt()){
-					token=new SimpleToken(matcher.group(),matcher.group(),entry.getKey());
+					token=new SimpleToken(matcher.group(),entry.getValue().getSecond().apply(matcher.group()),entry.getKey());
 					index=matcher.end();
 					return true;
 				}
@@ -80,8 +82,8 @@ public class NaiveLex implements LexFactory{
 	}
 	public static void main(String[] args){
 		NaiveLex lex=new NaiveLex();
-		lex.addType("A","[a-zA-Z]+");
-		lex.addType("B","[0-9]+");
+		lex.addTokenType("A","[a-zA-Z]+");
+		lex.addTokenType("B","[0-9]+");
 		Iterator<Token> iter=lex.split("catdo54gdog7");
 		while(iter.hasNext())
 			System.out.println(iter.next());

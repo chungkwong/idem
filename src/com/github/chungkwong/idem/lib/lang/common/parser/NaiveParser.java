@@ -27,9 +27,10 @@ public class NaiveParser implements Parser{
 	public static final ParserFactory FACTORY=(g)->new NaiveParser(g);
 	private final ContextFreeGrammar grammar;
 	private final boolean nullable;
-	private NaiveParser(ContextFreeGrammar grammar){
+	public NaiveParser(ContextFreeGrammar grammar){
 		this.grammar=normalize(grammar);
-		System.out.println(this.grammar);
+		if(DEBUG)
+			System.out.println(this.grammar);
 		this.nullable=this.grammar.getRules().stream().anyMatch((rule)->rule.getMember().length==0);
 	}
 	private static ContextFreeGrammar normalize(ContextFreeGrammar grammar){

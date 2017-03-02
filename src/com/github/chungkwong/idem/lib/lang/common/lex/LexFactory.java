@@ -15,13 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.chungkwong.idem.lib.lang.common.lex;
+import com.github.chungkwong.idem.lib.lang.common.parser.*;
 import com.github.chungkwong.idem.util.*;
+import java.util.*;
+import java.util.function.*;
 /**
  *
  * @author Chan Chung Kwong <1m02math@126.com>
  * @param <C> Enum of token type
  */
 public interface LexFactory{
-	String[] getAllTokenType();
+	Collection<Terminal> getAllTokenType();
+	void addTokenType(Terminal type,String regex,Function<String,Object> converter);
+	default void addTokenType(String type,String regex){
+		addTokenType(new Terminal(type),regex,(t)->t);
+	}
 	Lex createLex(IntCheckPointIterator src);
 }
